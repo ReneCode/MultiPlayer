@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "start:w": "nodemon"
+    "start:w": "nodemon",
+    "test:w": "jest --watch"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

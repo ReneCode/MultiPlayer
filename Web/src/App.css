@@ -1,0 +1,17 @@
+.App {
+  text-align: center;
+}
+
+.Main {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn {
+  width: 200px;
+  font-size: 1rem;
+}
+
+.game-link {
+  font-size: 1rem;
+}

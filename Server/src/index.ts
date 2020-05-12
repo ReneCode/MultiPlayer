@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const http = require("http");
 const https = require("https");
 
+import WebsocketServer from "./WsServer";
 import ludoRouter from "./routes/ludo";
 
 require("dotenv").config();
@@ -14,29 +15,6 @@ const app = express();
 // if (applicationInsightsLogger.init()) {
 //   applicationInsightsLogger.trackHttpRequests(app);
 // }
-
-// https://medium.com/@alexishevia/using-cors-in-express-cac7e29b005b
-const allowedOrigins = [
-  "http://ecad.fun",
-  "https://ecad.fun",
-  "http://www.ecad.fun",
-  "https://www.ecad.fun",
-  "http://localhost:3000",
-];
-app.use(
-  cors({
-    origin: (origin: string, callback: any) => {
-      if (!origin) {
-        return callback(null, true);
-      }
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `The CORS policy for this site does not allow access from: ${origin} `;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-  })
-);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -70,5 +48,5 @@ httpServer.listen(port, () => {
   console.log("app listening on port:", port);
 });
 
-// const wsServer = new WsServer();
-// wsServer.listen(httpServer);
+const wsServer = new WebsocketServer();
+wsServer.listen(httpServer);
