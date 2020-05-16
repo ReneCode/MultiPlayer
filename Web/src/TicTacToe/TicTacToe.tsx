@@ -1,11 +1,14 @@
 import React from "react";
-import { Board, Cell } from "../style";
+import { Board, Cell, Button, TicTacToeGameContainer } from "../style";
+import PlayersTurn from "./PlayersTurn";
 
 type Props = {
   game: any;
+  playerId: string;
   onMove: (move: object) => void;
+  onRestart: () => void;
 };
-const TicTacToe: React.FC<Props> = ({ game, onMove }) => {
+const TicTacToe: React.FC<Props> = ({ game, playerId, onMove, onRestart }) => {
   const handleCellClick = (row: number, col: number) => {
     onMove({ row, col });
   };
@@ -13,16 +16,32 @@ const TicTacToe: React.FC<Props> = ({ game, onMove }) => {
   if (!game.board) {
     return null;
   }
+
+  let component = null;
+  if (game.wonPlayerId) {
+    component = (
+      <React.Fragment>
+        <h3>Player {game.wonPlayerId} won!</h3>
+        <Button onClick={() => onRestart()}>play once more</Button>
+      </React.Fragment>
+    );
+  } else {
+    component = (
+      <PlayersTurn currentPlayer={game.currentPlayerId} me={playerId} />
+    );
+  }
+
   return (
-    <div>
+    <TicTacToeGameContainer>
       <h4>TIC TAC TOE</h4>
+      {component}
       <Board>
         {game.board.map((row: [], iRow: number) => {
           return (
-            <div>
+            <div key={iRow}>
               {row.map((cell, iCol: number) => {
                 return (
-                  <Cell onClick={() => handleCellClick(iRow, iCol)}>
+                  <Cell key={iCol} onClick={() => handleCellClick(iRow, iCol)}>
                     {cell}
                   </Cell>
                 );
@@ -31,7 +50,7 @@ const TicTacToe: React.FC<Props> = ({ game, onMove }) => {
           );
         })}
       </Board>
-    </div>
+    </TicTacToeGameContainer>
   );
 };
 

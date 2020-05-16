@@ -19,6 +19,12 @@ export const SmallText = styled.div`
   font-size: 0.7rem;
 `;
 
+export const TicTacToeGameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
 export const Board = styled.div`
   background-color: gray;
   display: flex;

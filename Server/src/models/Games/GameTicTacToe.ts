@@ -29,104 +29,199 @@ green:  31..40,1..30,131,132,133,134
 
 import GameConnector from "../GameConnector";
 import GameBase from "./GameBase";
+import Randomize from "../Randomize";
 
 const MAX_PLAYER_COUNT = 2;
-const ONE_PATH_LEN = 10;
-
 const MAX_ROW = 3;
 const MAX_COL = 3;
-
-export class Token {
-  player: number;
-  position: number;
-}
+const CELL_X = "X";
+const CELL_O = "O";
+const CELL_EMPTY = "";
 
 class GameTicTacToe extends GameBase {
   board = [];
-  currentPlayer = "";
+  currentPlayerIdx = -1;
+  wonPlayerId = undefined;
+  state: "idle" | "started" | "finished" = "idle";
 
   constructor(gameConnector: GameConnector, gameId: string) {
     super(gameConnector, gameId);
     this.init();
   }
 
+  public message(message: any) {
+    if (this.gameId != message.gameId) {
+      // ups - wrong game
+      return;
+    }
+
+    switch (message.cmd) {
+      case "game_restart":
+        this.init();
+        this.state = "started";
+        this.sendUpdatePlayers();
+        break;
+    }
+  }
+
   getGame() {
-    return { board: this.board };
+    let message: any = { board: this.board };
+    if (this.wonPlayerId) {
+      message = { ...message, wonPlayerId: this.wonPlayerId };
+    } else {
+      message = { ...message, currentPlayerId: this.getCurrentPlayerId() };
+    }
+    return message;
+  }
+
+  addPlayer(ws: any, playerId: string) {
+    if (this.state == "idle") {
+      if (this.players.length < MAX_PLAYER_COUNT) {
+        super.addPlayer(ws, playerId);
+      }
+      if (this.players.length == MAX_PLAYER_COUNT) {
+        this.start();
+      }
+    }
+  }
+
+  public start() {
+    this.currentPlayerIdx = Randomize.generateInt(2);
+    this.wonPlayerId = undefined;
+    this.state = "started";
+
+    this.sendUpdatePlayers();
   }
 
   public makeMove(
     playerId: string,
     { col, row }: { col: number; row: number }
   ) {
+    this.checkValidPlayerId(playerId);
     this.checkValidMove(col, row);
-    console.log("ticTacToe.move", col, row);
+
     const val = this.getCellValueForPlayer(playerId);
     this.setCellValue(col, row, val);
+
+    if (this.checkGameFinished()) {
+      this.state = "finished";
+    }
+    this.setNextCurrentPlayerIdx();
     this.sendUpdatePlayers();
   }
 
   private getCellValueForPlayer(playerId: string) {
     const index = this.players.findIndex((player) => player.id === playerId);
-    return index === 0 ? "X" : "O";
+    return index === 0 ? CELL_X : CELL_O;
   }
 
   private checkValidMove(col: number, row: number) {
-    const ok = col >= 0 && col < MAX_COL && row >= 0 && row < MAX_ROW;
+    let ok = col >= 0 && col < MAX_COL && row >= 0 && row < MAX_ROW;
     if (!ok) {
-      throw new Error(`invalid move: ${this.gameId}, ${col}, ${row}`);
+      throw new Error(
+        `invalid move - bad col/row: ${this.gameId}, ${col}, ${row}`
+      );
     }
+    if (this.getCellValue(col, row)) {
+      throw new Error(
+        `invalid move - cell allready set: ${this.gameId}, ${col}, ${row}`
+      );
+    }
+  }
+
+  private checkValidPlayerId(playerId: string) {
+    const ok = this.getPlayerId(this.currentPlayerIdx) === playerId;
+    if (!ok) {
+      throw new Error("player is not current player");
+    }
+  }
+
+  private getPlayerId(idx: number) {
+    if (idx >= 0 && idx < this.players.length && idx < MAX_PLAYER_COUNT) {
+      return this.players[idx].id;
+    } else {
+      return "";
+    }
+  }
+
+  private setNextCurrentPlayerIdx() {
+    if (this.currentPlayerIdx < this.players.length - 1) {
+      this.currentPlayerIdx++;
+    } else {
+      this.currentPlayerIdx = 0;
+    }
+  }
+
+  private getCurrentPlayerId() {
+    if (
+      this.currentPlayerIdx >= 0 &&
+      this.currentPlayerIdx < this.players.length
+    ) {
+      const player = this.players[this.currentPlayerIdx];
+      return player.id;
+    } else {
+      return "";
+    }
+  }
+
+  private getCellValue(col: number, row: number) {
+    return this.board[row][col];
   }
 
   private setCellValue(col: number, row: number, val: string) {
     this.board[row][col] = val;
   }
 
-  init() {
+  private init() {
+    this.board = [];
     for (let iRow = 0; iRow < MAX_ROW; iRow++) {
       const row = [];
       for (let iCol = 0; iCol < MAX_COL; iCol++) {
-        row.push("");
+        row.push(CELL_EMPTY);
       }
       this.board.push(row);
     }
+    this.wonPlayerId = "";
+  }
+
+  private checkGameFinished() {
+    const checkCells = [
+      ["0,0", "0,1", "0,2"],
+      ["1,0", "1,1", "1,2"],
+      ["2,0", "2,1", "2,2"],
+
+      ["0,0", "1,0", "2,0"],
+      ["0,1", "1,1", "2,1"],
+      ["0,2", "1,2", "2,2"],
+
+      ["0,0", "1,1", "2,2"],
+      ["0,2", "1,1", "2,0"],
+    ];
+
+    let wonPlayerId = "";
+    checkCells.forEach((cells) => {
+      const values = new Set<string>();
+      cells.forEach((cell) => {
+        const [col, row] = cell.split(",").map((str) => parseInt(str));
+        values.add(this.getCellValue(col, row));
+      });
+      if (values.size === 1 && !values.has(CELL_EMPTY)) {
+        const playerIdA = this.players[0].id;
+        const playerCellValueA = this.getCellValueForPlayer(playerIdA);
+        if (values.has(playerCellValueA)) {
+          wonPlayerId = playerIdA;
+        } else {
+          wonPlayerId = this.players[1].id;
+        }
+      }
+    });
+
+    if (wonPlayerId) {
+      this.wonPlayerId = wonPlayerId;
+    }
+
+    return !!wonPlayerId;
   }
 }
-
-export class Move {
-  steps: number;
-  token: Token;
-}
-
-export const calcNewBoard = (tokenList: Token[], move: Move) => {
-  if (
-    !tokenList.find((t) => {
-      return (
-        t.player === move.token.player && t.position === move.token.position
-      );
-    })
-  ) {
-    return null;
-  }
-
-  let position = move.token.position;
-  let steps = move.steps;
-  while (steps > 0) {
-    steps--;
-    position = nextPosition(position, move.token.player);
-  }
-  if (!position) {
-    return null;
-  }
-};
-
-const nextPosition = (position: number, player: number) => {
-  if (!position) {
-    return null;
-  }
-  // if (position <= 1 && position <=)
-  // if (isEndPosition(position, player))
-};
-
-const isEndPosition = (position: number, player: number) => {};
 
 export default GameTicTacToe;

@@ -98,12 +98,6 @@ const App: React.FC = () => {
     ws.current.send(JSON.stringify(sendMessage));
   };
 
-  const handleStartGame = () => {
-    if (gameId) {
-      sendMessage({ cmd: "game_start", gameId: gameId });
-    }
-  };
-
   const handleCreateGame = (name: string) => {
     sendMessage({ cmd: "game_create", name: name });
   };
@@ -117,8 +111,20 @@ const App: React.FC = () => {
     });
   };
 
+  const handleRestart = () => {
+    sendMessage({
+      cmd: "game_restart",
+      gameId: gameId,
+    });
+  };
+
   const gameComponent = game ? (
-    <TicTacToe game={game} onMove={handleMove}></TicTacToe>
+    <TicTacToe
+      game={game}
+      playerId={playerId}
+      onMove={handleMove}
+      onRestart={handleRestart}
+    ></TicTacToe>
   ) : null;
 
   return (
@@ -141,10 +147,7 @@ const App: React.FC = () => {
           })}
         </ul>
       </AppLeftSideContainer>
-      <AppGameContainer>
-        {gameId && <button onClick={handleStartGame}>Start</button>}
-        {gameComponent}
-      </AppGameContainer>
+      <AppGameContainer>{gameComponent}</AppGameContainer>
     </AppContainer>
   );
 };

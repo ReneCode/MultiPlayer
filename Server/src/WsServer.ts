@@ -60,8 +60,8 @@ class WebSocketServer {
       const playerId: string = message.playerId;
       const gameId: string = message.gameId;
       const cmd: string = message.cmd;
+
       const move: object = message.move;
-      let result: any = undefined;
       switch (cmd) {
         case "game_create":
           {
@@ -81,11 +81,14 @@ class WebSocketServer {
 
         case "game_move":
           this.gameServer.makeMove(gameId, playerId, move);
+          break;
+
+        case "game_restart":
+          this.gameServer.message(message);
+          break;
       }
-      return result;
     } catch (err) {
       console.error(err);
-      return null;
     }
   }
 

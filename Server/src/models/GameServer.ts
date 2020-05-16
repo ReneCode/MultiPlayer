@@ -60,6 +60,18 @@ class GameServer {
     this.sendUpdate();
   }
 
+  public message(message: any) {
+    const playerId: string = message.playerId;
+    const gameId: string = message.gameId;
+
+    this.checkGameId(gameId);
+    this.checkPlayerId(playerId);
+    const game = this.games.get(gameId);
+    if (game) {
+      game.message(message);
+    }
+  }
+
   public makeMove(gameId: string, playerId: string, move: any) {
     this.checkGameId(gameId);
     this.checkPlayerId(playerId);

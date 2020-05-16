@@ -35,6 +35,10 @@ class GameBase {
     }
   }
 
+  message(message: any) {
+    throw new Error("Method not implemented.");
+  }
+
   makeMove(playerId: string, move: any) {
     throw new Error("makeMove not implemented.");
   }
