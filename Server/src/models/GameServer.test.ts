@@ -1,6 +1,9 @@
-import gameServer from "./GameServer";
+import GameServer from "./GameServer";
 
 describe("GameServer", () => {
+  const wss = {};
+  const gameServer = new GameServer(wss);
+
   it("connect", () => {
     const playerId = gameServer.connect("ABC");
 

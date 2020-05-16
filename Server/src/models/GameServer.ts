@@ -1,5 +1,7 @@
 import Randomize from "./Randomize";
-import Game from "./Game";
+import GameConnector from "./GameConnector";
+import GameBase from "./Games/GameBase";
+import GameTicTacToe from "./Games/GameTicTacToe";
 
 type Connection = any;
 type PlayerId = string;
@@ -7,7 +9,17 @@ type GameId = string;
 
 class GameServer {
   players: Map<PlayerId, Connection> = new Map<PlayerId, Connection>();
-  games: Map<GameId, Game> = new Map<GameId, Game>();
+  games: Map<GameId, GameBase> = new Map<GameId, GameBase>();
+
+  readonly TicTacToe_Name = "TicTacToe";
+  readonly Halma_Name = "Halma";
+  readonly availiableGames = [this.TicTacToe_Name, this.Halma_Name];
+
+  constructor(private wss: any) {}
+
+  getAvailiableGames() {
+    return this.availiableGames;
+  }
 
   public connect(ws: Connection) {
     const playerId = Randomize.generateId(16);
@@ -15,25 +27,45 @@ class GameServer {
     return playerId;
   }
 
+  removePlayer(playerId: any) {
+    this.players.delete(playerId);
+    this.games.forEach((game) => game.removePlayer(playerId));
+  }
+
   public disconnect(ws: Connection) {}
 
-  // create game and add playerId to that game
-  public createGame(playerId: string) {
-    this.checkPlayerId(playerId);
+  public createGame(gameName: string) {
+    this.checkGameName(gameName);
 
-    const game = new Game();
     const gameId = Randomize.generateId(10);
+    const gameConnector = new GameConnector(this.wss);
+    let game: GameBase;
+    switch (gameName) {
+      case this.TicTacToe_Name:
+        game = new GameTicTacToe(gameConnector, gameId);
+        break;
+    }
     this.games.set(gameId, game);
-    game.addPlayer(playerId);
     return gameId;
   }
 
   // add playerId to the game with id gameId
-  public connectGame(playerId: PlayerId, gameId: GameId) {
-    this.checkPlayerId(playerId);
+  public addPlayer(gameId: string, playerId: string, ws: any) {
     this.checkGameId(gameId);
+    this.checkPlayerId(playerId);
+
     const game = this.games.get(gameId);
-    game.addPlayer(playerId);
+    game.addPlayer(ws, playerId);
+
+    this.sendUpdate();
+  }
+
+  public makeMove(gameId: string, playerId: string, move: any) {
+    this.checkGameId(gameId);
+    this.checkPlayerId(playerId);
+
+    const game = this.getGame(gameId);
+    game.makeMove(playerId, move);
   }
 
   public getGamePlayerIds(gameId: GameId) {
@@ -42,7 +74,22 @@ class GameServer {
     return game.getPlayerIds();
   }
 
+  public startGame(gameId: string) {
+    console.log("gameId:", gameId, this.games);
+    this.checkGameId(gameId);
+    const game = this.games.get(gameId);
+    game.start();
+  }
+
   // ----------------------------------------------------------
+
+  private sendUpdate() {}
+
+  private checkGameName(name: string) {
+    if (!this.availiableGames.includes(name)) {
+      throw new Error(`invalid game name: ${name}`);
+    }
+  }
 
   private checkPlayerId(playerId: PlayerId) {
     // must be connected player
@@ -52,13 +99,14 @@ class GameServer {
   }
 
   private checkGameId(gameId: GameId) {
-    const gameValid = !!this.games.get(gameId);
-    if (!gameValid) {
+    if (!this.getGame(gameId)) {
       throw new Error(`invalid Game ${gameId}`);
     }
   }
+
+  private getGame(gameId): GameBase {
+    return this.games.get(gameId);
+  }
 }
 
-const gameServer = new GameServer();
-
-export default gameServer;
+export default GameServer;

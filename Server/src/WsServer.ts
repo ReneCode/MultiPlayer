@@ -1,5 +1,5 @@
 import { Server } from "ws";
-import gameServer from "./models/GameServer";
+import GameServer from "./models/GameServer";
 
 // https://developer.mozilla.org/de/docs/Web/API/WebSocket/readyState
 const WS_CONNECTING = 0;
@@ -10,15 +10,17 @@ const WS_CLOSED = 3;
 const outAllPlayers = (wss) => {
   console.log("-------------");
   wss.clients.forEach((client) => {
-    console.log(">>> ", client.readyState, client.id);
+    console.log(">>> ", client.readyState, client.playerId);
   });
 };
 
 class WebSocketServer {
   wss = undefined;
+  gameServer: GameServer = undefined;
 
   public listen(server) {
     this.wss = new Server({ port: 5001 });
+    this.gameServer = new GameServer(this.wss);
 
     setInterval(() => {}, 5000);
 
@@ -28,41 +30,57 @@ class WebSocketServer {
     });
 
     this.wss.on("connection", (ws, req) => {
-      const playerId = gameServer.connect(ws);
+      const playerId = this.gameServer.connect(ws);
       console.log("connect player:", playerId);
-      ws.id = playerId;
-      const result = { cmd: "connected", playerId: playerId };
+      // add playerId to the client
+      ws.playerId = playerId;
+      const result = {
+        cmd: "client_connected",
+        playerId: playerId,
+        availiableGames: this.gameServer.getAvailiableGames(),
+      };
       ws.send(JSON.stringify(result));
 
       ws.on("message", (data) => {
-        this.handleMessage(data);
+        this.handleMessage(ws, data);
       });
 
       ws.on("close", (data, x) => {
-        console.log("close player:", ws.id);
-        this.updateGame(null);
+        console.log("close player:", ws.playerId);
+        this.gameServer.removePlayer(ws.playerId);
+        // this.updateGame(null);
       });
     });
   }
 
-  private handleMessage(data: any) {
+  private handleMessage(ws: Server, data: any) {
     try {
       const message = JSON.parse(data);
       console.log("message:", message);
-      const { playerId, gameId, cmd } = message;
+      const playerId: string = message.playerId;
+      const gameId: string = message.gameId;
+      const cmd: string = message.cmd;
+      const move: object = message.move;
       let result: any = undefined;
       switch (cmd) {
-        case "createGame":
+        case "game_create":
           {
-            const newGameId = gameServer.createGame(playerId);
+            const gameName = message.name;
+            const newGameId = this.gameServer.createGame(gameName);
+            this.gameServer.addPlayer(newGameId, playerId, ws);
             console.log("create Game:", newGameId);
-            this.updateGame(newGameId);
           }
           break;
-        case "connectGame":
-          gameServer.connectGame(playerId, gameId);
-          this.updateGame(gameId);
+        case "game_connect":
+          this.gameServer.addPlayer(gameId, playerId, ws);
           break;
+
+        case "game_start":
+          this.gameServer.startGame(gameId);
+          break;
+
+        case "game_move":
+          this.gameServer.makeMove(gameId, playerId, move);
       }
       return result;
     } catch (err) {
@@ -77,12 +95,12 @@ class WebSocketServer {
     const playerIds = [];
     this.wss.clients.forEach((client) => {
       if (client.readyState === WS_OPEN) {
-        playerIds.push(client.id);
+        playerIds.push(client.playerId);
       }
     });
 
     const msg = JSON.stringify({
-      cmd: "updateGame",
+      cmd: "game_update",
       players: playerIds,
       gameId: gameId,
     });

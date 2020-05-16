@@ -1,21 +1,35 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { useParams, useHistory } from "react-router";
+import TicTacToe from "./TicTacToe/TicTacToe";
+import {
+  Button,
+  AppContainer,
+  AppLeftSideContainer,
+  AppGameContainer,
+  SmallText,
+} from "./style";
+import GameNameList from "./GameNameList";
 
 const WS_URL = "ws://localhost:5001";
 
 const App: React.FC = () => {
   const { id } = useParams();
   const history = useHistory();
+  const [game, setGame] = useState(null as any);
   const [playerId, setPlayerId] = useState("");
   const [gameId, setGameId] = useState("");
   const [players, setPlayers] = useState([] as string[]);
+  const [availiableGames, setAvailiableGames] = useState([] as string[]);
   const ws = useRef((null as unknown) as WebSocket);
 
   useEffect(() => {
-    if (id) {
-      // routing with gameId
-      setGameId(id);
+    console.log("routing-id changed");
+    // routing with gameId
+    setGameId(id);
+    if (!id) {
+      setGame(null);
+      setPlayers([]);
     }
   }, [id]);
 
@@ -39,24 +53,25 @@ const App: React.FC = () => {
     }
 
     ws.current.onmessage = ({ data }) => {
-      const msg = JSON.parse(data);
-      console.log("Message:", msg);
-      switch (msg.cmd) {
-        case "updateGame":
-          updateGame(msg);
+      const message = JSON.parse(data);
+      console.log("get message:", message);
+      switch (message.cmd) {
+        case "game_update":
+          updateGame(message);
           if (!gameId) {
-            history.push(`/${msg.gameId}`);
+            history.push(`/${message.gameId}`);
           }
           break;
-        case "connected":
-          if (!playerId && msg.playerId) {
-            setPlayerId(msg.playerId);
+        case "client_connected":
+          setAvailiableGames(message.availiableGames);
+          if (!playerId && message.playerId) {
+            setPlayerId(message.playerId);
 
             if (gameId) {
               sendMessage({
-                cmd: "connectGame",
+                cmd: "game_connect",
                 gameId: gameId,
-                playerId: msg.playerId,
+                playerId: message.playerId,
               });
             }
           }
@@ -65,37 +80,72 @@ const App: React.FC = () => {
     };
   }, [gameId, history, playerId]);
 
-  const handleCreateGame = () => {
-    if (!gameId) {
-      sendMessage({ cmd: "createGame", playerId: playerId });
-    }
+  const handleReset = () => {
+    history.push("/");
   };
 
   const updateGame = (msg: any) => {
-    setPlayers(msg.players);
+    setPlayers(msg.players ? msg.players : []);
+    setGame(msg.game);
   };
 
-  const sendMessage = (msg: object) => {
-    ws.current.send(JSON.stringify(msg));
+  const sendMessage = (message: any) => {
+    let sendMessage = { ...message };
+    if (!message.playerId) {
+      sendMessage = { ...message, playerId: playerId };
+    }
+    console.log("sendMessage:", sendMessage);
+    ws.current.send(JSON.stringify(sendMessage));
   };
 
-  console.log("render gameId:", gameId);
+  const handleStartGame = () => {
+    if (gameId) {
+      sendMessage({ cmd: "game_start", gameId: gameId });
+    }
+  };
+
+  const handleCreateGame = (name: string) => {
+    sendMessage({ cmd: "game_create", name: name });
+  };
+
+  const handleMove = (move: any) => {
+    sendMessage({
+      cmd: "game_move",
+      playerId: playerId,
+      gameId: gameId,
+      move: move,
+    });
+  };
+
+  const gameComponent = game ? (
+    <TicTacToe game={game} onMove={handleMove}></TicTacToe>
+  ) : null;
+
   return (
-    <div className="App Main">
-      <div>Game: {gameId}</div>
-      <div>Player: {playerId}</div>
-      <h3>Player</h3>
-      <ul>
-        {players.map((player) => {
-          return <li key={player}>{player}</li>;
-        })}
-      </ul>
-      {!gameId && (
-        <button className="btn" onClick={handleCreateGame}>
-          Create Game
-        </button>
-      )}
-    </div>
+    <AppContainer>
+      <AppLeftSideContainer>
+        <Button onClick={handleReset}>Reset</Button>
+        <GameNameList
+          gameList={availiableGames}
+          onClick={handleCreateGame}
+        ></GameNameList>
+
+        <SmallText>
+          <div>my GameId: {gameId}</div>
+          <div>my PlayerId: {playerId}</div>
+        </SmallText>
+        <h3>Player List</h3>
+        <ul>
+          {players.map((player) => {
+            return <li key={player}>{player}</li>;
+          })}
+        </ul>
+      </AppLeftSideContainer>
+      <AppGameContainer>
+        {gameId && <button onClick={handleStartGame}>Start</button>}
+        {gameComponent}
+      </AppGameContainer>
+    </AppContainer>
   );
 };
 
