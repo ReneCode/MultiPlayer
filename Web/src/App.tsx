@@ -10,6 +10,7 @@ import {
   SmallText,
 } from "./style";
 import GameNameList from "./GameNameList";
+import PlayerList from "./PlayerList";
 
 const WS_URL = "ws://localhost:5001";
 
@@ -140,12 +141,9 @@ const App: React.FC = () => {
           <div>my GameId: {gameId}</div>
           <div>my PlayerId: {playerId}</div>
         </SmallText>
+
         <h3>Player List</h3>
-        <ul>
-          {players.map((player) => {
-            return <li key={player}>{player}</li>;
-          })}
-        </ul>
+        <PlayerList players={players} />
       </AppLeftSideContainer>
       <AppGameContainer>{gameComponent}</AppGameContainer>
     </AppContainer>

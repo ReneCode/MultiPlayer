@@ -1,14 +1,5 @@
 import GameConnector from "../GameConnector";
-
-class Player {
-  ws: any;
-  id: string;
-
-  constructor(ws: any, id: string) {
-    this.ws = ws;
-    this.id = id;
-  }
-}
+import Player from "../Player";
 
 class GameBase {
   players: Player[] = [];
@@ -60,9 +51,16 @@ class GameBase {
   // --------------
 
   protected sendUpdatePlayers() {
+    const players = this.players.map((player) => {
+      return {
+        id: player.id,
+        name: player.name,
+        scoore: player.score,
+      };
+    });
     this.sendMessageToAllPlayers({
       cmd: "game_update",
-      players: this.getPlayerIds(),
+      players: players,
       game: this.getGame(),
     });
   }
