@@ -79,11 +79,12 @@ class WebSocketServer {
           this.gameServer.startGame(gameId);
           break;
 
-        case "game_move":
-          this.gameServer.makeMove(gameId, playerId, move);
-          break;
+        // case "game_move":
+        //   this.gameServer.makeMove(gameId, playerId, move);
+        //   break;
 
-        case "game_restart":
+        default:
+          // case "game_restart":
           this.gameServer.message(message);
           break;
       }

@@ -72,13 +72,13 @@ class GameServer {
     }
   }
 
-  public makeMove(gameId: string, playerId: string, move: any) {
-    this.checkGameId(gameId);
-    this.checkPlayerId(playerId);
+  // public makeMove(gameId: string, playerId: string, move: any) {
+  //   this.checkGameId(gameId);
+  //   this.checkPlayerId(playerId);
 
-    const game = this.getGame(gameId);
-    game.makeMove(playerId, move);
-  }
+  //   const game = this.getGame(gameId);
+  //   game.makeMove(playerId, move);
+  // }
 
   public getGamePlayerIds(gameId: GameId) {
     this.checkGameId(gameId);

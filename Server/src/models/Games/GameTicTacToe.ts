@@ -54,12 +54,18 @@ class GameTicTacToe extends GameBase {
       // ups - wrong game
       return;
     }
+    const playerId = message.playerId;
+    this.checkValidPlayerId(playerId);
 
     switch (message.cmd) {
       case "game_restart":
         this.init();
         this.state = "started";
         this.sendUpdatePlayers();
+        break;
+
+      case "game_move":
+        this.makeMove(playerId, message.move);
         break;
     }
   }
