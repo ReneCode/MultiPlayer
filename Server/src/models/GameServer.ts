@@ -56,8 +56,6 @@ class GameServer {
 
     const game = this.games.get(gameId);
     game.addPlayer(ws, playerId);
-
-    this.sendUpdate();
   }
 
   public message(message: any) {
@@ -94,8 +92,6 @@ class GameServer {
   }
 
   // ----------------------------------------------------------
-
-  private sendUpdate() {}
 
   private checkGameName(name: string) {
     if (!this.availiableGames.includes(name)) {

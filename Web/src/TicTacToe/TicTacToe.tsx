@@ -44,6 +44,17 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
     );
   }
 
+  const getCellColor = (val: string): string => {
+    switch (val) {
+      case "X":
+        return "red";
+      case "O":
+        return "yellow";
+      default:
+        return "lightgray";
+    }
+  };
+
   return (
     <TicTacToeGameContainer>
       <h4>TIC TAC TOE</h4>
@@ -52,10 +63,14 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
         {game.board.map((row: [], iRow: number) => {
           return (
             <div key={iRow}>
-              {row.map((cell, iCol: number) => {
+              {row.map((val, iCol: number) => {
                 return (
-                  <Cell key={iCol} onClick={() => handleCellClick(iRow, iCol)}>
-                    {cell}
+                  <Cell
+                    key={iCol}
+                    color={getCellColor(val)}
+                    onClick={() => handleCellClick(iRow, iCol)}
+                  >
+                    {val}
                   </Cell>
                 );
               })}

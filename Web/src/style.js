@@ -32,12 +32,13 @@ export const Board = styled.div`
 `;
 
 export const Cell = styled.div`
-  margin: 10px;
-  background-color: yellow;
+  margin: 7px;
+  background-color: ${(props) => props.color};
   height: 50px;
   width: 50px;
   cursor: pointer;
   text-align: center;
+  border-radius: 7px;
 `;
 
 export const Button = styled.button`
