@@ -30,6 +30,7 @@ green:  31..40,1..30,131,132,133,134
 import GameConnector from "../GameConnector";
 import GameBase from "./GameBase";
 import Randomize from "../Randomize";
+import DtoGameTicTacToe from "./DtoGameTicTacToe";
 
 const MAX_PLAYER_COUNT = 2;
 const MAX_ROW = 3;
@@ -70,14 +71,19 @@ class GameTicTacToe extends GameBase {
     }
   }
 
-  getGame() {
-    let message: any = { board: this.board };
-    if (this.wonPlayerId) {
-      message = { ...message, wonPlayerId: this.wonPlayerId };
-    } else {
-      message = { ...message, currentPlayerId: this.getCurrentPlayerId() };
-    }
-    return message;
+  getGame(): DtoGameTicTacToe {
+    let dto: DtoGameTicTacToe = {
+      gameId: this.gameId,
+      board: this.board,
+      wonPlayerId: this.wonPlayerId ? this.wonPlayerId : undefined,
+      currentPlayerId: this.wonPlayerId ? undefined : this.getCurrentPlayerId(),
+    };
+    // if (this.wonPlayerId) {
+    //   dto = { ...dto, wonPlayerId: this.wonPlayerId };
+    // } else {
+    //   dto = { ...dto, currentPlayerId: this.getCurrentPlayerId() };
+    // }
+    return dto;
   }
 
   addPlayer(ws: any, playerId: string) {

@@ -12,7 +12,10 @@ import {
 import GameNameList from "./GameNameList";
 import PlayerList from "./PlayerList";
 
-const WS_URL = "ws://localhost:5001";
+const WS_SERVER = process.env.REACT_APP_WS_SERVER;
+if (!WS_SERVER) {
+  throw new Error(`REACT_APP_WS_SERVER not set`);
+}
 
 const App: React.FC = () => {
   const { id } = useParams();
@@ -36,7 +39,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!ws.current) {
-      ws.current = new WebSocket(WS_URL);
+      ws.current = new WebSocket(WS_SERVER);
       ws.current.onopen = () => {
         console.log("connected");
       };
@@ -58,7 +61,7 @@ const App: React.FC = () => {
       console.log("get message:", message);
       switch (message.cmd) {
         case "game_update":
-          updateGame(message);
+          handleUpdateGame(message);
           if (!gameId) {
             history.push(`/${message.gameId}`);
           }
@@ -85,7 +88,7 @@ const App: React.FC = () => {
     history.push("/");
   };
 
-  const updateGame = (msg: any) => {
+  const handleUpdateGame = (msg: any) => {
     setPlayers(msg.players ? msg.players : []);
     setGame(msg.game);
   };
@@ -103,28 +106,11 @@ const App: React.FC = () => {
     sendMessage({ cmd: "game_create", name: name });
   };
 
-  const handleMove = (move: any) => {
-    sendMessage({
-      cmd: "game_move",
-      playerId: playerId,
-      gameId: gameId,
-      move: move,
-    });
-  };
-
-  const handleRestart = () => {
-    sendMessage({
-      cmd: "game_restart",
-      gameId: gameId,
-    });
-  };
-
   const gameComponent = game ? (
     <TicTacToe
       game={game}
       playerId={playerId}
-      onMove={handleMove}
-      onRestart={handleRestart}
+      sendMessage={sendMessage}
     ></TicTacToe>
   ) : null;
 

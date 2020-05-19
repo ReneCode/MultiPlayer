@@ -1,16 +1,29 @@
 import React from "react";
 import { Board, Cell, Button, TicTacToeGameContainer } from "../style";
 import PlayersTurn from "./PlayersTurn";
+import DtoGameTicTacToe from "./DtoGameTicTacToe";
 
 type Props = {
-  game: any;
+  game: DtoGameTicTacToe;
   playerId: string;
-  onMove: (move: object) => void;
-  onRestart: () => void;
+  sendMessage: (message: any) => void;
 };
-const TicTacToe: React.FC<Props> = ({ game, playerId, onMove, onRestart }) => {
+const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
   const handleCellClick = (row: number, col: number) => {
-    onMove({ row, col });
+    const move = { row, col };
+    sendMessage({
+      cmd: "game_move",
+      playerId: playerId,
+      gameId: game.gameId,
+      move: move,
+    });
+  };
+
+  const handleRestart = () => {
+    sendMessage({
+      cmd: "game_restart",
+      gameId: game.gameId,
+    });
   };
 
   if (!game.board) {
@@ -22,7 +35,7 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, onMove, onRestart }) => {
     component = (
       <React.Fragment>
         <h3>Player {game.wonPlayerId} won!</h3>
-        <Button onClick={() => onRestart()}>play once more</Button>
+        <Button onClick={handleRestart}>play once more</Button>
       </React.Fragment>
     );
   } else {
