@@ -3,9 +3,12 @@ languate: node_js
 serivces:
   - docker
 
-env:
-  - TRAVIS_BUILD_DIR=Server
-
 before_install:
+  - echo "-----------"
+  - ls -na
   - cd Server
+  - echo "-----------"
+  - ls -na
   - npm run docker:build
+  - echo "$DOCKER_PASSWORD" | docker login relang.azurecr.io -u "$DOCKER_USERNAME" --password-stdin
+  - npm run docker:push
