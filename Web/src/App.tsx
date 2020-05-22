@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./App.css";
 import { useParams, useHistory } from "react-router";
 import TicTacToe from "./TicTacToe/TicTacToe";
@@ -51,6 +51,18 @@ const App: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sendMessage = useCallback(
+    (message: any) => {
+      let sendMessage = { ...message };
+      if (!message.playerId) {
+        sendMessage = { ...message, playerId: playerId };
+      }
+      console.log("sendMessage:", sendMessage);
+      ws.current.send(JSON.stringify(sendMessage));
+    },
+    [playerId]
+  );
+
   useEffect(() => {
     if (!ws.current) {
       return;
@@ -82,7 +94,7 @@ const App: React.FC = () => {
           break;
       }
     };
-  }, [gameId, history, playerId]);
+  }, [gameId, history, playerId, sendMessage]);
 
   const handleReset = () => {
     history.push("/");
@@ -91,15 +103,6 @@ const App: React.FC = () => {
   const handleUpdateGame = (msg: any) => {
     setPlayers(msg.players ? msg.players : []);
     setGame(msg.game);
-  };
-
-  const sendMessage = (message: any) => {
-    let sendMessage = { ...message };
-    if (!message.playerId) {
-      sendMessage = { ...message, playerId: playerId };
-    }
-    console.log("sendMessage:", sendMessage);
-    ws.current.send(JSON.stringify(sendMessage));
   };
 
   const handleCreateGame = (name: string) => {
