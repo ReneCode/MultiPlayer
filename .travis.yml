@@ -3,6 +3,9 @@ languate: node_js
 serivces:
   - docker
 
+env:
+  - TRAVIS_BUILD_DIR=Server
+
 before_install:
   - cd Server
   - npm run docker:build
