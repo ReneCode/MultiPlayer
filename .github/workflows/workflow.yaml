@@ -1,0 +1,11 @@
+name: "deploy Web - frontend to netlify"
+
+on: push
+
+jobs:
+  build:
+    # job name
+    name: build-frontend
+    runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v2
