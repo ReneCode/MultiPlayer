@@ -7,5 +7,6 @@ jobs:
     # job name
     name: build-frontend
     runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v2
+
+    steps:
+      - uses: actions/checkout@v2
