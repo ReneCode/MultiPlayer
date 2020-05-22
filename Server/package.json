@@ -8,7 +8,7 @@
   "scripts": {
     "docker:build": "docker build -t $npm_package_config_dockertag .",
     "docker:run": "docker run --rm -p 8080:8080 $npm_package_config_dockertag",
-    "docker:push": "docker push $npm_package_config_tag",
+    "docker:push": "docker push $npm_package_config_dockertag",
     "start": "node ./bin/www",
     "start:w": "nodemon",
     "test:w": "jest --watch",
