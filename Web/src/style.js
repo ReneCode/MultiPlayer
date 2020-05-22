@@ -12,7 +12,9 @@ export const AppLeftSideContainer = styled.div`
 `;
 
 export const AppGameContainer = styled.div`
-  margin: 10px;
+  flex-grow: 1;
+  padding: 10px;
+  background-color: #f7f7f7;
 `;
 
 export const SmallText = styled.div`
