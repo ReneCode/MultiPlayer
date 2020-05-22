@@ -41,10 +41,10 @@ const App: React.FC = () => {
   useEffect(() => {
     console.log("create WebSocket");
     if (!ws.current) {
-      ws.current = new WebSocket(WS_SERVER);
-      ws.current.onopen = () => {
-        console.log("connected");
-      };
+      // ws.current = new WebSocket(WS_SERVER);
+      // ws.current.onopen = () => {
+      // console.log("connected");
+      // };
     }
 
     return () => {
@@ -72,7 +72,7 @@ const App: React.FC = () => {
 
     ws.current.onmessage = ({ data }) => {
       const message = JSON.parse(data);
-      console.log("get message:", message);
+      console.log("got message:", message);
       switch (message.cmd) {
         case "game_update":
           handleUpdateGame(message);
@@ -111,6 +111,10 @@ const App: React.FC = () => {
     sendMessage({ cmd: "game_create", name: name });
   };
 
+  const handleMessage = (message: any) => {
+    console.log("got message in App.tsx", message);
+  };
+
   const gameComponent = game ? (
     <TicTacToe
       game={game}
@@ -121,8 +125,8 @@ const App: React.FC = () => {
 
   return (
     <AppContainer>
-      <WebSocketPingPong />
       <AppLeftSideContainer>
+        <WebSocketPingPong onMessage={handleMessage} />
         <Button onClick={handleReset}>Reset</Button>
         <GameNameList
           gameList={availiableGames}

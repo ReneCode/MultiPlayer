@@ -69,9 +69,7 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
                     key={iCol}
                     color={getCellColor(val)}
                     onClick={() => handleCellClick(iRow, iCol)}
-                  >
-                    {val}
-                  </Cell>
+                  ></Cell>
                 );
               })}
             </div>

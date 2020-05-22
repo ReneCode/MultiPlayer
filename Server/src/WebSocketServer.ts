@@ -61,6 +61,9 @@ class WebSocketServer {
 
       const move: object = message.move;
       switch (cmd) {
+        case "ping":
+          ws.send(JSON.stringify({ cmd: "pong" }));
+          break;
         case "game_create":
           {
             const gameName = message.name;
