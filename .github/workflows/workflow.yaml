@@ -7,13 +7,15 @@ jobs:
     # job name
     name: build-frontend
     runs-on: ubuntu-latest
-    working-directory: Web
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
-      - run: cd Web
-      - run: npm install
-      - run: npm run build
+          
+      - name: Build
+        working-directory: Web
+        run: |
+          npm install
+          npm run build
