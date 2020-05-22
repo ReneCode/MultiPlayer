@@ -9,6 +9,7 @@ const PING_DELAY = 6_000;
 
 type Props = {
   onMessage: (message: any) => void;
+  onConnectWebSocket: (ws: WebSocket) => void;
 };
 
 class WebSocketPingPong extends React.Component<Props> {
@@ -75,6 +76,7 @@ class WebSocketPingPong extends React.Component<Props> {
 
     this.ws.onmessage = this.onMessage;
 
+    this.props.onConnectWebSocket(this.ws);
     console.log("create WebSocket");
   };
 

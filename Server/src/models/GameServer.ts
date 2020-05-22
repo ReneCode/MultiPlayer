@@ -61,12 +61,15 @@ class GameServer {
   }
 
   // add playerId to the game with id gameId
-  public addPlayer(gameId: string, playerId: string, ws: any) {
-    this.checkGameId(gameId);
-    this.checkPlayerId(playerId);
-
+  public addPlayer(gameId: string, playerId: string, ws: WebSocket) {
     const game = this.games.get(gameId);
-    game.addPlayer(ws, playerId);
+    if (!game) {
+      const message = { cmd: "game_invalid" };
+      ws.send(JSON.stringify(message));
+    } else {
+      this.checkPlayerId(playerId);
+      game.addPlayer(ws, playerId);
+    }
   }
 
   public message(message: any) {

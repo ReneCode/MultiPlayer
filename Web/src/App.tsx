@@ -26,7 +26,7 @@ const App: React.FC = () => {
   const [gameId, setGameId] = useState("");
   const [players, setPlayers] = useState([] as string[]);
   const [availiableGames, setAvailiableGames] = useState([] as string[]);
-  const ws = useRef((null as unknown) as WebSocket);
+  const [ws, setWs] = useState((undefined as unknown) as WebSocket);
 
   useEffect(() => {
     console.log("routing-id changed");
@@ -38,73 +38,17 @@ const App: React.FC = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-    console.log("create WebSocket");
-    if (!ws.current) {
-      // ws.current = new WebSocket(WS_SERVER);
-      // ws.current.onopen = () => {
-      // console.log("connected");
-      // };
+  const sendMessage = (message: any) => {
+    let sendMessage = { ...message };
+    if (!message.playerId) {
+      sendMessage = { ...message, playerId: playerId };
     }
-
-    return () => {
-      ws.current.close();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const sendMessage = useCallback(
-    (message: any) => {
-      let sendMessage = { ...message };
-      if (!message.playerId) {
-        sendMessage = { ...message, playerId: playerId };
-      }
-      console.log("sendMessage:", sendMessage);
-      ws.current.send(JSON.stringify(sendMessage));
-    },
-    [playerId]
-  );
-
-  useEffect(() => {
-    if (!ws.current) {
-      return;
-    }
-
-    ws.current.onmessage = ({ data }) => {
-      const message = JSON.parse(data);
-      console.log("got message:", message);
-      switch (message.cmd) {
-        case "game_update":
-          handleUpdateGame(message);
-          if (!gameId) {
-            history.push(`/${message.gameId}`);
-          }
-          break;
-        case "client_connected":
-          setAvailiableGames(message.availiableGames);
-          if (!playerId && message.playerId) {
-            setPlayerId(message.playerId);
-
-            if (gameId) {
-              sendMessage({
-                cmd: "game_connect",
-                gameId: gameId,
-                playerId: message.playerId,
-              });
-            }
-          }
-          break;
-      }
-    };
-  }, [gameId, history, playerId, sendMessage]);
+    console.log("sendMessage:", sendMessage);
+    ws.send(JSON.stringify(sendMessage));
+  };
 
   const handleReset = () => {
     history.push("/");
-  };
-
-  const handleUpdateGame = (msg: any) => {
-    setPlayers(msg.players ? msg.players : []);
-    setGame(msg.game);
   };
 
   const handleCreateGame = (name: string) => {
@@ -112,7 +56,37 @@ const App: React.FC = () => {
   };
 
   const handleMessage = (message: any) => {
-    console.log("got message in App.tsx", message);
+    console.log("got message:", message);
+    switch (message.cmd) {
+      case "game_update":
+        setPlayers(message.players ? message.players : []);
+        setGame(message.game);
+        if (!gameId) {
+          history.push(`/${message.gameId}`);
+        }
+        break;
+
+      case "game_invalid":
+        if (gameId) {
+          setGameId("");
+          history.push("/");
+        }
+        break;
+
+      case "client_connected":
+        setAvailiableGames(message.availiableGames);
+        if (!playerId && message.playerId) {
+          setPlayerId(message.playerId);
+          if (gameId) {
+            sendMessage({
+              cmd: "game_connect",
+              gameId: gameId,
+              playerId: message.playerId,
+            });
+          }
+        }
+        break;
+    }
   };
 
   const gameComponent = game ? (
@@ -126,7 +100,10 @@ const App: React.FC = () => {
   return (
     <AppContainer>
       <AppLeftSideContainer>
-        <WebSocketPingPong onMessage={handleMessage} />
+        <WebSocketPingPong
+          onMessage={handleMessage}
+          onConnectWebSocket={(ws) => setWs(ws)}
+        />
         <Button onClick={handleReset}>Reset</Button>
         <GameNameList
           gameList={availiableGames}
