@@ -15,14 +15,12 @@ const outAllPlayers = (wss) => {
 };
 
 class WebSocketServer {
-  wss = undefined;
   gameServer: GameServer = undefined;
 
-  public listen(server) {
-    this.wss = new Server({ port: 5001 });
+  constructor(private wss: any) {
     this.gameServer = new GameServer(this.wss);
 
-    setInterval(() => {}, 5000);
+    // setInterval(() => {}, 5000);
 
     console.log("start webSocket Server");
     this.wss.on("request", (req) => {

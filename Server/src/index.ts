@@ -1,52 +1,21 @@
-import express = require("express");
-const cors = require("cors");
-const path = require("path");
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
 const http = require("http");
-const https = require("https");
+const WSServer = require("ws").Server;
 
-import WebsocketServer from "./WsServer";
-import ludoRouter from "./routes/ludo";
+const app = require("./http-server");
+import WebSockerServer from "./WebSocketServer";
 
-require("dotenv").config();
-const app = express();
+const server = http.createServer();
+server.on("request", app);
 
-// if (applicationInsightsLogger.init()) {
-//   applicationInsightsLogger.trackHttpRequests(app);
-// }
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
-
-app.use(morgan("tiny", {}));
-
-app.use("/ludo", ludoRouter);
-
-app.get("/", (req: any, res: any) => {
-  res.send("hi, multi-player server is running");
+// create web socket server on top of a regular http server
+const wss = new WSServer({
+  server: server,
 });
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
-});
-
-// initData();
+const webSocketServer = new WebSockerServer(wss);
 
 const port = process.env.PORT || 8080;
-const httpServer = http.createServer(app);
-httpServer.listen(port, () => {
-  console.log("app listening on port:", port);
+server.listen(port, () => {
+  console.log("server listening (http and ws) on port:", port);
 });
 
-const wsServer = new WebsocketServer();
-wsServer.listen(httpServer);
+// https://stackoverflow.com/questions/34808925/express-and-websocket-listening-on-the-same-port

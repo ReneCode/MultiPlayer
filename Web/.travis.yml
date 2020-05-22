@@ -1,0 +1,8 @@
+languate: node_js
+
+serivces:
+  - docker
+
+before_install:
+  - cd Server
+  - npm run docker:build
