@@ -11,6 +11,7 @@ import {
 } from "./style";
 import GameNameList from "./GameNameList";
 import PlayerList from "./PlayerList";
+import WebSocketPingPong from "./components/WebSocketPingPong";
 
 const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {
@@ -38,6 +39,7 @@ const App: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
+    console.log("create WebSocket");
     if (!ws.current) {
       ws.current = new WebSocket(WS_SERVER);
       ws.current.onopen = () => {
@@ -119,6 +121,7 @@ const App: React.FC = () => {
 
   return (
     <AppContainer>
+      <WebSocketPingPong />
       <AppLeftSideContainer>
         <Button onClick={handleReset}>Reset</Button>
         <GameNameList

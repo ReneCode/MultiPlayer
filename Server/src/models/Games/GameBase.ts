@@ -18,7 +18,7 @@ class GameBase {
     this.sendUpdatePlayers();
   }
 
-  removePlayer(playerId: any): void {
+  removePlayer(playerId: string): void {
     const player = this.getPlayer(playerId);
     if (player) {
       this.players = this.players.filter((player) => player.id !== playerId);
@@ -30,7 +30,7 @@ class GameBase {
     throw new Error("Method not implemented.");
   }
 
-  makeMove(playerId: string, move: any) {
+  cmdMakeMove(playerId: string, move: any) {
     throw new Error("makeMove not implemented.");
   }
 
@@ -38,7 +38,9 @@ class GameBase {
     throw new Error("getGame not implemented");
   }
 
-  start() {
+  cmdInit() {}
+
+  cmdStart() {
     throw new Error("start not implemented");
   }
 
@@ -55,7 +57,7 @@ class GameBase {
       return {
         id: player.id,
         name: player.name,
-        scoore: player.score,
+        score: player.score,
       };
     });
     this.sendMessageToAllPlayers({

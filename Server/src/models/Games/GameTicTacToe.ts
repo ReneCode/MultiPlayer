@@ -47,7 +47,6 @@ class GameTicTacToe extends GameBase {
 
   constructor(gameConnector: GameConnector, gameId: string) {
     super(gameConnector, gameId);
-    this.init();
   }
 
   public message(message: any) {
@@ -56,18 +55,16 @@ class GameTicTacToe extends GameBase {
       return;
     }
     const playerId = message.playerId;
-    this.checkValidPlayerId(playerId);
 
     switch (message.cmd) {
-      case "game_restart":
-        this.init();
-        this.state = "started";
-        this.sendUpdatePlayers();
-        break;
-
       case "game_move":
-        this.makeMove(playerId, message.move);
+        this.cmdMakeMove(playerId, message.move);
         break;
+      case "game_restart":
+        this.cmdStart();
+        break;
+      default:
+        console.error("bad message", message);
     }
   }
 
@@ -78,48 +75,66 @@ class GameTicTacToe extends GameBase {
       wonPlayerId: this.wonPlayerId ? this.wonPlayerId : undefined,
       currentPlayerId: this.wonPlayerId ? undefined : this.getCurrentPlayerId(),
     };
-    // if (this.wonPlayerId) {
-    //   dto = { ...dto, wonPlayerId: this.wonPlayerId };
-    // } else {
-    //   dto = { ...dto, currentPlayerId: this.getCurrentPlayerId() };
-    // }
     return dto;
   }
 
-  addPlayer(ws: any, playerId: string) {
+  public addPlayer(ws: any, playerId: string) {
     if (this.state == "idle") {
       if (this.players.length < MAX_PLAYER_COUNT) {
         super.addPlayer(ws, playerId);
       }
       if (this.players.length == MAX_PLAYER_COUNT) {
-        this.start();
+        this.cmdStart();
       }
     }
   }
 
-  public start() {
-    this.currentPlayerIdx = Randomize.generateInt(2);
-    this.wonPlayerId = undefined;
-    this.state = "started";
+  public removePlayer(playerId: string) {
+    this.state = "idle";
+    super.removePlayer(playerId);
+  }
 
+  public cmdInit() {
+    this.clearBoard();
+    this.state = "idle";
     this.sendUpdatePlayers();
   }
 
-  public makeMove(
+  public cmdStart() {
+    this.clearBoard();
+    this.state = "started";
+    this.sendUpdatePlayers();
+  }
+
+  public cmdMakeMove(
     playerId: string,
     { col, row }: { col: number; row: number }
   ) {
     this.checkValidPlayerId(playerId);
     this.checkValidMove(col, row);
+    if (this.state === "started") {
+      const val = this.getCellValueForPlayer(playerId);
+      this.setCellValue(col, row, val);
 
-    const val = this.getCellValueForPlayer(playerId);
-    this.setCellValue(col, row, val);
-
-    if (this.checkGameFinished()) {
-      this.state = "finished";
+      if (this.checkGameFinished()) {
+        this.state = "finished";
+      }
+      this.setNextCurrentPlayerIdx();
+      this.sendUpdatePlayers();
     }
-    this.setNextCurrentPlayerIdx();
-    this.sendUpdatePlayers();
+  }
+
+  private clearBoard() {
+    this.board = [];
+    for (let iRow = 0; iRow < MAX_ROW; iRow++) {
+      const row = [];
+      for (let iCol = 0; iCol < MAX_COL; iCol++) {
+        row.push(CELL_EMPTY);
+      }
+      this.board.push(row);
+    }
+    this.currentPlayerIdx = Randomize.generateInt(2);
+    this.wonPlayerId = undefined;
   }
 
   private getCellValueForPlayer(playerId: string) {
@@ -182,18 +197,6 @@ class GameTicTacToe extends GameBase {
 
   private setCellValue(col: number, row: number, val: string) {
     this.board[row][col] = val;
-  }
-
-  private init() {
-    this.board = [];
-    for (let iRow = 0; iRow < MAX_ROW; iRow++) {
-      const row = [];
-      for (let iCol = 0; iCol < MAX_COL; iCol++) {
-        row.push(CELL_EMPTY);
-      }
-      this.board.push(row);
-    }
-    this.wonPlayerId = "";
   }
 
   private checkGameFinished() {

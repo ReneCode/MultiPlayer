@@ -29,7 +29,15 @@ class GameServer {
 
   removePlayer(playerId: any) {
     this.players.delete(playerId);
-    this.games.forEach((game) => game.removePlayer(playerId));
+    this.games.forEach((game) => {
+      try {
+        if (game) {
+          game.removePlayer(playerId);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
   }
 
   public disconnect(ws: Connection) {}
@@ -43,7 +51,10 @@ class GameServer {
     switch (gameName) {
       case this.TicTacToe_Name:
         game = new GameTicTacToe(gameConnector, gameId);
+        game.cmdInit();
         break;
+      default:
+        throw new Error("bad gameName:" + gameName);
     }
     this.games.set(gameId, game);
     return gameId;
@@ -88,7 +99,7 @@ class GameServer {
     console.log("gameId:", gameId, this.games);
     this.checkGameId(gameId);
     const game = this.games.get(gameId);
-    game.start();
+    game.cmdStart();
   }
 
   // ----------------------------------------------------------
