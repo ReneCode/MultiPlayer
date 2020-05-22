@@ -13,3 +13,6 @@ before_install:
   - echo "$DOCKER_PASSWORD" | docker login relang.azurecr.io -u "$DOCKER_USERNAME" --password-stdin
   - docker images
   - npm run docker:push
+
+script:
+  - echo ---------- ready ------ do not run npm install ------------
