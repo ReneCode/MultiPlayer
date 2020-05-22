@@ -5,17 +5,17 @@ on: push
 jobs:
   build:
     # job name
-    name: build-frontend
+    name: build-backend
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: "12"
-          
+          node-version: 12
+
       - name: Build
-        working-directory: Web
+        working-directory: Server
         run: |
           npm install
           npm run build
