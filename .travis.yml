@@ -1,7 +1,10 @@
-languate: node_js
+language: node_js
 
 serivces:
   - docker
+
+env:
+  - TRAVIS_BUILD_DIR
 
 before_install:
   - echo "-----------"
@@ -14,5 +17,5 @@ before_install:
   - docker images
   - npm run docker:push
 
-script:
+install:
   - echo ---------- ready ------ do not run npm install ------------
