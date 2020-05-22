@@ -11,9 +11,9 @@ class GameServer {
   players: Map<PlayerId, Connection> = new Map<PlayerId, Connection>();
   games: Map<GameId, GameBase> = new Map<GameId, GameBase>();
 
-  readonly TicTacToe_Name = "TicTacToe";
-  readonly Halma_Name = "Halma";
-  readonly availiableGames = [this.TicTacToe_Name, this.Halma_Name];
+  readonly TicTacToe_Name = "Tic Tac Toe";
+  readonly FiveInARow_Name = "Five in a row";
+  readonly availiableGames = [this.TicTacToe_Name, this.FiveInARow_Name];
 
   constructor(private wss: any) {}
 

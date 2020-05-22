@@ -7,15 +7,10 @@ env:
   - TRAVIS_BUILD_DIR
 
 before_install:
-  - echo "-----------"
-  - ls -na
   - cd Server
-  - echo "-----------"
-  - ls -na
   - npm run docker:build
   - echo "$DOCKER_PASSWORD" | docker login relang.azurecr.io -u "$DOCKER_USERNAME" --password-stdin
-  - docker images
   - npm run docker:push
 
 install:
-  - echo ---------- ready ------ do not run npm install ------------
+  - echo ----------- do not run npm install ------------
