@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useParams, useHistory } from "react-router";
 import TicTacToe from "./TicTacToe/TicTacToe";
