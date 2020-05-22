@@ -24,7 +24,7 @@ app.use(morgan("tiny", {}));
 
 app.use("/ludo", ludoRouter);
 
-app.get("/", (req: any, res: any) => {
+app.get("/api", (req: any, res: any) => {
   res.send("hi, multi-player server is running");
 });
 
