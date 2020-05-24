@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useParams, useHistory } from "react-router";
-import TicTacToe from "./TicTacToe/TicTacToe";
+import TicTacToe from "../TicTacToe/TicTacToe";
 import {
   Button,
   AppContainer,
@@ -11,7 +11,7 @@ import {
 } from "./style";
 import GameNameList from "./GameNameList";
 import PlayerList from "./PlayerList";
-import WebSocketPingPong from "./components/WebSocketPingPong";
+import WebSocketPingPong from "./WebSocketPingPong";
 
 const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {

@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const http = require("http");
 const https = require("https");
 
-import ludoRouter from "./routes/ludo";
+import gameRouter from "./routes/game";
 
 require("dotenv").config();
 const app = express();
@@ -20,9 +20,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+app.use(cors());
+
 app.use(morgan("tiny", {}));
 
-app.use("/ludo", ludoRouter);
+app.use("/game", gameRouter);
 
 app.get("/", (req: any, res: any) => {
   res.send("hi, multi-player server is running");

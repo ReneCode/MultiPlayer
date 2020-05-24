@@ -6,6 +6,7 @@ interface DtoGameTicTacToe extends DtoGameBase {
   board: any[];
   wonPlayerId: string;
   currentPlayerId: string;
+  state: "started" | "finished" | "idle";
 }
 
 export default DtoGameTicTacToe;

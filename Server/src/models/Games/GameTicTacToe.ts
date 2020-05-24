@@ -74,6 +74,7 @@ class GameTicTacToe extends GameBase {
       board: this.board,
       wonPlayerId: this.wonPlayerId ? this.wonPlayerId : undefined,
       currentPlayerId: this.wonPlayerId ? undefined : this.getCurrentPlayerId(),
+      state: this.state,
     };
     return dto;
   }
@@ -116,9 +117,16 @@ class GameTicTacToe extends GameBase {
       const val = this.getCellValueForPlayer(playerId);
       this.setCellValue(col, row, val);
 
-      if (this.checkGameFinished()) {
+      const wonPlayerId = this.getWonPlayerId();
+      if (wonPlayerId) {
+        this.wonPlayerId = wonPlayerId;
         this.state = "finished";
       }
+
+      if (this.isGameDrawn()) {
+        this.state = "finished";
+      }
+
       this.setNextCurrentPlayerIdx();
       this.sendUpdatePlayers();
     }
@@ -172,10 +180,12 @@ class GameTicTacToe extends GameBase {
   }
 
   private setNextCurrentPlayerIdx() {
-    if (this.currentPlayerIdx < this.players.length - 1) {
-      this.currentPlayerIdx++;
-    } else {
-      this.currentPlayerIdx = 0;
+    if (this.state === "started") {
+      if (this.currentPlayerIdx < this.players.length - 1) {
+        this.currentPlayerIdx++;
+      } else {
+        this.currentPlayerIdx = 0;
+      }
     }
   }
 
@@ -199,7 +209,7 @@ class GameTicTacToe extends GameBase {
     this.board[row][col] = val;
   }
 
-  private checkGameFinished() {
+  private getWonPlayerId() {
     const checkCells = [
       ["0,0", "0,1", "0,2"],
       ["1,0", "1,1", "1,2"],
@@ -213,7 +223,7 @@ class GameTicTacToe extends GameBase {
       ["0,2", "1,1", "2,0"],
     ];
 
-    let wonPlayerId = "";
+    let wonPlayerId;
     checkCells.forEach((cells) => {
       const values = new Set<string>();
       cells.forEach((cell) => {
@@ -231,11 +241,25 @@ class GameTicTacToe extends GameBase {
       }
     });
 
-    if (wonPlayerId) {
-      this.wonPlayerId = wonPlayerId;
-    }
+    return wonPlayerId;
+  }
 
-    return !!wonPlayerId;
+  private *makeBoardIterator() {
+    for (let iRow = 0; iRow < MAX_ROW; iRow++) {
+      for (let iCol = 0; iCol < MAX_COL; iCol++) {
+        const val = this.board[iRow][iCol];
+        yield { row: iRow, col: iCol, val };
+      }
+    }
+  }
+
+  private isGameDrawn() {
+    const cellValues = new Set<string>();
+    const iter = this.makeBoardIterator();
+    for (const cell of iter) {
+      cellValues.add(cell.val);
+    }
+    return !cellValues.has(CELL_EMPTY);
   }
 }
 

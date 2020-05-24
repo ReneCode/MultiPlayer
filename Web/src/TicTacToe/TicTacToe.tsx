@@ -1,5 +1,10 @@
 import React from "react";
-import { Board, Cell, Button, TicTacToeGameContainer } from "../style";
+import {
+  Board,
+  Cell,
+  Button,
+  TicTacToeGameContainer,
+} from "../components/style";
 import PlayersTurn from "./PlayersTurn";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
 
@@ -26,24 +31,6 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
     });
   };
 
-  if (!game.board) {
-    return null;
-  }
-
-  let component = null;
-  if (game.wonPlayerId) {
-    component = (
-      <React.Fragment>
-        <h3>Player {game.wonPlayerId} won!</h3>
-        <Button onClick={handleRestart}>play once more</Button>
-      </React.Fragment>
-    );
-  } else {
-    component = (
-      <PlayersTurn currentPlayer={game.currentPlayerId} me={playerId} />
-    );
-  }
-
   const getCellColor = (val: string): string => {
     switch (val) {
       case "X":
@@ -54,6 +41,30 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
         return "lightgray";
     }
   };
+
+  if (!game.board) {
+    return null;
+  }
+
+  let component = null;
+  if (game.state === "finished") {
+    let textComponent = null;
+    if (game.wonPlayerId) {
+      textComponent = <h3>Player {game.wonPlayerId} won!</h3>;
+    } else {
+      textComponent = <h3>drawn</h3>;
+    }
+    component = (
+      <React.Fragment>
+        {textComponent}
+        <Button onClick={handleRestart}>play once more</Button>
+      </React.Fragment>
+    );
+  } else {
+    component = (
+      <PlayersTurn currentPlayer={game.currentPlayerId} me={playerId} />
+    );
+  }
 
   return (
     <TicTacToeGameContainer>
