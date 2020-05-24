@@ -21,8 +21,6 @@ const TicTacToe: React.FC<Props> = ({
   playerId,
   sendMessage,
 }) => {
-  console.log(">>", game);
-
   const handleCellClick = (row: number, col: number) => {
     const move = { row, col };
     sendMessage({
@@ -45,7 +43,11 @@ const TicTacToe: React.FC<Props> = ({
     switch (val) {
       case 1:
       case 2:
-        return players[playerIdx].color;
+        if (players.length > playerIdx) {
+          return players[playerIdx].color;
+        } else {
+          return "drakgray";
+        }
       default:
         return "lightgray";
     }

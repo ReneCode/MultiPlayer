@@ -59,8 +59,13 @@ class WebSocketPingPong extends React.Component<Props> {
   };
 
   onOpen = () => {
-    console.log("onOpen");
+    console.log("websocket open");
     this.connected = true;
+  };
+
+  onClose = () => {
+    console.log("websocket close");
+    this.connected = false;
   };
 
   connectToServer = () => {
@@ -70,6 +75,7 @@ class WebSocketPingPong extends React.Component<Props> {
     console.log("connect to WebSocket");
     this.ws = new WebSocket(WS_SERVER);
     this.ws.onopen = this.onOpen;
+    this.ws.onclose = this.onClose;
 
     this.ws.onmessage = this.onMessage;
 
