@@ -3,7 +3,7 @@ interface DtoGameBase {
 }
 
 interface DtoGameTicTacToe extends DtoGameBase {
-  board: any[];
+  board: number[][];
   wonPlayerId: string;
   currentPlayerId: string;
   state: "started" | "finished" | "idle";

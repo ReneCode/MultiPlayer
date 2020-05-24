@@ -35,9 +35,10 @@ import DtoGameTicTacToe from "./DtoGameTicTacToe";
 const MAX_PLAYER_COUNT = 2;
 const MAX_ROW = 3;
 const MAX_COL = 3;
-const CELL_X = "X";
-const CELL_O = "O";
-const CELL_EMPTY = "";
+
+const CELL_1 = 1;
+const CELL_2 = 2;
+const CELL_EMPTY = 0;
 
 class GameTicTacToe extends GameBase {
   board = [];
@@ -147,7 +148,7 @@ class GameTicTacToe extends GameBase {
 
   private getCellValueForPlayer(playerId: string) {
     const index = this.players.findIndex((player) => player.id === playerId);
-    return index === 0 ? CELL_X : CELL_O;
+    return index === 0 ? CELL_1 : CELL_2;
   }
 
   private checkValidMove(col: number, row: number) {
@@ -205,7 +206,7 @@ class GameTicTacToe extends GameBase {
     return this.board[row][col];
   }
 
-  private setCellValue(col: number, row: number, val: string) {
+  private setCellValue(col: number, row: number, val: number) {
     this.board[row][col] = val;
   }
 
@@ -225,7 +226,7 @@ class GameTicTacToe extends GameBase {
 
     let wonPlayerId;
     checkCells.forEach((cells) => {
-      const values = new Set<string>();
+      const values = new Set<number>();
       cells.forEach((cell) => {
         const [col, row] = cell.split(",").map((str) => parseInt(str));
         values.add(this.getCellValue(col, row));
@@ -254,7 +255,7 @@ class GameTicTacToe extends GameBase {
   }
 
   private isGameDrawn() {
-    const cellValues = new Set<string>();
+    const cellValues = new Set<number>();
     const iter = this.makeBoardIterator();
     for (const cell of iter) {
       cellValues.add(cell.val);

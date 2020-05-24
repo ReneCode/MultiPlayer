@@ -12,6 +12,7 @@ import {
 import GameNameList from "./GameNameList";
 import PlayerList from "./PlayerList";
 import WebSocketPingPong from "./WebSocketPingPong";
+import { Player } from "../model/Player";
 
 const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {
@@ -24,7 +25,7 @@ const App: React.FC = () => {
   const [game, setGame] = useState(null as any);
   const [playerId, setPlayerId] = useState("");
   const [gameId, setGameId] = useState("");
-  const [players, setPlayers] = useState([] as string[]);
+  const [players, setPlayers] = useState([] as Player[]);
   const [availiableGames, setAvailiableGames] = useState([] as string[]);
   const [ws, setWs] = useState((undefined as unknown) as WebSocket);
 
@@ -92,6 +93,7 @@ const App: React.FC = () => {
   const gameComponent = game ? (
     <TicTacToe
       game={game}
+      players={players}
       playerId={playerId}
       sendMessage={sendMessage}
     ></TicTacToe>

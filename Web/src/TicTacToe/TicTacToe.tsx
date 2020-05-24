@@ -7,13 +7,22 @@ import {
 } from "../components/style";
 import PlayersTurn from "./PlayersTurn";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
+import { Player } from "../model/Player";
 
 type Props = {
   game: DtoGameTicTacToe;
+  players: Player[];
   playerId: string;
   sendMessage: (message: any) => void;
 };
-const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
+const TicTacToe: React.FC<Props> = ({
+  game,
+  players,
+  playerId,
+  sendMessage,
+}) => {
+  console.log(">>", game);
+
   const handleCellClick = (row: number, col: number) => {
     const move = { row, col };
     sendMessage({
@@ -31,12 +40,12 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
     });
   };
 
-  const getCellColor = (val: string): string => {
+  const getCellColor = (val: number): string => {
+    const playerIdx = val - 1;
     switch (val) {
-      case "X":
-        return "red";
-      case "O":
-        return "yellow";
+      case 1:
+      case 2:
+        return players[playerIdx].color;
       default:
         return "lightgray";
     }
@@ -71,7 +80,7 @@ const TicTacToe: React.FC<Props> = ({ game, playerId, sendMessage }) => {
       <h4>TIC TAC TOE</h4>
       {component}
       <Board>
-        {game.board.map((row: [], iRow: number) => {
+        {game.board.map((row, iRow: number) => {
           return (
             <div key={iRow}>
               {row.map((val, iCol: number) => {

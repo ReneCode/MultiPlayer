@@ -41,6 +41,11 @@ namespace Randomize {
     }
     return result.join("");
   }
+
+  export function choose(list: any[]): any {
+    const idx = Randomize.generateInt(list.length);
+    return list[idx];
+  }
 }
 
 export default Randomize;

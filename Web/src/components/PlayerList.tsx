@@ -1,15 +1,17 @@
 import React from "react";
+import PlayerName from "./PlayerName";
+import { Player } from "../model/Player";
 
 type Props = {
-  players: any[];
+  players: Player[];
 };
 const PlayerList: React.FC<Props> = ({ players }) => {
   return (
-    <ul>
+    <div>
       {players.map((player) => {
-        return <li key={player.id}>{player.id}</li>;
+        return <PlayerName key={player.id} player={player} />;
       })}
-    </ul>
+    </div>
   );
 };
 

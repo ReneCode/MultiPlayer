@@ -58,6 +58,7 @@ class GameBase {
         id: player.id,
         name: player.name,
         score: player.score,
+        color: player.color,
       };
     });
     this.sendMessageToAllPlayers({

@@ -15,7 +15,7 @@ type Props = {
 class WebSocketPingPong extends React.Component<Props> {
   ws: WebSocket | undefined = undefined;
   connected: boolean = false;
-  intervalId: NodeJS.Timeout = (undefined as unknown) as NodeJS.Timeout;
+  intervalId: number = 0;
 
   constructor(props: any) {
     super(props);
