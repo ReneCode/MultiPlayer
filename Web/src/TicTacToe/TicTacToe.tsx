@@ -53,6 +53,10 @@ const TicTacToe: React.FC<Props> = ({
     }
   };
 
+  const getCurrentPlayer = () => {
+    return players.find((player) => player.id === game.currentPlayerId);
+  };
+
   if (!game.board) {
     return null;
   }
@@ -72,8 +76,13 @@ const TicTacToe: React.FC<Props> = ({
       </React.Fragment>
     );
   } else {
+    const currentPlayer = getCurrentPlayer();
+    const currentPlayerName = currentPlayer?.name;
     component = (
-      <PlayersTurn currentPlayer={game.currentPlayerId} me={playerId} />
+      <PlayersTurn
+        playerName={currentPlayerName}
+        myself={currentPlayer?.id === playerId}
+      />
     );
   }
 
