@@ -118,7 +118,7 @@ const App: React.FC = () => {
         </SmallText>
 
         <h3>Player List</h3>
-        <PlayerList players={players} />
+        <PlayerList players={players} myPlayerId={playerId} />
       </AppLeftSideContainer>
       <AppGameContainer>{gameComponent}</AppGameContainer>
     </AppContainer>

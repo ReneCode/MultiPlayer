@@ -18,16 +18,22 @@ const Color = styled.div`
   margin: 5px;
 `;
 
+const MeMarker = styled.div`
+  margin-left: 4px;
+`;
+
 type Props = {
   player: Player;
   withColor?: boolean;
+  me: boolean;
 };
 
-const PlayerName: React.FC<Props> = ({ player }) => {
+const PlayerName: React.FC<Props> = ({ player, me }) => {
   return (
     <PlayerNameContainer>
       <Color color={player.color} />
-      <span>{player.name}</span>
+      <div>{player.name}</div>
+      {me && <MeMarker>(me)</MeMarker>}
     </PlayerNameContainer>
   );
 };
