@@ -107,10 +107,13 @@ const FiveInARow: React.FC<Props> = ({
       const currentPlayer = getCurrentPlayer();
       const currentPlayerName = currentPlayer?.name;
       component = (
-        <PlayersTurn
-          playerName={currentPlayerName}
-          myself={currentPlayer?.id === playerId}
-        />
+        <React.Fragment>
+          <Button onClick={handleStart}>Restart</Button>
+          <PlayersTurn
+            playerName={currentPlayerName}
+            myself={currentPlayer?.id === playerId}
+          />
+        </React.Fragment>
       );
       break;
   }

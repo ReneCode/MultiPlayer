@@ -30,6 +30,10 @@ const machineConfiguration = {
     started: {
       on: {
         FINISHED: "finished",
+        START: {
+          target: "started",
+          actions: "doStart",
+        },
         MOVE: {
           target: "started",
           actions: ["doMove"],
@@ -109,7 +113,7 @@ class GameFiveInARow extends GameBase {
   }
 
   private doStart() {
-    this.sendUpdate();
+    this.cmdInit();
   }
 
   private doMove(context, message) {
