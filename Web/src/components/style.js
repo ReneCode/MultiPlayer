@@ -21,7 +21,7 @@ export const SmallText = styled.div`
   font-size: 0.7rem;
 `;
 
-export const TicTacToeGameContainer = styled.div`
+export const GameContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;

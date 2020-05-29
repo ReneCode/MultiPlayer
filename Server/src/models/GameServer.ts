@@ -86,6 +86,7 @@ class GameServer {
     const playerId: string = message.playerId;
     const gameId: string = message.gameId;
 
+    // console.log(message);
     this.checkGameId(gameId);
     this.checkPlayerId(playerId);
     const game = this.games.get(gameId);
@@ -93,14 +94,6 @@ class GameServer {
       game.message(message);
     }
   }
-
-  // public makeMove(gameId: string, playerId: string, move: any) {
-  //   this.checkGameId(gameId);
-  //   this.checkPlayerId(playerId);
-
-  //   const game = this.getGame(gameId);
-  //   game.makeMove(playerId, move);
-  // }
 
   public getGamePlayerIds(gameId: GameId) {
     this.checkGameId(gameId);

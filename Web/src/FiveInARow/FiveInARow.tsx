@@ -1,13 +1,37 @@
 import React from "react";
-import {
-  Board,
-  Cell,
-  Button,
-  TicTacToeGameContainer,
-} from "../components/style";
+import styled from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
+
+const GameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const Board = styled.div`
+  background-color: gray;
+  display: flex;
+  flex-direction: row;
+  padding: 8px;
+  border-radius: 5px;
+`;
+
+const Cell = styled.div`
+  margin: 3px;
+  background-color: ${(props) => props.color};
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 15px;
+`;
+
+const Button = styled.button`
+  font-size: 1.2rem;
+  margin: 0.5rem;
+`;
 
 type Props = {
   game: DtoGameFiveInARow;
@@ -25,31 +49,27 @@ const FiveInARow: React.FC<Props> = ({
     const move = { row, col };
     sendMessage({
       cmd: "GAME_MOVE",
-      playerId: playerId,
-      gameId: game.gameId,
       move: move,
     });
   };
 
-  const handleRestart = () => {
+  const handleStart = () => {
     sendMessage({
-      cmd: "GAME_RESTART",
-      gameId: game.gameId,
+      cmd: "GAME_START",
     });
   };
 
   const getCellColor = (val: number): string => {
     const playerIdx = val - 1;
     switch (val) {
-      case 1:
-      case 2:
+      case 0:
+        return "#999";
+      default:
         if (players.length > playerIdx) {
           return players[playerIdx].color;
         } else {
           return "drakgray";
         }
-      default:
-        return "lightgray";
     }
   };
 
@@ -62,32 +82,41 @@ const FiveInARow: React.FC<Props> = ({
   }
 
   let component = null;
-  if (game.state === "finished") {
-    let textComponent = null;
-    if (game.wonPlayerId) {
-      textComponent = <h3>Player {game.wonPlayerId} won!</h3>;
-    } else {
-      textComponent = <h3>drawn</h3>;
-    }
-    component = (
-      <React.Fragment>
-        {textComponent}
-        <Button onClick={handleRestart}>play once more</Button>
-      </React.Fragment>
-    );
-  } else {
-    const currentPlayer = getCurrentPlayer();
-    const currentPlayerName = currentPlayer?.name;
-    component = (
-      <PlayersTurn
-        playerName={currentPlayerName}
-        myself={currentPlayer?.id === playerId}
-      />
-    );
+  switch (game.state) {
+    case "finished":
+      let textComponent = null;
+      if (game.wonPlayerId) {
+        textComponent = <h3>Player {game.wonPlayerId} won!</h3>;
+      } else {
+        textComponent = <h3>drawn</h3>;
+      }
+      component = (
+        <React.Fragment>
+          {textComponent}
+          <Button onClick={handleStart}>play once more</Button>
+        </React.Fragment>
+      );
+      break;
+    case "idle":
+      if (players.length >= 1) {
+        component = <Button onClick={handleStart}>Start</Button>;
+      }
+      break;
+
+    case "started":
+      const currentPlayer = getCurrentPlayer();
+      const currentPlayerName = currentPlayer?.name;
+      component = (
+        <PlayersTurn
+          playerName={currentPlayerName}
+          myself={currentPlayer?.id === playerId}
+        />
+      );
+      break;
   }
 
   return (
-    <TicTacToeGameContainer>
+    <GameContainer>
       <h4>{game.name}</h4>
       {component}
       <Board>
@@ -107,7 +136,7 @@ const FiveInARow: React.FC<Props> = ({
           );
         })}
       </Board>
-    </TicTacToeGameContainer>
+    </GameContainer>
   );
 };
 

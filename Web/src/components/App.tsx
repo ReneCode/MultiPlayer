@@ -31,7 +31,7 @@ const App: React.FC = () => {
   const [ws, setWs] = useState((undefined as unknown) as WebSocket);
 
   useEffect(() => {
-    //    console.log("routing-id changed");
+    console.log("routing-id changed:", id);
     // routing with gameId
     setGameId(id);
     if (!id) {
@@ -42,10 +42,14 @@ const App: React.FC = () => {
 
   const sendMessage = (message: any) => {
     let sendMessage = { ...message };
-    if (!message.playerId) {
-      sendMessage = { ...message, playerId: playerId };
+    if (gameId) {
+      sendMessage = { ...sendMessage, gameId: gameId };
     }
-    //    console.log("sendMessage:", sendMessage);
+    if (playerId) {
+      sendMessage = { ...sendMessage, playerId: playerId };
+    }
+
+    // console.log("sendMessage:", sendMessage);
     ws.send(JSON.stringify(sendMessage));
   };
 

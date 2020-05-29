@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Board,
-  Cell,
-  Button,
-  TicTacToeGameContainer,
-} from "../components/style";
+import { Board, Cell, Button, GameContainer } from "../components/style";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
@@ -96,7 +91,7 @@ const TicTacToe: React.FC<Props> = ({
   }
 
   return (
-    <TicTacToeGameContainer>
+    <GameContainer>
       <h4>TIC TAC TOE</h4>
       {component}
       <Board>
@@ -116,7 +111,7 @@ const TicTacToe: React.FC<Props> = ({
           );
         })}
       </Board>
-    </TicTacToeGameContainer>
+    </GameContainer>
   );
 };
 
