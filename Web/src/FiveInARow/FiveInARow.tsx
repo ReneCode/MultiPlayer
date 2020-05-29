@@ -74,6 +74,7 @@ const FiveInARow: React.FC<Props> = ({
   };
 
   const getCurrentPlayer = () => {
+    console.log(">>>", game);
     return players.find((player) => player.id === game.currentPlayerId);
   };
 
@@ -104,14 +105,13 @@ const FiveInARow: React.FC<Props> = ({
       break;
 
     case "started":
-      const currentPlayer = getCurrentPlayer();
-      const currentPlayerName = currentPlayer?.name;
+      const currentPlayerName = getCurrentPlayer()?.name;
       component = (
         <React.Fragment>
           <Button onClick={handleStart}>Restart</Button>
           <PlayersTurn
             playerName={currentPlayerName}
-            myself={currentPlayer?.id === playerId}
+            myself={game.currentPlayerId === playerId}
           />
         </React.Fragment>
       );

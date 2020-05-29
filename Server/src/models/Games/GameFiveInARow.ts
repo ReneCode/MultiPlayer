@@ -1,6 +1,7 @@
 import GameBase from "./GameBase";
 import GameConnector from "../GameConnector";
 import { Machine, interpret, Interpreter } from "xstate";
+import Randomize from "../Randomize";
 
 const MAX_ROWS = 15;
 const MAX_COLS = 15;
@@ -42,19 +43,11 @@ const machineConfiguration = {
     },
   },
 };
-// {
-//   actions: {
-//     doMove: (context, event) => {
-//       console.log("doing move", context, event);
-//     },
-//   },
-// }
 
 class GameFiveInARow extends GameBase {
   board = [];
-  currentPlayerIdx = -1;
+  currentPlayerId = "";
   wonPlayerId = undefined;
-  state: "idle" | "started" | "finished" = "idle";
 
   service: Interpreter<any>;
 
@@ -73,7 +66,9 @@ class GameFiveInARow extends GameBase {
         doMove: this.doMove,
       },
     };
-    this.service = interpret(Machine(machineConfiguration, machineOptions));
+    this.service = interpret(
+      Machine(machineConfiguration, machineOptions)
+    ).start();
   }
 
   public addPlayer(ws: any, playerId: string) {
@@ -84,6 +79,7 @@ class GameFiveInARow extends GameBase {
     return {
       name: GameFiveInARow.getName(),
       board: this.board,
+      currentPlayerId: this.currentPlayerId,
       state: this.service.state.value,
     };
   }
@@ -97,7 +93,7 @@ class GameFiveInARow extends GameBase {
       }
       this.board.push(row);
     }
-    this.service.start();
+
     this.sendUpdate();
   }
 
@@ -113,21 +109,28 @@ class GameFiveInARow extends GameBase {
   }
 
   private doStart() {
+    const startPlayerIdx = Randomize.generateInt(this.players.length);
+    this.currentPlayerId = this.players[startPlayerIdx].id;
     this.cmdInit();
   }
 
   private doMove(context, message) {
     console.log(message);
-    const col = message.move.col;
-    const row = message.move.row;
-    const ok = col >= 0 && col < MAX_COLS && row >= 0 && row < MAX_ROWS;
-    if (ok) {
-      const oldVal = this.getCell(row, col);
-      if (oldVal === CELL_EMPTY) {
-        const val = this.getCellValueForPlayer(message.playerId);
-        if (val) {
-          this.setCell(row, col, val);
-          this.sendUpdate();
+    if (message.playerId === this.currentPlayerId) {
+      const col = message.move.col;
+      const row = message.move.row;
+      const ok = col >= 0 && col < MAX_COLS && row >= 0 && row < MAX_ROWS;
+      if (ok) {
+        const oldVal = this.getCell(row, col);
+        if (oldVal === CELL_EMPTY) {
+          const val = this.getCellValueForPlayer(message.playerId);
+          if (val) {
+            this.setCell(row, col, val);
+
+            this.setNextCurrentPlayerId();
+
+            this.sendUpdate();
+          }
         }
       }
     }
@@ -148,6 +151,17 @@ class GameFiveInARow extends GameBase {
 
   private getCell(row: number, col: number) {
     return this.board[row][col];
+  }
+
+  private setNextCurrentPlayerId() {
+    const currentIdx = this.players.findIndex(
+      (player) => player.id === this.currentPlayerId
+    );
+    let nextIdx = currentIdx + 1;
+    if (nextIdx >= this.players.length) {
+      nextIdx = 0;
+    }
+    this.currentPlayerId = this.players[nextIdx].id;
   }
 }
 
