@@ -15,15 +15,18 @@ class GameBase {
     }
     const player = new Player(ws, playerId);
     this.players.push(player);
-    this.sendUpdatePlayers();
   }
 
   removePlayer(playerId: string): void {
     const player = this.getPlayer(playerId);
     if (player) {
       this.players = this.players.filter((player) => player.id !== playerId);
-      this.sendUpdatePlayers();
     }
+  }
+
+  hasPlayer(playerId: any) {
+    const player = this.getPlayer(playerId);
+    return !!player;
   }
 
   message(message: any) {
@@ -34,8 +37,9 @@ class GameBase {
     throw new Error("makeMove not implemented.");
   }
 
-  getGame(): any {
-    throw new Error("getGame not implemented");
+  // override
+  public getGame(): any {
+    return {};
   }
 
   cmdInit() {}
@@ -52,7 +56,7 @@ class GameBase {
 
   // --------------
 
-  protected sendUpdatePlayers() {
+  public sendUpdate() {
     const players = this.players.map((player) => {
       return {
         id: player.id,
@@ -61,11 +65,15 @@ class GameBase {
         color: player.color,
       };
     });
-    this.sendMessageToAllPlayers({
-      cmd: "game_update",
+    const message = {
+      cmd: "GAME_UPDATE",
+      gameId: this.gameId,
       players: players,
       game: this.getGame(),
-    });
+    };
+
+    const clients = this.players.map((player) => player.ws);
+    this.gameConnector.sendMessageToClients(message, clients);
   }
 
   getPlayerIds(): string[] {

@@ -13,6 +13,7 @@ import GameNameList from "./GameNameList";
 import PlayerList from "./PlayerList";
 import WebSocketPingPong from "./WebSocketPingPong";
 import { Player } from "../model/Player";
+import FiveInARow from "../FiveInARow/FiveInARow";
 
 const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {
@@ -22,7 +23,7 @@ if (!WS_SERVER) {
 const App: React.FC = () => {
   const { id } = useParams();
   const history = useHistory();
-  const [game, setGame] = useState(null as any);
+  const [game, setGame] = useState(undefined as any);
   const [playerId, setPlayerId] = useState("");
   const [gameId, setGameId] = useState("");
   const [players, setPlayers] = useState([] as Player[]);
@@ -34,7 +35,7 @@ const App: React.FC = () => {
     // routing with gameId
     setGameId(id);
     if (!id) {
-      setGame(null);
+      setGame(undefined);
       setPlayers([]);
     }
   }, [id]);
@@ -53,13 +54,13 @@ const App: React.FC = () => {
   };
 
   const handleCreateGame = (name: string) => {
-    sendMessage({ cmd: "game_create", name: name });
+    sendMessage({ cmd: "GAME_CREATE", name: name });
   };
 
   const handleMessage = (message: any) => {
-    //    console.log("got message:", message);
+    console.log("got message:", message);
     switch (message.cmd) {
-      case "game_update":
+      case "GAME_UPDATE":
         setPlayers(message.players ? message.players : []);
         setGame(message.game);
         if (!gameId) {
@@ -67,20 +68,20 @@ const App: React.FC = () => {
         }
         break;
 
-      case "game_invalid":
+      case "GAME_INVALID":
         if (gameId) {
           setGameId("");
           history.push("/");
         }
         break;
 
-      case "client_connected":
+      case "CLIENT_CONNECTED":
         setAvailiableGames(message.availiableGames);
         if (!playerId && message.playerId) {
           setPlayerId(message.playerId);
           if (gameId) {
             sendMessage({
-              cmd: "game_connect",
+              cmd: "GAME_CONNECT",
               gameId: gameId,
               playerId: message.playerId,
             });
@@ -90,14 +91,29 @@ const App: React.FC = () => {
     }
   };
 
-  const gameComponent = game ? (
-    <TicTacToe
-      game={game}
-      players={players}
-      playerId={playerId}
-      sendMessage={sendMessage}
-    ></TicTacToe>
-  ) : null;
+  let gameComponent = null;
+  switch (game?.name) {
+    case "TicTacToe":
+      gameComponent = (
+        <TicTacToe
+          game={game}
+          players={players}
+          playerId={playerId}
+          sendMessage={sendMessage}
+        ></TicTacToe>
+      );
+      break;
+
+    case "FiveInARow":
+      gameComponent = (
+        <FiveInARow
+          game={game}
+          players={players}
+          playerId={playerId}
+          sendMessage={sendMessage}
+        />
+      );
+  }
 
   return (
     <AppContainer>

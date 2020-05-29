@@ -58,10 +58,10 @@ class GameTicTacToe extends GameBase {
     const playerId = message.playerId;
 
     switch (message.cmd) {
-      case "game_move":
+      case "GAME_MOVE":
         this.cmdMakeMove(playerId, message.move);
         break;
-      case "game_restart":
+      case "GAME_RESTART":
         this.cmdStart();
         break;
       default:
@@ -71,6 +71,7 @@ class GameTicTacToe extends GameBase {
 
   getGame(): DtoGameTicTacToe {
     let dto: DtoGameTicTacToe = {
+      name: "TicTacToe",
       gameId: this.gameId,
       board: this.board,
       wonPlayerId: this.wonPlayerId ? this.wonPlayerId : undefined,
@@ -81,14 +82,13 @@ class GameTicTacToe extends GameBase {
   }
 
   public addPlayer(ws: any, playerId: string) {
-    if (this.state == "idle") {
-      if (this.players.length < MAX_PLAYER_COUNT) {
-        super.addPlayer(ws, playerId);
-      }
-      if (this.players.length == MAX_PLAYER_COUNT) {
-        this.cmdStart();
-      }
+    if (this.state == "idle" && this.players.length < MAX_PLAYER_COUNT) {
+      super.addPlayer(ws, playerId);
     }
+
+    //   if (this.players.length == MAX_PLAYER_COUNT) {
+    //   this.cmdStart();
+    // }
   }
 
   public removePlayer(playerId: string) {
@@ -99,13 +99,13 @@ class GameTicTacToe extends GameBase {
   public cmdInit() {
     this.clearBoard();
     this.state = "idle";
-    this.sendUpdatePlayers();
+    this.sendUpdate();
   }
 
   public cmdStart() {
     this.clearBoard();
     this.state = "started";
-    this.sendUpdatePlayers();
+    this.sendUpdate();
   }
 
   public cmdMakeMove(
@@ -129,7 +129,7 @@ class GameTicTacToe extends GameBase {
       }
 
       this.setNextCurrentPlayerIdx();
-      this.sendUpdatePlayers();
+      this.sendUpdate();
     }
   }
 

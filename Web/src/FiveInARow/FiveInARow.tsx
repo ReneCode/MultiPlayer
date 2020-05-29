@@ -5,17 +5,17 @@ import {
   Button,
   TicTacToeGameContainer,
 } from "../components/style";
-import DtoGameTicTacToe from "./DtoGameTicTacToe";
+import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
 
 type Props = {
-  game: DtoGameTicTacToe;
+  game: DtoGameFiveInARow;
   players: Player[];
   playerId: string;
   sendMessage: (message: any) => void;
 };
-const TicTacToe: React.FC<Props> = ({
+const FiveInARow: React.FC<Props> = ({
   game,
   players,
   playerId,
@@ -62,42 +62,33 @@ const TicTacToe: React.FC<Props> = ({
   }
 
   let component = null;
-  switch (game.state) {
-    case "finished":
-      let textComponent = null;
-      if (game.wonPlayerId) {
-        textComponent = <h3>Player {game.wonPlayerId} won!</h3>;
-      } else {
-        textComponent = <h3>drawn</h3>;
-      }
-      component = (
-        <React.Fragment>
-          {textComponent}
-          <Button onClick={handleRestart}>play once more</Button>
-        </React.Fragment>
-      );
-      break;
-    case "idle":
-      if (players.length === 2) {
-        component = <Button onClick={handleRestart}>Start</Button>;
-      }
-      break;
-
-    case "started":
-      const currentPlayer = getCurrentPlayer();
-      const currentPlayerName = currentPlayer?.name;
-      component = (
-        <PlayersTurn
-          playerName={currentPlayerName}
-          myself={currentPlayer?.id === playerId}
-        />
-      );
-      break;
+  if (game.state === "finished") {
+    let textComponent = null;
+    if (game.wonPlayerId) {
+      textComponent = <h3>Player {game.wonPlayerId} won!</h3>;
+    } else {
+      textComponent = <h3>drawn</h3>;
+    }
+    component = (
+      <React.Fragment>
+        {textComponent}
+        <Button onClick={handleRestart}>play once more</Button>
+      </React.Fragment>
+    );
+  } else {
+    const currentPlayer = getCurrentPlayer();
+    const currentPlayerName = currentPlayer?.name;
+    component = (
+      <PlayersTurn
+        playerName={currentPlayerName}
+        myself={currentPlayer?.id === playerId}
+      />
+    );
   }
 
   return (
     <TicTacToeGameContainer>
-      <h4>TIC TAC TOE</h4>
+      <h4>{game.name}</h4>
       {component}
       <Board>
         {game.board.map((row, iRow: number) => {
@@ -120,4 +111,4 @@ const TicTacToe: React.FC<Props> = ({
   );
 };
 
-export default TicTacToe;
+export default FiveInARow;

@@ -1,5 +1,11 @@
 import { Server } from "ws";
+const colors = require("colors");
 import GameServer from "./models/GameServer";
+
+colors.setTheme({
+  messageIn: ["brightRed"],
+  messageOut: ["green"],
+});
 
 // https://developer.mozilla.org/de/docs/Web/API/WebSocket/readyState
 const WS_CONNECTING = 0;
@@ -7,20 +13,11 @@ const WS_OPEN = 1;
 const WS_CLOSING = 2;
 const WS_CLOSED = 3;
 
-const outAllPlayers = (wss) => {
-  console.log("-------------");
-  wss.clients.forEach((client) => {
-    console.log(">>> ", client.readyState, client.playerId);
-  });
-};
-
 class WebSocketServer {
   gameServer: GameServer = undefined;
 
   constructor(private wss: any) {
     this.gameServer = new GameServer(this.wss);
-
-    // setInterval(() => {}, 5000);
 
     console.log("start webSocket Server");
     this.wss.on("request", (req) => {
@@ -28,25 +25,26 @@ class WebSocketServer {
     });
 
     this.wss.on("connection", (ws, req) => {
-      const playerId = this.gameServer.connect(ws);
-      console.log("connect player:", playerId);
+      console.log(colors.messageIn("connect"));
+      const playerId = this.gameServer.connectPlayer(ws);
+      // console.log("connect player:", playerId);
       // add playerId to the client
       ws.playerId = playerId;
       const result = {
-        cmd: "client_connected",
+        cmd: "CLIENT_CONNECTED",
         playerId: playerId,
         availiableGames: this.gameServer.getAvailiableGames(),
       };
+      console.log(colors.messageOut("CLIENT_CONNECTED"));
       ws.send(JSON.stringify(result));
 
       ws.on("message", (data) => {
         this.handleMessage(ws, data);
       });
 
-      ws.on("close", (data, x) => {
-        console.log("close player:", ws.playerId);
-        this.gameServer.removePlayer(ws.playerId);
-        // this.updateGame(null);
+      ws.on("close", () => {
+        console.log(colors.messageIn(`close ${ws.playerId}`));
+        this.gameServer.disconnectPlayer(ws.playerId);
       });
     });
   }
@@ -54,7 +52,9 @@ class WebSocketServer {
   private handleMessage(ws: Server, data: any) {
     try {
       const message = JSON.parse(data);
-      console.log("message:", message);
+      console.log(colors.messageIn(`message ${message.cmd}`));
+
+      // console.log("message:", message);
       const playerId: string = message.playerId;
       const gameId: string = message.gameId;
       const cmd: string = message.cmd;
@@ -62,30 +62,21 @@ class WebSocketServer {
       const move: object = message.move;
       switch (cmd) {
         case "ping":
+          console.log(colors.messageOut("pong"));
           ws.send(JSON.stringify({ cmd: "pong" }));
           break;
-        case "game_create":
+        case "GAME_CREATE":
           {
             const gameName = message.name;
             const newGameId = this.gameServer.createGame(gameName);
             this.gameServer.addPlayer(newGameId, playerId, ws);
-            console.log("create Game:", newGameId);
           }
           break;
-        case "game_connect":
+        case "GAME_CONNECT":
           this.gameServer.addPlayer(gameId, playerId, ws);
           break;
 
-        case "game_start":
-          this.gameServer.startGame(gameId);
-          break;
-
-        // case "game_move":
-        //   this.gameServer.makeMove(gameId, playerId, move);
-        //   break;
-
         default:
-          // case "game_restart":
           this.gameServer.message(message);
           break;
       }
@@ -105,7 +96,7 @@ class WebSocketServer {
     });
 
     const msg = JSON.stringify({
-      cmd: "game_update",
+      cmd: "GAME_UPDATE",
       players: playerIds,
       gameId: gameId,
     });

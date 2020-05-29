@@ -5,14 +5,14 @@ describe("GameServer", () => {
   const gameServer = new GameServer(wss);
 
   it("connect", () => {
-    const playerId = gameServer.connect("ABC");
+    const playerId = gameServer.connectPlayer("ABC");
 
     expect(playerId).toBeTruthy();
   });
 
   describe("createGame", () => {
     it("valid player", () => {
-      const playerId = gameServer.connect("ABC");
+      const playerId = gameServer.connectPlayer("ABC");
       const gameId = gameServer.createGame(playerId);
       expect(gameId).toBeTruthy();
       const playerIds = gameServer.getGamePlayerIds(gameId);
@@ -21,7 +21,7 @@ describe("GameServer", () => {
     });
 
     it("invalid player", () => {
-      gameServer.connect("ABC");
+      gameServer.connectPlayer("ABC");
       expect(() => gameServer.createGame("badPlayerId")).toThrowError();
     });
   });

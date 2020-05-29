@@ -1,12 +1,10 @@
-interface DtoGameBase {
-  readonly gameId: string;
-}
+import DtoGameBase from "./DtoGameBase";
 
 interface DtoGameTicTacToe extends DtoGameBase {
   board: any[];
   wonPlayerId: string;
   currentPlayerId: string;
-  state: "started" | "finished" | "idle";
+  state: "idle" | "started" | "finished";
 }
 
 export default DtoGameTicTacToe;
