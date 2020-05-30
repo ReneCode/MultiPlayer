@@ -48,6 +48,7 @@ class GameFiveInARow extends GameBase {
   board = [];
   currentPlayerId = "";
   wonPlayerId = undefined;
+  lastMovedCell = undefined;
 
   service: Interpreter<any>;
 
@@ -81,6 +82,7 @@ class GameFiveInARow extends GameBase {
       board: this.board,
       currentPlayerId: this.currentPlayerId,
       state: this.service.state.value,
+      lastMovedCell: this.lastMovedCell,
     };
   }
 
@@ -115,7 +117,6 @@ class GameFiveInARow extends GameBase {
   }
 
   private doMove(context, message) {
-    console.log(message);
     if (message.playerId === this.currentPlayerId) {
       const col = message.move.col;
       const row = message.move.row;
@@ -126,7 +127,7 @@ class GameFiveInARow extends GameBase {
           const val = this.getCellValueForPlayer(message.playerId);
           if (val) {
             this.setCell(row, col, val);
-
+            this.lastMovedCell = { row, col };
             this.setNextCurrentPlayerId();
 
             this.sendUpdate();

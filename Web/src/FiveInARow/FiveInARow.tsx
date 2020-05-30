@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
@@ -18,14 +18,19 @@ const Board = styled.div`
   border-radius: 5px;
 `;
 
+type CellProps = {
+  pump: boolean;
+  color: string;
+};
 const Cell = styled.div`
   margin: 3px;
-  background-color: ${(props) => props.color};
+  background-color: ${(props: CellProps) => props.color};
   height: 30px;
   width: 30px;
   cursor: pointer;
   text-align: center;
   border-radius: 15px;
+  animation: ${(props) => (props.pump ? "pump 2s infinite" : "")};
 `;
 
 const Button = styled.button`
@@ -74,7 +79,6 @@ const FiveInARow: React.FC<Props> = ({
   };
 
   const getCurrentPlayer = () => {
-    console.log(">>>", game);
     return players.find((player) => player.id === game.currentPlayerId);
   };
 
@@ -127,8 +131,13 @@ const FiveInARow: React.FC<Props> = ({
           return (
             <div key={iRow}>
               {row.map((val, iCol: number) => {
+                const lastMove =
+                  game.lastMovedCell &&
+                  iRow === game.lastMovedCell.row &&
+                  iCol === game.lastMovedCell.col;
                 return (
                   <Cell
+                    pump={lastMove}
                     key={iCol}
                     color={getCellColor(val)}
                     onClick={() => handleCellClick(iRow, iCol)}

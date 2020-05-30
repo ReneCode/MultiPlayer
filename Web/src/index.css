@@ -20,3 +20,24 @@ code {
 #root {
   height: 100%;
 }
+
+@keyframes pump {
+  0% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(0.7);
+  }
+}
+
+@keyframes blink {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
