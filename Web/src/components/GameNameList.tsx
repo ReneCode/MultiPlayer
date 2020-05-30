@@ -10,7 +10,7 @@ const GameNameList: React.FC<Props> = ({ gameList, onClick }) => {
     return null;
   }
   return (
-    <GameNameContainer>
+    <GameNameContainer data-cy="game-name-container">
       <GameListHeader>Availiable Games</GameListHeader>
       {gameList.map((name) => {
         return (

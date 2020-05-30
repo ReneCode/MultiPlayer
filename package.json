@@ -1,0 +1,24 @@
+{
+  "name": "multi-player",
+  "version": "1.0.0",
+  "description": "online multiplayer game(s) - Server (websocket) and Web-Frontend (React)",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ReneCode/MultiPlayer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ReneCode/MultiPlayer/issues"
+  },
+  "homepage": "https://github.com/ReneCode/MultiPlayer#readme",
+  "devDependencies": {
+    "cypress": "^4.7.0"
+  }
+}

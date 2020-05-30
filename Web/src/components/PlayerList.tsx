@@ -9,6 +9,8 @@ type Props = {
 const PlayerList: React.FC<Props> = ({ players, myPlayerId }) => {
   return (
     <div>
+      <h3>Player List</h3>
+
       {players.map((player) => {
         return (
           <PlayerName

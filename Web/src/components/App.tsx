@@ -68,7 +68,7 @@ const App: React.FC = () => {
         setPlayers(message.players ? message.players : []);
         setGame(message.game);
         if (!gameId) {
-          history.push(`/${message.gameId}`);
+          history.push(`/g/${message.gameId}`);
         }
         break;
 
@@ -137,7 +137,6 @@ const App: React.FC = () => {
           <div>my PlayerId: {playerId}</div>
         </SmallText>
 
-        <h3>Player List</h3>
         <PlayerList players={players} myPlayerId={playerId} />
       </AppLeftSideContainer>
       <AppGameContainer>{gameComponent}</AppGameContainer>

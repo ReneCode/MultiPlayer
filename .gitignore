@@ -1,2 +1,3 @@
 node_modules
 Web/build
+cypress/integration/examples
