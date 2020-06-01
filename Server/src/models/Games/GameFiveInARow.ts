@@ -22,6 +22,11 @@ const machineConfiguration = {
       },
     },
     finished: {
+      entry: [
+        () => {
+          console.log("enter finished stated");
+        },
+      ],
       on: {
         START: {
           target: "started",
@@ -31,7 +36,7 @@ const machineConfiguration = {
     },
     started: {
       on: {
-        FINISHED: "finished",
+        FINISH: "finished",
         START: {
           target: "started",
           actions: "doStart",
@@ -147,6 +152,11 @@ class GameFiveInARow extends GameBase {
         this.setNextCurrentPlayerId();
 
         this.sendUpdate();
+
+        if (this.wonCells.length > 0) {
+          // console.log("game finished");
+          this.service.send("FINISH");
+        }
       }
     }
   }
