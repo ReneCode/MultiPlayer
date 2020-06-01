@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { keyframes, css } from "styled-components";
+import styled from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
@@ -19,7 +19,8 @@ const Board = styled.div`
 `;
 
 type CellProps = {
-  pump: boolean;
+  lastmove: boolean;
+  won: boolean;
   color: string;
 };
 const Cell = styled.div`
@@ -30,7 +31,8 @@ const Cell = styled.div`
   cursor: pointer;
   text-align: center;
   border-radius: 15px;
-  animation: ${(props) => (props.pump ? "pump 2s infinite" : "")};
+  animation: ${(props) =>
+    props.won ? "won 1.2s infinite" : props.lastmove ? "lastmove 2s 3" : ""};
 `;
 
 const Button = styled.button`
@@ -50,7 +52,7 @@ const FiveInARow: React.FC<Props> = ({
   playerId,
   sendMessage,
 }) => {
-  const handleCellClick = (row: number, col: number) => {
+  const handleCellClick = (col: number, row: number) => {
     const move = { row, col };
     sendMessage({
       cmd: "GAME_MOVE",
@@ -127,20 +129,21 @@ const FiveInARow: React.FC<Props> = ({
       <h4>{game.name}</h4>
       {component}
       <Board>
-        {game.board.map((row, iRow: number) => {
+        {game.board.map((col, iCol: number) => {
           return (
-            <div key={iRow}>
-              {row.map((val, iCol: number) => {
+            <div key={iCol}>
+              {col.map((val, iRow: number) => {
                 const lastMove =
                   game.lastMovedCell &&
                   iRow === game.lastMovedCell.row &&
                   iCol === game.lastMovedCell.col;
                 return (
                   <Cell
-                    pump={lastMove}
-                    key={iCol}
+                    lastmove={lastMove}
+                    won={game.wonCells.includes(`${iCol},${iRow}`)}
+                    key={iRow}
                     color={getCellColor(val)}
-                    onClick={() => handleCellClick(iRow, iCol)}
+                    onClick={() => handleCellClick(iCol, iRow)}
                   ></Cell>
                 );
               })}

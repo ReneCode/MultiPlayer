@@ -5,6 +5,7 @@ import Randomize from "../Randomize";
 
 const MAX_ROWS = 15;
 const MAX_COLS = 15;
+const COMPLETE_LEN = 5;
 
 const CELL_EMPTY = 0;
 
@@ -48,6 +49,7 @@ class GameFiveInARow extends GameBase {
   board = [];
   currentPlayerId = "";
   wonPlayerId = undefined;
+  wonCells = [];
   lastMovedCell = undefined;
 
   service: Interpreter<any>;
@@ -83,10 +85,13 @@ class GameFiveInARow extends GameBase {
       currentPlayerId: this.currentPlayerId,
       state: this.service.state.value,
       lastMovedCell: this.lastMovedCell,
+      wonCells: this.wonCells,
     };
   }
 
   public cmdInit() {
+    this.lastMovedCell = undefined;
+    this.wonCells = [];
     this.board = [];
     for (let iRow = 0; iRow < MAX_ROWS; iRow++) {
       const row = [];
@@ -117,22 +122,31 @@ class GameFiveInARow extends GameBase {
   }
 
   private doMove(context, message) {
-    if (message.playerId === this.currentPlayerId) {
-      const col = message.move.col;
-      const row = message.move.row;
-      const ok = col >= 0 && col < MAX_COLS && row >= 0 && row < MAX_ROWS;
-      if (ok) {
-        const oldVal = this.getCell(row, col);
-        if (oldVal === CELL_EMPTY) {
-          const val = this.getCellValueForPlayer(message.playerId);
-          if (val) {
-            this.setCell(row, col, val);
-            this.lastMovedCell = { row, col };
-            this.setNextCurrentPlayerId();
+    if (message.playerId !== this.currentPlayerId) {
+      // invalid player
+      return;
+    }
 
-            this.sendUpdate();
-          }
-        }
+    const col = message.move.col;
+    const row = message.move.row;
+    const ok = col >= 0 && col < MAX_COLS && row >= 0 && row < MAX_ROWS;
+    if (!ok) {
+      // invalid move
+      return;
+    }
+
+    const oldVal = this.getCell(col, row);
+    if (oldVal === CELL_EMPTY) {
+      const val = this.getCellValueForPlayer(message.playerId);
+      if (val) {
+        this.setCell(col, row, val);
+        this.lastMovedCell = { col, row };
+
+        this.wonCells = this.getWonCells();
+
+        this.setNextCurrentPlayerId();
+
+        this.sendUpdate();
       }
     }
   }
@@ -146,12 +160,12 @@ class GameFiveInARow extends GameBase {
     }
   }
 
-  private setCell(row: number, col: number, val: number) {
-    this.board[row][col] = val;
+  private setCell(col: number, row: number, val: number) {
+    this.board[col][row] = val;
   }
 
-  private getCell(row: number, col: number) {
-    return this.board[row][col];
+  private getCell(col: number, row: number) {
+    return this.board[col][row];
   }
 
   private setNextCurrentPlayerId() {
@@ -163,6 +177,69 @@ class GameFiveInARow extends GameBase {
       nextIdx = 0;
     }
     this.currentPlayerId = this.players[nextIdx].id;
+  }
+
+  private getWonCells() {
+    let wonCells = [];
+    const checkCells = this.getCheckCells();
+    checkCells.forEach((cells) => {
+      const values = new Set<number>();
+      cells.forEach((cell) => {
+        const [col, row] = cell.split(",").map((str: string) => parseInt(str));
+        values.add(this.getCell(col, row));
+      });
+      if (values.size === 1 && !values.has(CELL_EMPTY)) {
+        console.log(">>>", cells);
+        wonCells = cells;
+      }
+    });
+    return wonCells;
+  }
+
+  private getCheckCells() {
+    const checkCells: string[][] = [];
+
+    for (let iCol = 0; iCol < MAX_COLS; iCol++) {
+      for (let iRow = 0; iRow <= MAX_ROWS - COMPLETE_LEN; iRow++) {
+        const line = [];
+        for (let i = 0; i < COMPLETE_LEN; i++) {
+          line.push(`${iCol},${iRow + i}`);
+        }
+        checkCells.push(line);
+      }
+    }
+
+    for (let iRow = 0; iRow < MAX_ROWS; iRow++) {
+      for (let iCol = 0; iCol <= MAX_COLS - COMPLETE_LEN; iCol++) {
+        const line = [];
+        for (let i = 0; i < COMPLETE_LEN; i++) {
+          line.push(`${iCol + i},${iRow}`);
+        }
+        checkCells.push(line);
+      }
+    }
+
+    for (let iCol = 0; iCol <= MAX_COLS - COMPLETE_LEN; iCol++) {
+      for (let iRow = 0; iRow <= MAX_ROWS - COMPLETE_LEN; iRow++) {
+        const line = [];
+        for (let i = 0; i < COMPLETE_LEN; i++) {
+          line.push(`${iCol + i},${iRow + i}`);
+        }
+        checkCells.push(line);
+      }
+    }
+
+    for (let iCol = COMPLETE_LEN - 1; iCol < MAX_COLS; iCol++) {
+      for (let iRow = 0; iRow <= MAX_ROWS - COMPLETE_LEN; iRow++) {
+        const line = [];
+        for (let i = 0; i < COMPLETE_LEN; i++) {
+          line.push(`${iCol - i},${iRow + i}`);
+        }
+        checkCells.push(line);
+      }
+    }
+
+    return checkCells;
   }
 }
 

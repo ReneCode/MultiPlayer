@@ -6,6 +6,7 @@ interface DtoGameFiveInARow extends DtoGameBase {
   currentPlayerId: string;
   lastMovedCell: { col: number; row: number };
   state: "started" | "finished" | "idle";
+  wonCells: string[];
 }
 
 export default DtoGameFiveInARow;
