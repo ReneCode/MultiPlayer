@@ -1,6 +1,6 @@
 import { Server } from "ws";
 const colors = require("colors");
-import GameServer from "./models/GameServer";
+import gameServer from "./models/GameServer";
 
 colors.setTheme({
   messageIn: ["brightRed"],
@@ -14,26 +14,22 @@ const WS_CLOSING = 2;
 const WS_CLOSED = 3;
 
 class WebSocketServer {
-  gameServer: GameServer = undefined;
-
-  constructor(private wss: any) {
-    this.gameServer = new GameServer(this.wss);
-
+  constructor(wss: any) {
     console.log("start webSocket Server");
-    this.wss.on("request", (req) => {
+    wss.on("request", (req) => {
       console.log(">>> request:", req);
     });
 
-    this.wss.on("connection", (ws, req) => {
+    wss.on("connection", (ws, req) => {
       console.log(colors.messageIn("connect"));
-      const playerId = this.gameServer.connectPlayer(ws);
+      const playerId = gameServer.connectPlayer(ws);
       // console.log("connect player:", playerId);
       // add playerId to the client
       ws.playerId = playerId;
       const result = {
         cmd: "CLIENT_CONNECTED",
         playerId: playerId,
-        availiableGames: this.gameServer.getAvailiableGames(),
+        availiableGames: gameServer.getAvailiableGames(),
       };
       console.log(colors.messageOut("CLIENT_CONNECTED"));
       ws.send(JSON.stringify(result));
@@ -44,7 +40,7 @@ class WebSocketServer {
 
       ws.on("close", () => {
         console.log(colors.messageIn(`close ${ws.playerId}`));
-        this.gameServer.disconnectPlayer(ws.playerId);
+        gameServer.disconnectPlayer(ws.playerId);
       });
     });
   }
@@ -68,16 +64,16 @@ class WebSocketServer {
         case "GAME_CREATE":
           {
             const gameName = message.name;
-            const newGameId = this.gameServer.createGame(gameName);
-            this.gameServer.addPlayer(newGameId, playerId, ws);
+            const newGameId = gameServer.createGame(gameName);
+            gameServer.addPlayer(newGameId, playerId, ws);
           }
           break;
         case "GAME_CONNECT":
-          this.gameServer.addPlayer(gameId, playerId, ws);
+          gameServer.addPlayer(gameId, playerId, ws);
           break;
 
         default:
-          this.gameServer.message(message);
+          gameServer.message(message);
           break;
       }
     } catch (err) {
@@ -85,27 +81,27 @@ class WebSocketServer {
     }
   }
 
-  private updateGame = (gameId) => {
-    console.log("--- update game ----");
+  // private updateGame = (gameId) => {
+  //   console.log("--- update game ----");
 
-    const playerIds = [];
-    this.wss.clients.forEach((client) => {
-      if (client.readyState === WS_OPEN) {
-        playerIds.push(client.playerId);
-      }
-    });
+  //   const playerIds = [];
+  //   this.wss.clients.forEach((client) => {
+  //     if (client.readyState === WS_OPEN) {
+  //       playerIds.push(client.playerId);
+  //     }
+  //   });
 
-    const msg = JSON.stringify({
-      cmd: "GAME_UPDATE",
-      players: playerIds,
-      gameId: gameId,
-    });
-    this.wss.clients.forEach((client) => {
-      if (client.readyState === WS_OPEN) {
-        client.send(msg);
-      }
-    });
-  };
+  //   const msg = JSON.stringify({
+  //     cmd: "GAME_UPDATE",
+  //     players: playerIds,
+  //     gameId: gameId,
+  //   });
+  //   this.wss.clients.forEach((client) => {
+  //     if (client.readyState === WS_OPEN) {
+  //       client.send(msg);
+  //     }
+  //   });
+  // };
 }
 
 export default WebSocketServer;

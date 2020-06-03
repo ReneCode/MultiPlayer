@@ -199,7 +199,6 @@ class GameFiveInARow extends GameBase {
         values.add(this.getCell(col, row));
       });
       if (values.size === 1 && !values.has(CELL_EMPTY)) {
-        console.log(">>>", cells);
         wonCells = cells;
       }
     });

@@ -16,7 +16,7 @@ class GameServer {
   readonly FiveInARow_Name = "Five in a row";
   readonly availiableGames = [this.TicTacToe_Name, this.FiveInARow_Name];
 
-  constructor(private wss: any) {}
+  constructor() {}
 
   getAvailiableGames() {
     return this.availiableGames;
@@ -63,7 +63,7 @@ class GameServer {
     this.checkGameName(gameName);
 
     const gameId = Randomize.generateId(10);
-    const gameConnector = new GameConnector(this.wss);
+    const gameConnector = new GameConnector();
     let game: GameBase;
     switch (gameName) {
       case this.TicTacToe_Name:
@@ -134,4 +134,6 @@ class GameServer {
   }
 }
 
-export default GameServer;
+const gameServer = new GameServer();
+
+export default gameServer;

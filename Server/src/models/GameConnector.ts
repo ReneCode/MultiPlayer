@@ -3,7 +3,7 @@ const colors = require("colors");
 const WS_OPEN = 1;
 
 class GameConnector {
-  constructor(private wss: any) {}
+  constructor() {}
 
   public sendMessageToClients(message: any, clients: any[]) {
     console.log(colors.messageOut(message.cmd));
