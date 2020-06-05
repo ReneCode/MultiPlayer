@@ -9,7 +9,6 @@ import {
   AppGameContainer,
   SmallText,
 } from "./style";
-import GameNameList from "./GameNameList";
 import PlayerList from "./PlayerList";
 import WebSocketPingPong from "./WebSocketPingPong";
 import { Player } from "../model/Player";
@@ -27,17 +26,11 @@ const App: React.FC = () => {
   const [playerId, setPlayerId] = useState("");
   const [gameId, setGameId] = useState("");
   const [players, setPlayers] = useState([] as Player[]);
-  const [availiableGames, setAvailiableGames] = useState([] as string[]);
   const [ws, setWs] = useState((undefined as unknown) as WebSocket);
 
   useEffect(() => {
-    console.log("routing-id changed:", id);
     // routing with gameId
     setGameId(id);
-    if (!id) {
-      setGame(undefined);
-      setPlayers([]);
-    }
   }, [id]);
 
   const sendMessage = (message: any) => {
@@ -55,10 +48,6 @@ const App: React.FC = () => {
 
   const handleReset = () => {
     history.push("/");
-  };
-
-  const handleCreateGame = (name: string) => {
-    sendMessage({ cmd: "GAME_CREATE", name: name });
   };
 
   const handleMessage = (message: any) => {
@@ -80,7 +69,6 @@ const App: React.FC = () => {
         break;
 
       case "CLIENT_CONNECTED":
-        setAvailiableGames(message.availiableGames);
         if (!playerId && message.playerId) {
           setPlayerId(message.playerId);
           if (gameId) {
@@ -127,10 +115,6 @@ const App: React.FC = () => {
           onConnectWebSocket={(ws) => setWs(ws)}
         />
         <Button onClick={handleReset}>Reset</Button>
-        <GameNameList
-          gameList={availiableGames}
-          onClick={handleCreateGame}
-        ></GameNameList>
 
         <SmallText>
           <div>my GameId: {gameId}</div>

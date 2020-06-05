@@ -29,7 +29,6 @@ class WebSocketServer {
       const result = {
         cmd: "CLIENT_CONNECTED",
         playerId: playerId,
-        availiableGames: gameServer.getAvailiableGames(),
       };
       console.log(colors.messageOut("CLIENT_CONNECTED"));
       ws.send(JSON.stringify(result));
@@ -61,13 +60,13 @@ class WebSocketServer {
           console.log(colors.messageOut("pong"));
           ws.send(JSON.stringify({ cmd: "pong" }));
           break;
-        case "GAME_CREATE":
-          {
-            const gameName = message.name;
-            const newGameId = gameServer.createGame(gameName);
-            gameServer.addPlayer(newGameId, playerId, ws);
-          }
-          break;
+        // case "GAME_CREATE":
+        //   {
+        //     const gameName = message.name;
+        //     const newGameId = gameServer.createGame(gameName);
+        //     gameServer.addPlayer(newGameId, playerId, ws);
+        //   }
+        //   break;
         case "GAME_CONNECT":
           gameServer.addPlayer(gameId, playerId, ws);
           break;

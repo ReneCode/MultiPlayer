@@ -28,7 +28,7 @@ class WebSocketPingPong extends React.Component<Props> {
     this.intervalId = setInterval(this.sendPing, PING_DELAY);
   }
 
-  componentWillUnmound() {
+  componentWillUnmount() {
     clearInterval(this.intervalId);
     if (this.ws) {
       this.ws.close();
@@ -72,7 +72,7 @@ class WebSocketPingPong extends React.Component<Props> {
     if (this.ws) {
       this.ws.close();
     }
-    console.log("connect to WebSocket");
+    console.log("websocket connect");
     this.ws = new WebSocket(WS_SERVER);
     this.ws.onopen = this.onOpen;
     this.ws.onclose = this.onClose;

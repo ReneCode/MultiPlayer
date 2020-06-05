@@ -6,9 +6,7 @@ import Home from "./components/Home";
 const Routing = () => {
   return (
     <Switch>
-      <Route exact path="/home" component={Home}></Route>
-      <Route exact path="/" component={App}></Route>
-      <Route exact path="/home" component={Home}></Route>
+      <Route exact path="/" component={Home}></Route>
       <Route exact path="/g/:id" component={App}></Route>
     </Switch>
   );

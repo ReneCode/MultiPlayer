@@ -15,6 +15,10 @@ const app = express();
 //   applicationInsightsLogger.trackHttpRequests(app);
 // }
 
+// view engine setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
@@ -24,7 +28,7 @@ app.use(cors());
 
 app.use(morgan("tiny", {}));
 
-app.use("/game", gameRouter);
+app.use("/games", gameRouter);
 
 app.get("/", (req: any, res: any) => {
   res.send("hi, multi-player server is running");
