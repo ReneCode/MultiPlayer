@@ -49,20 +49,3 @@ export const Button = styled.button`
 `;
 
 // --------------------------------
-
-export const GameNameContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-export const GameListHeader = styled.h3`
-  border-bottom: 1px solid gray;
-`;
-
-export const GameName = styled.button`
-  background-color: lightgreen;
-  width: 140px;
-  font-size: 1.2rem;
-  margin: 0.1rem;
-`;
