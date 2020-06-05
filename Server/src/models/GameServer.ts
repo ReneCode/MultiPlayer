@@ -2,6 +2,7 @@ import Randomize from "./Randomize";
 import GameBase from "./Games/GameBase";
 import GameTicTacToe from "./Games/GameTicTacToe";
 import GameFiveInARow from "./Games/GameFiveInARow";
+import GameNobodyIsPerfect from "./Games/nobodyIsPerfect/GameNobodyIsPerfect";
 
 type Connection = any;
 type PlayerId = string;
@@ -13,7 +14,12 @@ class GameServer {
 
   readonly TicTacToe_Name = "Tic Tac Toe";
   readonly FiveInARow_Name = "Five in a row";
-  readonly availiableGames = [this.TicTacToe_Name, this.FiveInARow_Name];
+  readonly NobodysPerfect_Name = "Nobody's perfect";
+  readonly availiableGames = [
+    this.TicTacToe_Name,
+    this.FiveInARow_Name,
+    this.NobodysPerfect_Name,
+  ];
 
   constructor() {}
 
@@ -61,23 +67,28 @@ class GameServer {
   public createGame(gameName: string) {
     this.checkGameName(gameName);
 
-    const gameId = Randomize.generateId(10);
     let game: GameBase;
     switch (gameName) {
       case this.TicTacToe_Name:
-        game = new GameTicTacToe(gameId);
+        game = new GameTicTacToe();
         game.cmdInit();
         break;
 
       case this.FiveInARow_Name:
-        game = new GameFiveInARow(gameId);
+        game = new GameFiveInARow();
         game.cmdInit();
         break;
+
+      case this.NobodysPerfect_Name:
+        game = new GameNobodyIsPerfect();
+        game.cmdInit();
+        break;
+
       default:
         throw new Error("bad gameName:" + gameName);
     }
-    this.games.set(gameId, game);
-    return gameId;
+    this.games.set(game.gameId, game);
+    return game.gameId;
   }
 
   public message(message: any) {

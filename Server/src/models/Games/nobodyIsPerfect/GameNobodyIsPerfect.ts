@@ -27,10 +27,6 @@ const machineConfiguration = {
   },
 };
 
-class GameNobodysperfect extends GameBase {
-  constructor(gameId: string) {
-    super(gameId);
-  }
-}
+class GameNobodyIsPerfect extends GameBase {}
 
-export default GameNobodysperfect;
+export default GameNobodyIsPerfect;

@@ -45,10 +45,6 @@ class GameTicTacToe extends GameBase {
   wonPlayerId = undefined;
   state: "idle" | "started" | "finished" = "idle";
 
-  constructor(gameId: string) {
-    super(gameId);
-  }
-
   public message(message: any) {
     if (this.gameId != message.gameId) {
       // ups - wrong game

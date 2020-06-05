@@ -61,8 +61,8 @@ class GameFiveInARow extends GameBase {
   static getName() {
     return "FiveInARow";
   }
-  constructor(gameId: string) {
-    super(gameId);
+  constructor() {
+    super();
 
     this.doStart = this.doStart.bind(this);
     this.doMove = this.doMove.bind(this);

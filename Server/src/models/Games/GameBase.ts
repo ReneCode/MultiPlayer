@@ -1,13 +1,17 @@
 const colors = require("colors");
 
 import Player from "../Player";
+import Randomize from "../Randomize";
 
 const WS_OPEN = 1;
 
 class GameBase {
   players: Player[] = [];
+  readonly gameId: string;
 
-  constructor(protected gameId: string) {}
+  constructor() {
+    this.gameId = Randomize.generateId(10);
+  }
 
   addPlayer(ws: any, playerId: string) {
     if (this.getPlayer(playerId)) {
