@@ -1,5 +1,4 @@
 import Randomize from "./Randomize";
-import GameConnector from "./GameConnector";
 import GameBase from "./Games/GameBase";
 import GameTicTacToe from "./Games/GameTicTacToe";
 import GameFiveInARow from "./Games/GameFiveInARow";
@@ -63,16 +62,15 @@ class GameServer {
     this.checkGameName(gameName);
 
     const gameId = Randomize.generateId(10);
-    const gameConnector = new GameConnector();
     let game: GameBase;
     switch (gameName) {
       case this.TicTacToe_Name:
-        game = new GameTicTacToe(gameConnector, gameId);
+        game = new GameTicTacToe(gameId);
         game.cmdInit();
         break;
 
       case this.FiveInARow_Name:
-        game = new GameFiveInARow(gameConnector, gameId);
+        game = new GameFiveInARow(gameId);
         game.cmdInit();
         break;
       default:

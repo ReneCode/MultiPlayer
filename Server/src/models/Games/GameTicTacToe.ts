@@ -27,7 +27,6 @@ yellow: 21..40,1..20,121,122,123,124
 green:  31..40,1..30,131,132,133,134
 */
 
-import GameConnector from "../GameConnector";
 import GameBase from "./GameBase";
 import Randomize from "../Randomize";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
@@ -46,8 +45,8 @@ class GameTicTacToe extends GameBase {
   wonPlayerId = undefined;
   state: "idle" | "started" | "finished" = "idle";
 
-  constructor(gameConnector: GameConnector, gameId: string) {
-    super(gameConnector, gameId);
+  constructor(gameId: string) {
+    super(gameId);
   }
 
   public message(message: any) {

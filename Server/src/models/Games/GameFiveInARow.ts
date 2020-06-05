@@ -1,5 +1,4 @@
 import GameBase from "./GameBase";
-import GameConnector from "../GameConnector";
 import { Machine, interpret, Interpreter } from "xstate";
 import Randomize from "../Randomize";
 
@@ -62,8 +61,8 @@ class GameFiveInARow extends GameBase {
   static getName() {
     return "FiveInARow";
   }
-  constructor(gameConnector: GameConnector, gameId: string) {
-    super(gameConnector, gameId);
+  constructor(gameId: string) {
+    super(gameId);
 
     this.doStart = this.doStart.bind(this);
     this.doMove = this.doMove.bind(this);
