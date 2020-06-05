@@ -46,6 +46,20 @@ namespace Randomize {
     const idx = Randomize.generateInt(list.length);
     return list[idx];
   }
+
+  export function shuffle(list: any[]): any[] {
+    const result = list.map((e) => e);
+    for (let i = 0; i < list.length; i++) {
+      const idx1 = Randomize.generateInt(list.length);
+      const idx2 = Randomize.generateInt(list.length);
+      if (idx1 !== idx2) {
+        const tmp = result[idx1];
+        result[idx1] = result[idx2];
+        result[idx2] = tmp;
+      }
+    }
+    return result;
+  }
 }
 
 export default Randomize;

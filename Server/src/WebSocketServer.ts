@@ -60,13 +60,6 @@ class WebSocketServer {
           console.log(colors.messageOut("pong"));
           ws.send(JSON.stringify({ cmd: "pong" }));
           break;
-        // case "GAME_CREATE":
-        //   {
-        //     const gameName = message.name;
-        //     const newGameId = gameServer.createGame(gameName);
-        //     gameServer.addPlayer(newGameId, playerId, ws);
-        //   }
-        //   break;
         case "GAME_CONNECT":
           gameServer.addPlayer(gameId, playerId, ws);
           break;
@@ -79,28 +72,6 @@ class WebSocketServer {
       console.error(err);
     }
   }
-
-  // private updateGame = (gameId) => {
-  //   console.log("--- update game ----");
-
-  //   const playerIds = [];
-  //   this.wss.clients.forEach((client) => {
-  //     if (client.readyState === WS_OPEN) {
-  //       playerIds.push(client.playerId);
-  //     }
-  //   });
-
-  //   const msg = JSON.stringify({
-  //     cmd: "GAME_UPDATE",
-  //     players: playerIds,
-  //     gameId: gameId,
-  //   });
-  //   this.wss.clients.forEach((client) => {
-  //     if (client.readyState === WS_OPEN) {
-  //       client.send(msg);
-  //     }
-  //   });
-  // };
 }
 
 export default WebSocketServer;
