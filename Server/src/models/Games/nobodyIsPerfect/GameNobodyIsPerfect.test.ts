@@ -1,6 +1,15 @@
+const colors = require("colors");
+
 import GameNobodyIsPerfect from "./GameNobodyIsPerfect";
 
 describe("GameNobodyIsPerfect", () => {
+  beforeAll(() => {
+    colors.setTheme({
+      messageIn: ["brightRed"],
+      messageOut: ["green"],
+    });
+  });
+
   it("complete game", () => {
     const game = new GameNobodyIsPerfect();
     let g = game.getGame();
@@ -11,9 +20,9 @@ describe("GameNobodyIsPerfect", () => {
     g = game.getGame();
     expect(g.state).toBe("idle");
 
-    game.addPlayer(null, "player-A");
-    game.addPlayer(null, "player-B");
-    game.addPlayer(null, "player-C");
+    game.addPlayer({}, "player-A");
+    game.addPlayer({}, "player-B");
+    game.addPlayer({}, "player-C");
     g = game.getGame();
 
     expect(g.players).toHaveLength(3);

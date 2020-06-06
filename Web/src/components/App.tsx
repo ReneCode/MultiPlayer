@@ -13,6 +13,7 @@ import PlayerList from "./PlayerList";
 import WebSocketPingPong from "./WebSocketPingPong";
 import { Player } from "../model/Player";
 import FiveInARow from "../FiveInARow/FiveInARow";
+import NobodyIsPerfect from "./NobodyIsPerfect/NobodyIsPerfect";
 
 const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {
@@ -105,6 +106,17 @@ const App: React.FC = () => {
           sendMessage={sendMessage}
         />
       );
+      break;
+
+    case "NobodyIsPerfect":
+      gameComponent = (
+        <NobodyIsPerfect
+          game={game}
+          playerId={playerId}
+          sendMessage={sendMessage}
+        />
+      );
+      break;
   }
 
   return (

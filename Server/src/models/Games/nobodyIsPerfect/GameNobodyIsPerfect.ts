@@ -115,6 +115,10 @@ class GameNobodyIsPerfect extends GameBase {
     ).start();
   }
 
+  static getName() {
+    return "NobodyIsPerfect";
+  }
+
   getGame() {
     const state = this.service.state.value;
     const players = this.players.map((p: GamePlayer) => {
@@ -130,6 +134,7 @@ class GameNobodyIsPerfect extends GameBase {
       };
     });
     return {
+      name: GameNobodyIsPerfect.getName(),
       state: state,
       players: players,
       question: this.question,
@@ -138,8 +143,18 @@ class GameNobodyIsPerfect extends GameBase {
   }
 
   public addPlayer(ws: any, playerId: string) {
+    console.log(">>> addPlayer", playerId);
     const player = new GamePlayer(ws, playerId);
     this.players.push(player);
+  }
+
+  public removePlayer(playerId: string) {
+    const player = this.getPlayer(playerId) as GamePlayer;
+    this.players = this.players.filter((p) => p.id !== playerId);
+    if (player.master) {
+      // master is gone - create new master
+      this.newMasterPlayer();
+    }
   }
 
   message(message: any) {
@@ -166,10 +181,16 @@ class GameNobodyIsPerfect extends GameBase {
           playerId: message.playerId,
           vote: message.vote,
         });
+        break;
+
+      default:
+        console.log("bad message:", message.cmd);
+        return;
     }
+    this.sendUpdate();
   }
 
-  doStart(context, event) {
+  newMasterPlayer() {
     // set master to next player
     let idx = this.players.findIndex((p: GamePlayer) => p.master === true);
     idx++;
@@ -179,7 +200,13 @@ class GameNobodyIsPerfect extends GameBase {
     if (idx >= this.players.length) {
       idx = 0;
     }
-    const playerIdMaster = this.players[idx].id;
+    const masterPlayer = this.players[idx] as GamePlayer;
+    masterPlayer.master = true;
+    return masterPlayer;
+  }
+
+  doStart(context, event) {
+    const masterPlayer = this.newMasterPlayer();
 
     this.question = undefined;
     this.answer = undefined;
@@ -187,7 +214,7 @@ class GameNobodyIsPerfect extends GameBase {
     this.players.forEach((p: GamePlayer) => {
       p.answer = undefined;
       p.vote = -1;
-      p.master = p.id === playerIdMaster ? true : false;
+      p.master = p.id === masterPlayer.id ? true : false;
     });
   }
   doSetQuestionAndAnswer(context, event) {

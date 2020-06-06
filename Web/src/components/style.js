@@ -48,4 +48,14 @@ export const Button = styled.button`
   margin: 0.5rem;
 `;
 
+export const GroupContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+
+  background-color: #00000033;
+  border: 1px solid #00000022;
+  border-radius: 5px;
+  padding: 10px;
+`;
 // --------------------------------
