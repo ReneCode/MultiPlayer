@@ -64,7 +64,6 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
   let topComponent = null;
   switch (game.state) {
     case "idle":
-    case "finish":
       if (game.players.length >= 2) {
         buttonComponent = <Button onClick={handleStart}>Start</Button>;
       }
@@ -95,13 +94,44 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
       break;
 
     case "collectVoting":
-      topComponent = (
-        <VoteAnswers
-          question={game.question}
-          answers={game.allAnswers}
-          onSet={handleVoteAnswer}
-        />
-      );
+      {
+        const votes = game.players
+          .map((player) => {
+            return { name: player.name, vote: player.vote };
+          })
+          .filter((v) => v.vote >= 0);
+        topComponent = (
+          <VoteAnswers
+            question={game.question}
+            answers={game.allAnswers}
+            votes={votes}
+            onSet={handleVoteAnswer}
+          />
+        );
+      }
+      break;
+
+    case "finish":
+      {
+        if (game.players.length >= 2) {
+          buttonComponent = <Button onClick={handleStart}>Start</Button>;
+        }
+
+        const votes = game.players
+          .map((player) => {
+            return { name: player.name, vote: player.vote };
+          })
+          .filter((v) => v.vote >= 0);
+        topComponent = (
+          <VoteAnswers
+            question={game.question}
+            answers={game.allAnswers}
+            votes={votes}
+            onSet={() => {}}
+          />
+        );
+      }
+      break;
   }
 
   return (

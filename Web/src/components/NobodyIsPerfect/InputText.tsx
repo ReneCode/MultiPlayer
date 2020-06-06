@@ -16,11 +16,10 @@ const Text = styled.textarea`
   font-size: 1rem;
   font-family: "arial";
   height: 4rem;
-  margin-bottom: 0.8rem;
 `;
 
 type Props = {
-  label: string;
+  label?: string;
   text?: string;
   onChangeText?: (text: string) => void;
 };
@@ -41,7 +40,7 @@ const InputText: React.FC<Props> = ({ label, text, onChangeText }) => {
 
   return (
     <InputContainer>
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
       <Text
         readOnly={!onChangeText}
         value={value}
