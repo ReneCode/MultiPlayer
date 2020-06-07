@@ -19,15 +19,24 @@ const Text = styled.textarea`
   border-left-width: 12px;
   border-left-style: solid;
   border-left-color: ${(props) => (props.color ? props.color : "#00000055")};
+  border-right: ${(props) =>
+    !!(props as any)["data-dashed"] ? "12px solid gray" : "none"};
 `;
 
 type Props = {
   label?: string;
   text?: string;
   color?: string;
+  master?: boolean;
   onChangeText?: (text: string) => void;
 };
-const InputText: React.FC<Props> = ({ color, label, text, onChangeText }) => {
+const InputText: React.FC<Props> = ({
+  color,
+  label,
+  text,
+  master,
+  onChangeText,
+}) => {
   const [value, setValue] = useState("");
 
   useEffect(() => {
@@ -42,6 +51,7 @@ const InputText: React.FC<Props> = ({ color, label, text, onChangeText }) => {
     }
   };
 
+  console.log(">>", master);
   return (
     <InputContainer>
       {label && <Label>{label}</Label>}
@@ -49,6 +59,7 @@ const InputText: React.FC<Props> = ({ color, label, text, onChangeText }) => {
         readOnly={!onChangeText}
         value={value}
         color={color}
+        data-dashed={master}
         onChange={(ev: any) => setValue(ev.target.value)}
         onBlur={handleOnBlur}
       />

@@ -17,7 +17,7 @@ type Props = {
     gameId: string;
     players: any[];
     question: string;
-    allAnswers: { text: string; color: string }[];
+    allAnswers: { text: string; playerId: string }[];
     state: string;
   };
   sendMessage: (message: any) => void;
@@ -99,7 +99,8 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
           question={game.question}
           answers={game.allAnswers}
           players={game.players}
-          onSet={handleVoteAnswer}
+          // master not able to vote
+          onSet={isMyselfMaster() ? undefined : handleVoteAnswer}
         />
       );
       break;

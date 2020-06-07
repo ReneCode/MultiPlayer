@@ -20,8 +20,14 @@ const BottomContainer = styled.div`
 
 type Props = {
   question: string;
-  answers: { text: string; color: string }[];
-  players: { name: string; color: string; id: string; vote: number }[];
+  answers: { text: string; playerId: string }[];
+  players: {
+    name: string;
+    color: string;
+    id: string;
+    vote: number;
+    master: boolean;
+  }[];
   onSet?: (vote: number) => void;
 };
 const VoteAnswers: React.FC<Props> = ({
@@ -34,9 +40,15 @@ const VoteAnswers: React.FC<Props> = ({
     <GroupContainer>
       <InputText label="Question" text={question} />
       {answers.map((answer, idx) => {
+        const player = players.find((player) => player.id === answer.playerId);
+        console.log("player:>", player);
         return (
           <Container key={idx}>
-            <InputText text={answer.text} color={answer.color} />
+            <InputText
+              text={answer.text}
+              color={player?.color}
+              master={player?.master}
+            />
             <BottomContainer>
               {onSet && <Button onClick={() => onSet(idx)}>Vote</Button>}
               <PlayerNames

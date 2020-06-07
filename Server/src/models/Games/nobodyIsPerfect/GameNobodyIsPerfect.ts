@@ -91,8 +91,7 @@ class GameNobodyIsPerfect extends GameBase {
   // playerIdMaster: string;
   question: string;
   answer: string;
-  allAnswers: string[];
-  allAnswersPlayerId: string[];
+  allAnswers: { text: string; playerId: string }[] = [];
 
   constructor() {
     super();
@@ -138,7 +137,10 @@ class GameNobodyIsPerfect extends GameBase {
       state: state,
       players: players,
       question: this.question,
-      allAnswers: this.allAnswers,
+      allAnswers:
+        state === "finish"
+          ? this.allAnswers
+          : this.allAnswers.map((answer) => ({ text: answer.text })),
     };
   }
 
@@ -210,7 +212,7 @@ class GameNobodyIsPerfect extends GameBase {
 
     this.question = undefined;
     this.answer = undefined;
-    this.allAnswers = undefined;
+    this.allAnswers = [];
     this.players.forEach((p: GamePlayer) => {
       p.answer = undefined;
       p.vote = -1;
@@ -249,21 +251,15 @@ class GameNobodyIsPerfect extends GameBase {
   doEnterCollectVoting(context, event) {
     // collect all answers - also the right one
 
-    let tmp: { answer: string; playerId: string }[] = [];
+    this.allAnswers = [];
     this.players.forEach((p: GamePlayer) => {
       if (p.master) {
-        tmp.push({ answer: this.answer, playerId: p.id });
+        this.allAnswers.push({ text: this.answer, playerId: p.id });
       } else {
-        tmp.push({ answer: p.answer, playerId: p.id });
+        this.allAnswers.push({ text: p.answer, playerId: p.id });
       }
     });
-    tmp = Randomize.shuffle(tmp);
-    this.allAnswers = [];
-    this.allAnswersPlayerId = [];
-    tmp.forEach((val) => {
-      this.allAnswers.push(val.answer);
-      this.allAnswersPlayerId.push(val.playerId);
-    });
+    this.allAnswers = Randomize.shuffle(this.allAnswers);
   }
 
   doAddVote(context, event) {
@@ -296,15 +292,15 @@ class GameNobodyIsPerfect extends GameBase {
       throw new Error("master player not found");
     }
 
-    const voteOk = this.allAnswersPlayerId.findIndex(
-      (id) => id == masterPlayer.id
+    const voteOk = this.allAnswers.findIndex(
+      (answer) => answer.playerId === masterPlayer.id
     );
     this.players.forEach((player: GamePlayer) => {
       if (!player.master) {
         if (player.vote == voteOk) {
           player.score += SCORE_VOTED_RIGHT;
         } else {
-          const votedPlayerId = this.allAnswersPlayerId[player.vote];
+          const votedPlayerId = this.allAnswers[player.vote]?.playerId;
           const otherPlayer = this.getPlayer(votedPlayerId);
           // to not score, if player votes its own answer
           if (player.id !== votedPlayerId) {

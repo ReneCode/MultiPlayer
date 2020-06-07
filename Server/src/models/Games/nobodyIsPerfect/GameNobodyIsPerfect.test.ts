@@ -93,9 +93,9 @@ describe("GameNobodyIsPerfect", () => {
     // that are the shuffled answers
     const answers = g.allAnswers;
     expect(answers).toHaveLength(3);
-    expect(answers).toContain(answerOk);
-    expect(answers).toContain(answerB);
-    expect(answers).toContain(answerC);
+    expect(answers).toContainEqual({ text: answerOk });
+    expect(answers).toContainEqual({ text: answerB });
+    expect(answers).toContainEqual({ text: answerC });
 
     // voting
     // master not allowed to vote
@@ -109,7 +109,9 @@ describe("GameNobodyIsPerfect", () => {
     expect(g.players[0]).toHaveProperty("vote", -1);
 
     // B voted the ok
-    const voteForOk = g.allAnswers.indexOf(answerOk);
+    const voteForOk = g.allAnswers.findIndex(
+      (answer) => answer.text == answerOk
+    );
     game.message({
       cmd: "GAME_ADD_VOTE",
       playerId: "player-B",
@@ -130,7 +132,7 @@ describe("GameNobodyIsPerfect", () => {
     expect(g.players[2]).toHaveProperty("vote", -1);
 
     // final vote - calculate score
-    const voteForB = g.allAnswers.indexOf(answerB);
+    const voteForB = g.allAnswers.findIndex((answer) => answer.text == answerB);
     game.message({
       cmd: "GAME_ADD_VOTE",
       playerId: "player-C",
@@ -189,7 +191,9 @@ describe("GameNobodyIsPerfect", () => {
     g = game.getGame();
 
     // B voted the ok
-    const voteForOk = g.allAnswers.indexOf(answerOk);
+    const voteForOk = g.allAnswers.findIndex(
+      (answer) => answer.text == answerOk
+    );
     game.message({
       cmd: "GAME_ADD_VOTE",
       playerId: "player-B",
@@ -197,7 +201,7 @@ describe("GameNobodyIsPerfect", () => {
     });
 
     // C votes its own answer
-    const voteForC = g.allAnswers.indexOf(answerC);
+    const voteForC = g.allAnswers.findIndex((answer) => answer.text == answerC);
     game.message({
       cmd: "GAME_ADD_VOTE",
       playerId: "player-C",
