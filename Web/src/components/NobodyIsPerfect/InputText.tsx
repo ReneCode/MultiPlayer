@@ -16,14 +16,18 @@ const Text = styled.textarea`
   font-size: 1rem;
   font-family: "arial";
   height: 4rem;
+  border-left-width: 12px;
+  border-left-style: solid;
+  border-left-color: ${(props) => (props.color ? props.color : "#00000055")};
 `;
 
 type Props = {
   label?: string;
   text?: string;
+  color?: string;
   onChangeText?: (text: string) => void;
 };
-const InputText: React.FC<Props> = ({ label, text, onChangeText }) => {
+const InputText: React.FC<Props> = ({ color, label, text, onChangeText }) => {
   const [value, setValue] = useState("");
 
   useEffect(() => {
@@ -44,6 +48,7 @@ const InputText: React.FC<Props> = ({ label, text, onChangeText }) => {
       <Text
         readOnly={!onChangeText}
         value={value}
+        color={color}
         onChange={(ev: any) => setValue(ev.target.value)}
         onBlur={handleOnBlur}
       />

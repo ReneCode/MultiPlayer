@@ -23,9 +23,9 @@ const MeMarker = styled.div`
 `;
 
 type Props = {
-  player: Player;
+  player: { name: string; color: string };
   withColor?: boolean;
-  me: boolean;
+  me?: boolean;
 };
 
 const PlayerName: React.FC<Props> = ({ player, me }) => {

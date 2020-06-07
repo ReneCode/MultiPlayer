@@ -17,7 +17,7 @@ type Props = {
     gameId: string;
     players: any[];
     question: string;
-    allAnswers: string[];
+    allAnswers: { text: string; color: string }[];
     state: string;
   };
   sendMessage: (message: any) => void;
@@ -94,43 +94,28 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
       break;
 
     case "collectVoting":
-      {
-        const votes = game.players
-          .map((player) => {
-            return { name: player.name, vote: player.vote };
-          })
-          .filter((v) => v.vote >= 0);
-        topComponent = (
-          <VoteAnswers
-            question={game.question}
-            answers={game.allAnswers}
-            votes={votes}
-            onSet={handleVoteAnswer}
-          />
-        );
-      }
+      topComponent = (
+        <VoteAnswers
+          question={game.question}
+          answers={game.allAnswers}
+          players={game.players}
+          onSet={handleVoteAnswer}
+        />
+      );
       break;
 
     case "finish":
-      {
-        if (game.players.length >= 2) {
-          buttonComponent = <Button onClick={handleStart}>Start</Button>;
-        }
-
-        const votes = game.players
-          .map((player) => {
-            return { name: player.name, vote: player.vote };
-          })
-          .filter((v) => v.vote >= 0);
-        topComponent = (
-          <VoteAnswers
-            question={game.question}
-            answers={game.allAnswers}
-            votes={votes}
-            onSet={() => {}}
-          />
-        );
+      if (game.players.length >= 2) {
+        buttonComponent = <Button onClick={handleStart}>Start</Button>;
       }
+
+      topComponent = (
+        <VoteAnswers
+          question={game.question}
+          answers={game.allAnswers}
+          players={game.players}
+        />
+      );
       break;
   }
 

@@ -18,6 +18,7 @@ class GameBase {
       throw new Error("player ${playerId} allready added to game");
     }
     const player = new Player(ws, playerId);
+    player.color = this.getUniquePlayerColor();
     this.players.push(player);
   }
 
@@ -25,6 +26,32 @@ class GameBase {
     const player = this.getPlayer(playerId);
     if (player) {
       this.players = this.players.filter((player) => player.id !== playerId);
+    }
+  }
+
+  getUniquePlayerColor(): string {
+    while (true) {
+      const color = Randomize.choose([
+        "white",
+        "black",
+        "red",
+        "green",
+        "greenyellow",
+        "fuchsia",
+        "powderblue",
+        "blue",
+        "orange",
+        "pink",
+        "yellow",
+        "brown",
+        "cyan",
+        "gold",
+      ]);
+
+      const player = this.players.find((player) => player.color === color);
+      if (!player) {
+        return color;
+      }
     }
   }
 

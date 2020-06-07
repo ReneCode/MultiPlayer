@@ -144,6 +144,7 @@ class GameNobodyIsPerfect extends GameBase {
 
   public addPlayer(ws: any, playerId: string) {
     const player = new GamePlayer(ws, playerId);
+    player.color = this.getUniquePlayerColor();
     this.players.push(player);
   }
 
