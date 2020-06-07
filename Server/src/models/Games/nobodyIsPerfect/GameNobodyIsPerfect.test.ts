@@ -156,4 +156,60 @@ describe("GameNobodyIsPerfect", () => {
     expect(g.players[1]).toHaveProperty("score", 2 + 3);
     expect(g.players[2]).toHaveProperty("score", 0);
   });
+
+  it("do not score you own answer", () => {
+    const game = new GameNobodyIsPerfect();
+    let g = game.getGame();
+    game.message({ cmd: "GAME_START" });
+    game.addPlayer({}, "player-A");
+    game.addPlayer({}, "player-B");
+    game.addPlayer({}, "player-C");
+    // start the game - first: pickQuestion
+    game.message({ cmd: "GAME_START" });
+    const questionText = "what is the aim of life?";
+    const answerOk = "42";
+    const answerB = "b-answer";
+    const answerC = "c-answer";
+    game.message({
+      cmd: "GAME_SET_QUESTION_AND_ANSWER",
+      question: questionText,
+      answer: answerOk,
+    });
+    game.message({
+      cmd: "GAME_ADD_ANSWER",
+      playerId: "player-B",
+      answer: answerB,
+    });
+    game.message({
+      cmd: "GAME_ADD_ANSWER",
+      playerId: "player-C",
+      answer: answerC,
+    });
+
+    g = game.getGame();
+
+    // B voted the ok
+    const voteForOk = g.allAnswers.indexOf(answerOk);
+    game.message({
+      cmd: "GAME_ADD_VOTE",
+      playerId: "player-B",
+      vote: voteForOk,
+    });
+
+    // C votes its own answer
+    const voteForC = g.allAnswers.indexOf(answerC);
+    game.message({
+      cmd: "GAME_ADD_VOTE",
+      playerId: "player-C",
+      vote: voteForC,
+    });
+    g = game.getGame();
+    expect(g.state).toBe("finish");
+    expect(g.players[0]).toHaveProperty("score", 0);
+    expect(g.players[2]).toHaveProperty("vote", voteForC);
+    // B voted correct +2
+    // C votes its own answer => no score
+    expect(g.players[1]).toHaveProperty("score", 2);
+    expect(g.players[2]).toHaveProperty("score", 0);
+  });
 });

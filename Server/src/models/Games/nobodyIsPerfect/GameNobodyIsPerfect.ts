@@ -143,7 +143,6 @@ class GameNobodyIsPerfect extends GameBase {
   }
 
   public addPlayer(ws: any, playerId: string) {
-    console.log(">>> addPlayer", playerId);
     const player = new GamePlayer(ws, playerId);
     this.players.push(player);
   }
@@ -306,7 +305,10 @@ class GameNobodyIsPerfect extends GameBase {
         } else {
           const votedPlayerId = this.allAnswersPlayerId[player.vote];
           const otherPlayer = this.getPlayer(votedPlayerId);
-          otherPlayer.score += SCORE_VOTED_FROM_OTHER;
+          // to not score, if player votes its own answer
+          if (player.id !== votedPlayerId) {
+            otherPlayer.score += SCORE_VOTED_FROM_OTHER;
+          }
         }
       }
     });
