@@ -1,8 +1,17 @@
 import React from "react";
+import styled from "styled-components";
+
 import { Button, GroupContainer } from "../style";
 import PickQuestionAndAnswer from "./PickQuestionAndAnswer";
 import AddAnswer from "./AddAnswer";
 import VoteAnswers from "./VoteAnswers";
+import PlayerName from "../PlayerName";
+
+const PlayerStatus = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
 
 interface DtoGame {
   gameId: string;
@@ -125,13 +134,14 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
       <h4>NobodyIsPerfect</h4>
       {game.players.map((p) => {
         return (
-          <div key={p.id}>
-            <span>{p.name}</span>
-            <span> Score:{p.score}</span>
+          <PlayerStatus key={p.id}>
+            <PlayerName player={p}></PlayerName>
+            <div> / </div>
+            <span> score:{p.score}</span>
             {p.master && <span> (master)</span>}
             {p.answered && <span> (answered) </span>}
             {p.vote >= 0 && <span> (voted) </span>}
-          </div>
+          </PlayerStatus>
         );
       })}
       {buttonComponent}

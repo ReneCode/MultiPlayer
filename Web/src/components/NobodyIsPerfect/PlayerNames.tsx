@@ -12,8 +12,6 @@ type Props = {
   players: { name: string; color: string; id: string }[];
 };
 const PlayerNames: React.FC<Props> = ({ players }) => {
-  // const text = names.join(",");
-
   return (
     <Container>
       {players.map((player) => {

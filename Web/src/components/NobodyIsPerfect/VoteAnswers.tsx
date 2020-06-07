@@ -41,7 +41,6 @@ const VoteAnswers: React.FC<Props> = ({
       <InputText label="Question" text={question} />
       {answers.map((answer, idx) => {
         const player = players.find((player) => player.id === answer.playerId);
-        console.log("player:>", player);
         return (
           <Container key={idx}>
             <InputText
