@@ -1,6 +1,14 @@
 # MultiPlayer
 
-online multiplayer game(s) - Server (websocket) and Web-Frontend (React)
+## online multiplayer game(s).
+
+Server (node.js)
+
+[![Build Status](https://travis-ci.org/ReneCode/MultiPlayer.svg?branch=master)](https://travis-ci.org/ReneCode/MultiPlayer)
+
+Web-Frontend (React)
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/029ab0ff-295e-40f4-b444-891158fbeb0e/deploy-status)](https://app.netlify.com/sites/mpgame/deploys)
 
 #Issues
 
@@ -8,11 +16,26 @@ online multiplayer game(s) - Server (websocket) and Web-Frontend (React)
 
 #Ideas
 
-- try game "five in a row"
-
 # protocoll
 
 ## websocket-connection
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+```mermaid
+
+graph TD;
+
+    Home-->TicTacToe;
+    Home-->FiveInARow;
+    Home-->NobodyIsPerfect;
+```
 
 ```txt
 SERVER                                                                          CLIENT
