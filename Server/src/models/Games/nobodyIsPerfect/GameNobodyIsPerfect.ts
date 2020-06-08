@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+
 import GameBase from "../GameBase";
 import { Machine, interpret, Interpreter } from "xstate";
 import Player from "../../Player";
@@ -222,6 +224,17 @@ class GameNobodyIsPerfect extends GameBase {
   doSetQuestionAndAnswer(context, event) {
     this.question = event.question;
     this.answer = event.answer;
+
+    const url = "https://relang.builtwithdark.com/nobodyisperfect/addqa";
+    const options = {
+      method: "POST",
+      body: JSON.stringify({
+        question: event.question,
+        answer: event.answer,
+      }),
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch(url, options).then();
   }
 
   doAddAnswer(context, event) {

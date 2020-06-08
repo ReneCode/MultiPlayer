@@ -24,6 +24,7 @@
     "http-errors": "~1.6.3",
     "http-status-codes": "^1.4.0",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.6.0",
     "pug": "2.0.0-beta11",
     "xstate": "^4.10.0"
   },
