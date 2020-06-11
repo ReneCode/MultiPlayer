@@ -1,5 +1,4 @@
 import React from "react";
-import { Player } from "../model/Player";
 
 import styled from "styled-components";
 
@@ -10,8 +9,8 @@ const PlayerNameContainer = styled.div`
 `;
 
 const Color = styled.div`
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
   background-color: ${(props) => props.color};
   border: 0.1rem solid gray;
   border-radius: 50px;
@@ -28,12 +27,13 @@ type Props = {
   me?: boolean;
 };
 
-const PlayerName: React.FC<Props> = ({ player, me }) => {
+const PlayerName: React.FC<Props> = ({ player, me, children }) => {
   return (
     <PlayerNameContainer>
       <Color color={player.color} />
       <div>{player.name}</div>
       {me && <MeMarker>(me)</MeMarker>}
+      {children}
     </PlayerNameContainer>
   );
 };

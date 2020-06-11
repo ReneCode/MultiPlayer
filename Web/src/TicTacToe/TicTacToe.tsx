@@ -1,8 +1,16 @@
 import React from "react";
-import { Board, Cell, Button, GameContainer } from "../components/style";
+import styled from "styled-components";
+
+import { Board, Cell, Button } from "../components/style";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
+
+const GameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
 
 type Props = {
   game: DtoGameTicTacToe;
@@ -92,7 +100,8 @@ const TicTacToe: React.FC<Props> = ({
 
   return (
     <GameContainer>
-      <h4>TIC TAC TOE</h4>
+      {/* <PlayerList players={players} myPlayerId={playerId} /> */}
+
       {component}
       <Board>
         {game.board.map((row, iRow: number) => {

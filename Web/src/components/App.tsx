@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
+import styled from "styled-components";
+
+// import "./App.css";
 import { useParams, useHistory } from "react-router";
 import TicTacToe from "../TicTacToe/TicTacToe";
-import {
-  Button,
-  AppContainer,
-  AppLeftSideContainer,
-  AppGameContainer,
-  SmallText,
-} from "./style";
-import PlayerList from "./PlayerList";
 import WebSocketPingPong from "./WebSocketPingPong";
 import { Player } from "../model/Player";
 import FiveInARow from "../FiveInARow/FiveInARow";
@@ -19,6 +13,26 @@ const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {
   throw new Error(`REACT_APP_WS_SERVER not set`);
 }
+
+export const AppContainer = styled.div`
+  height: 100%;
+`;
+
+const HomeButton = styled.div`
+  padding: 2px;
+  cursor: pointer;
+`;
+
+const TopBar = styled.div`
+  background-color: #ddd7;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const GameName = styled.div`
+  margin-left: 10px;
+`;
 
 const App: React.FC = () => {
   const { id } = useParams();
@@ -121,21 +135,17 @@ const App: React.FC = () => {
 
   return (
     <AppContainer>
-      <AppLeftSideContainer>
-        <WebSocketPingPong
-          onMessage={handleMessage}
-          onConnectWebSocket={(ws) => setWs(ws)}
-        />
-        <Button onClick={handleReset}>Reset</Button>
-
-        <SmallText>
-          <div>my GameId: {gameId}</div>
-          <div>my PlayerId: {playerId}</div>
-        </SmallText>
-
-        <PlayerList players={players} myPlayerId={playerId} />
-      </AppLeftSideContainer>
-      <AppGameContainer>{gameComponent}</AppGameContainer>
+      <WebSocketPingPong
+        onMessage={handleMessage}
+        onConnectWebSocket={(ws) => setWs(ws)}
+      />
+      <TopBar>
+        <HomeButton onClick={handleReset}>
+          <img src="/home.svg" alt="home" width="28" height="28" />
+        </HomeButton>
+        <GameName>{game?.name}</GameName>
+      </TopBar>
+      {gameComponent}
     </AppContainer>
   );
 };

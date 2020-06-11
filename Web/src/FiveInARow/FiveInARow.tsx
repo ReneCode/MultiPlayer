@@ -3,12 +3,24 @@ import styled from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../model/Player";
 import PlayersTurn from "../components/PlayersTurn";
+import PlayerName from "../components/PlayerName";
+import PlayerList from "../components/PlayerList";
 
 const GameContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
 `;
+
+const LeftSide = styled.div`
+  width: 240px;
+`;
+
+const RightSide = styled.div`
+  margin-top: 10px;
+`;
+
+const PlayerRow = styled.table``;
 
 const Board = styled.div`
   background-color: gray;
@@ -88,69 +100,56 @@ const FiveInARow: React.FC<Props> = ({
     return null;
   }
 
-  let component = null;
+  let actionComponent = null;
   switch (game.state) {
     case "finished":
-      let textComponent = null;
-      if (game.wonPlayerId) {
-        textComponent = <h3>Player {game.wonPlayerId} won!</h3>;
-      } else {
-        textComponent = <h3>drawn</h3>;
-      }
-      component = (
-        <React.Fragment>
-          {textComponent}
-          <Button onClick={handleStart}>play once more</Button>
-        </React.Fragment>
-      );
+      actionComponent = <Button onClick={handleStart}>play once more</Button>;
       break;
     case "idle":
-      if (players.length >= 1) {
-        component = <Button onClick={handleStart}>Start</Button>;
+      if (players.length > 1) {
+        actionComponent = <Button onClick={handleStart}>Start</Button>;
+      } else {
+        actionComponent = <h4>waiting for 2 or more players</h4>;
       }
-      break;
-
-    case "started":
-      const currentPlayerName = getCurrentPlayer()?.name;
-      component = (
-        <React.Fragment>
-          <Button onClick={handleStart}>Restart</Button>
-          <PlayersTurn
-            playerName={currentPlayerName}
-            myself={game.currentPlayerId === playerId}
-          />
-        </React.Fragment>
-      );
       break;
   }
 
   return (
     <GameContainer>
-      <h4>{game.name}</h4>
-      {component}
-      <Board>
-        {game.board.map((col, iCol: number) => {
-          return (
-            <div key={iCol}>
-              {col.map((val, iRow: number) => {
-                const lastMove =
-                  game.lastMovedCell &&
-                  iRow === game.lastMovedCell.row &&
-                  iCol === game.lastMovedCell.col;
-                return (
-                  <Cell
-                    lastmove={lastMove}
-                    won={game.wonCells.includes(`${iCol},${iRow}`)}
-                    key={iRow}
-                    color={getCellColor(val)}
-                    onClick={() => handleCellClick(iCol, iRow)}
-                  ></Cell>
-                );
-              })}
-            </div>
-          );
-        })}
-      </Board>
+      <LeftSide>
+        <PlayerList
+          players={players}
+          myPlayerId={playerId}
+          currentTurnPlayerId={game.currentPlayerId}
+          showScore={true}
+        />
+        {actionComponent}
+      </LeftSide>
+      <RightSide>
+        <Board>
+          {game.board.map((col, iCol: number) => {
+            return (
+              <div key={iCol}>
+                {col.map((val, iRow: number) => {
+                  const lastMove =
+                    game.lastMovedCell &&
+                    iRow === game.lastMovedCell.row &&
+                    iCol === game.lastMovedCell.col;
+                  return (
+                    <Cell
+                      lastmove={lastMove}
+                      won={game.wonCells.includes(`${iCol},${iRow}`)}
+                      key={iRow}
+                      color={getCellColor(val)}
+                      onClick={() => handleCellClick(iCol, iRow)}
+                    ></Cell>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </Board>
+      </RightSide>
     </GameContainer>
   );
 };

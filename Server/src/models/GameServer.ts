@@ -96,11 +96,15 @@ class GameServer {
     const gameId: string = message.gameId;
 
     // console.log(message);
-    this.checkGameId(gameId);
-    this.checkPlayerId(playerId);
+    // this.checkGameId(gameId);
+    // this.checkPlayerId(playerId);
     const game = this.games.get(gameId);
     if (game) {
-      game.message(message);
+      const playerId = message.playerId;
+      const foundPlayer = game.players.find((p) => p.id == playerId);
+      if (foundPlayer) {
+        game.message(message);
+      }
     }
   }
 

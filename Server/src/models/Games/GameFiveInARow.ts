@@ -9,23 +9,23 @@ const COMPLETE_LEN = 5;
 const CELL_EMPTY = 0;
 
 const machineConfiguration = {
+  strict: true,
   id: "fiveInARow",
   initial: "idle",
   states: {
     idle: {
+      entry: "doIdle",
       on: {
         START: {
+          cond: "condStart",
           target: "started",
           actions: "doStart",
         },
       },
     },
     finished: {
-      entry: [
-        () => {
-          console.log("enter finished stated");
-        },
-      ],
+      RESET: "idle",
+      entry: ["doFinished"],
       on: {
         START: {
           target: "started",
@@ -35,6 +35,7 @@ const machineConfiguration = {
     },
     started: {
       on: {
+        RESET: "idle",
         FINISH: "finished",
         START: {
           target: "started",
@@ -64,13 +65,15 @@ class GameFiveInARow extends GameBase {
   constructor() {
     super();
 
-    this.doStart = this.doStart.bind(this);
-    this.doMove = this.doMove.bind(this);
-
     const machineOptions = {
       actions: {
-        doStart: this.doStart,
-        doMove: this.doMove,
+        doStart: this.doStart.bind(this),
+        doMove: this.doMove.bind(this),
+        doFinished: this.doFinished.bind(this),
+        doIdle: this.doIdle.bind(this),
+      },
+      guards: {
+        condStart: this.condStart.bind(this),
       },
     };
     this.service = interpret(
@@ -82,21 +85,37 @@ class GameFiveInARow extends GameBase {
     super.addPlayer(ws, playerId);
   }
 
+  public removePlayer(playerId: string) {
+    this.players = this.players.filter((p) => p.id !== playerId);
+    this.service.send("RESET");
+  }
+
   public getGame() {
     return {
       name: GameFiveInARow.getName(),
       board: this.board,
       currentPlayerId: this.currentPlayerId,
-      state: this.service.state.value,
+      state: this.service ? this.service.state.value : "",
       lastMovedCell: this.lastMovedCell,
       wonCells: this.wonCells,
+      wonPlayerId: this.wonPlayerId,
+      players: this.players.map((p) => {
+        return {
+          id: p.id,
+          name: p.name,
+          color: p.color,
+          score: p.score,
+        };
+      }),
     };
   }
 
   public cmdInit() {
     this.lastMovedCell = undefined;
     this.wonCells = [];
+    this.wonPlayerId = "";
     this.board = [];
+    this.currentPlayerId = "";
     for (let iRow = 0; iRow < MAX_ROWS; iRow++) {
       const row = [];
       for (let iCol = 0; iCol < MAX_COLS; iCol++) {
@@ -104,8 +123,6 @@ class GameFiveInARow extends GameBase {
       }
       this.board.push(row);
     }
-
-    this.sendUpdate();
   }
 
   public message(message: any) {
@@ -119,10 +136,16 @@ class GameFiveInARow extends GameBase {
     }
   }
 
+  private doIdle() {
+    this.cmdInit();
+    this.sendUpdate();
+  }
+
   private doStart() {
+    this.cmdInit();
     const startPlayerIdx = Randomize.generateInt(this.players.length);
     this.currentPlayerId = this.players[startPlayerIdx].id;
-    this.cmdInit();
+    this.sendUpdate();
   }
 
   private doMove(context, message) {
@@ -148,16 +171,25 @@ class GameFiveInARow extends GameBase {
 
         this.wonCells = this.getWonCells();
 
-        this.setNextCurrentPlayerId();
-
-        this.sendUpdate();
-
         if (this.wonCells.length > 0) {
-          // console.log("game finished");
+          // game finished
+          const [col, row] = this.wonCells[0].split(",");
+          const cellValue = this.getCell(col, row);
+          this.wonPlayerId = this.getPlayerIdFromCellValue(cellValue);
+          const wonPlayer = this.getPlayer(this.wonPlayerId);
+          wonPlayer.score++;
           this.service.send("FINISH");
+        } else {
+          this.setNextCurrentPlayerId();
+          this.sendUpdate();
         }
       }
     }
+  }
+
+  private doFinished(context, message) {
+    this.currentPlayerId = "";
+    this.sendUpdate();
   }
 
   private getCellValueForPlayer(playerId: string) {
@@ -167,6 +199,15 @@ class GameFiveInARow extends GameBase {
     } else {
       return index + 1;
     }
+  }
+
+  private getPlayerIdFromCellValue(cellValue: string) {
+    let idx = parseInt(cellValue);
+    idx--;
+    if (idx >= 0 && idx < this.players.length) {
+      return this.players[idx].id;
+    }
+    return "";
   }
 
   private setCell(col: number, row: number, val: number) {
@@ -248,6 +289,10 @@ class GameFiveInARow extends GameBase {
     }
 
     return checkCells;
+  }
+
+  condStart(context, event) {
+    return this.players.length > 0;
   }
 }
 

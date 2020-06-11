@@ -13,6 +13,10 @@ const PlayerStatus = styled.div`
   align-items: center;
 `;
 
+const GameContainer = styled.div`
+  width: 600px;
+`;
+
 interface DtoGame {
   gameId: string;
   players: any[];
@@ -130,8 +134,7 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
   }
 
   return (
-    <React.Fragment>
-      <h4>NobodyIsPerfect</h4>
+    <GameContainer>
       {game.players.map((p) => {
         return (
           <PlayerStatus key={p.id}>
@@ -146,7 +149,7 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
       })}
       {buttonComponent}
       {topComponent}
-    </React.Fragment>
+    </GameContainer>
   );
 };
 
