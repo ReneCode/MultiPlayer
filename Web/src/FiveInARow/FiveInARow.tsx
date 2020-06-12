@@ -2,8 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../model/Player";
-import PlayersTurn from "../components/PlayersTurn";
-import PlayerName from "../components/PlayerName";
 import PlayerList from "../components/PlayerList";
 
 const GameContainer = styled.div`
@@ -19,8 +17,6 @@ const LeftSide = styled.div`
 const RightSide = styled.div`
   margin-top: 10px;
 `;
-
-const PlayerRow = styled.table``;
 
 const Board = styled.div`
   background-color: gray;
@@ -90,10 +86,6 @@ const FiveInARow: React.FC<Props> = ({
           return "drakgray";
         }
     }
-  };
-
-  const getCurrentPlayer = () => {
-    return players.find((player) => player.id === game.currentPlayerId);
   };
 
   if (!game.board) {

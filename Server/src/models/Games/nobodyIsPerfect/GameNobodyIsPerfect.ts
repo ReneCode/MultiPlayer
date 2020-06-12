@@ -148,6 +148,9 @@ class GameNobodyIsPerfect extends GameBase {
 
   public addPlayer(ws: any, playerId: string) {
     const player = new GamePlayer(ws, playerId);
+    if (this.players.length === 0) {
+      player.master = true;
+    }
     player.color = this.getUniquePlayerColor();
     this.players.push(player);
   }
@@ -196,6 +199,9 @@ class GameNobodyIsPerfect extends GameBase {
 
   newMasterPlayer() {
     // set master to next player
+    if (this.players.length === 0) {
+      return;
+    }
     let idx = this.players.findIndex((p: GamePlayer) => p.master === true);
     idx++;
     if (idx < 0) {

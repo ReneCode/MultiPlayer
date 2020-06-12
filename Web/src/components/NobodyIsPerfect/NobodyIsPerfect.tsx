@@ -6,6 +6,14 @@ import PickQuestionAndAnswer from "./PickQuestionAndAnswer";
 import AddAnswer from "./AddAnswer";
 import VoteAnswers from "./VoteAnswers";
 import PlayerName from "../PlayerName";
+import Crown from "../icon/Crown";
+import Waiting from "../icon/Waiting";
+import Checkmark from "../icon/Checkmark";
+
+const PlayerTable = styled.table`
+  tr {
+  }
+`;
 
 const PlayerStatus = styled.div`
   display: flex;
@@ -17,21 +25,30 @@ const GameContainer = styled.div`
   width: 600px;
 `;
 
-interface DtoGame {
-  gameId: string;
-  players: any[];
-}
-
 type Props = {
   playerId: string;
 
   game: {
     name: string;
     gameId: string;
-    players: any[];
+    players: {
+      id: string;
+      name: string;
+      color: string;
+      score: string;
+      master: boolean;
+      answered: boolean;
+      answer: string;
+      vote: number;
+    }[];
     question: string;
     allAnswers: { text: string; playerId: string }[];
-    state: string;
+    state:
+      | "idle"
+      | "pickQuestion"
+      | "collectAnswers"
+      | "collectVoting"
+      | "finish";
   };
   sendMessage: (message: any) => void;
 };
@@ -73,22 +90,22 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
     return master?.id === playerId;
   };
 
-  let buttonComponent = null;
   let topComponent = null;
+  let actionComponent = null;
   switch (game.state) {
     case "idle":
       if (game.players.length >= 2) {
-        buttonComponent = <Button onClick={handleStart}>Start</Button>;
+        topComponent = <Button onClick={handleStart}>Start</Button>;
       }
       break;
 
     case "pickQuestion":
       if (isMyselfMaster()) {
-        topComponent = (
+        actionComponent = (
           <PickQuestionAndAnswer onSet={handleSetQuestionAndAnswer} />
         );
       } else {
-        topComponent = (
+        actionComponent = (
           <GroupContainer>Question and answers are set ...</GroupContainer>
         );
       }
@@ -96,18 +113,18 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
 
     case "collectAnswers":
       if (isMyselfMaster()) {
-        topComponent = (
+        actionComponent = (
           <GroupContainer>Answers are collected ...</GroupContainer>
         );
       } else {
-        topComponent = (
+        actionComponent = (
           <AddAnswer question={game.question} onSet={handleAddAnswer} />
         );
       }
       break;
 
     case "collectVoting":
-      topComponent = (
+      actionComponent = (
         <VoteAnswers
           question={game.question}
           answers={game.allAnswers}
@@ -120,10 +137,10 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
 
     case "finish":
       if (game.players.length >= 2) {
-        buttonComponent = <Button onClick={handleStart}>Start</Button>;
+        topComponent = <Button onClick={handleStart}>Start</Button>;
       }
 
-      topComponent = (
+      actionComponent = (
         <VoteAnswers
           question={game.question}
           answers={game.allAnswers}
@@ -135,20 +152,41 @@ const NobodyIsPerfect: React.FC<Props> = ({ playerId, game, sendMessage }) => {
 
   return (
     <GameContainer>
-      {game.players.map((p) => {
-        return (
-          <PlayerStatus key={p.id}>
-            <PlayerName player={p}></PlayerName>
-            <div> / </div>
-            <span> score:{p.score}</span>
-            {p.master && <span> (master)</span>}
-            {p.answered && <span> (answered) </span>}
-            {p.vote >= 0 && <span> (voted) </span>}
-          </PlayerStatus>
-        );
-      })}
-      {buttonComponent}
+      <PlayerTable>
+        <tbody>
+          {game.players.map((p) => {
+            const playerWaiting =
+              (game.state === "pickQuestion" && p.master) ||
+              (game.state === "collectAnswers" && !p.master && !p.answered) ||
+              (game.state === "collectVoting" && !p.master && p.vote < 0);
+
+            const playerCheckmark =
+              (game.state === "collectAnswers" && !p.master && p.answered) ||
+              (game.state === "collectVoting" && !p.master && p.vote >= 0);
+            return (
+              <tr key={p.id}>
+                <td>
+                  <PlayerName player={p} me={p.id === playerId}></PlayerName>
+                </td>
+                <td> {p.score}</td>
+                <td>{p.master && <Crown />}</td>
+                {playerCheckmark && (
+                  <td>
+                    <Checkmark />
+                  </td>
+                )}
+                {playerWaiting && (
+                  <td>
+                    <Waiting />
+                  </td>
+                )}
+              </tr>
+            );
+          })}
+        </tbody>
+      </PlayerTable>
       {topComponent}
+      {actionComponent}
     </GameContainer>
   );
 };
