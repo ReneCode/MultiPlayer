@@ -8,7 +8,7 @@ const GameNameContainer = styled.div`
 `;
 
 const GameListHeader = styled.h3`
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid #33442233;
 `;
 
 const GameName = styled.button`
@@ -31,7 +31,7 @@ const GameNameList: React.FC<Props> = ({ gameList, onClick }) => {
   }
   return (
     <GameNameContainer data-cy="game-name-container">
-      <GameListHeader>Availiable Games</GameListHeader>
+      <GameListHeader>Availiable Games:</GameListHeader>
       {gameList.map((name) => {
         return (
           <GameName key={name} onClick={() => onClick(name)}>
