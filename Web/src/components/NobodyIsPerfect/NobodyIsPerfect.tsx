@@ -15,12 +15,6 @@ const PlayerTable = styled.table`
   }
 `;
 
-const PlayerStatus = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
 const GameContainer = styled.div`
   width: 600px;
 `;
