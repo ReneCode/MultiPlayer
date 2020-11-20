@@ -1,4 +1,4 @@
 [build]
   baseDirectory = "Web"
   command = "npm run build"
-  publish = "Web/build"
+  publish = "build"
