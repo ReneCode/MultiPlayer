@@ -2,7 +2,7 @@
 
 ## install
 
-github.settings.secrets: set
+add github.settings.secrets:
 
 - DOCKERHUB_TOKEN
 - DOCKERHUB_USERNAME
