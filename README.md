@@ -1,5 +1,13 @@
 # MultiPlayer
 
+## install
+
+github.settings.secrets: set
+
+- DOCKERHUB_TOKEN
+- DOCKERHUB_USERNAME
+- DOCKER_REGISTRY
+
 ## online multiplayer game(s).
 
 Server (node.js)
