@@ -1,0 +1,45 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Get Date
+        # https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows
+        run: echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: User npm ${{matrix.node-version}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Login to azure container registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker build Server Backend
+        working-directory: ./Server
+        run: |
+          docker build . -t ${{ secrets.DOCKER_REGISTRY }}/mpgame-server
+          docker tag ${{ secrets.DOCKER_REGISTRY }}/mpgame-server ${{ secrets.DOCKER_REGISTRY }}/mpgame-server:$NOW
+          docker image push ${{ secrets.DOCKER_REGISTRY }}/mpgame-server
+        env:
+          CI: true
