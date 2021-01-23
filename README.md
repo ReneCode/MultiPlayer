@@ -4,9 +4,9 @@
 
 add github.settings.secrets:
 
-- DOCKERHUB_TOKEN
-- DOCKERHUB_USERNAME
-- DOCKER_REGISTRY
+- DOCKERHUB_TOKEN : <password>
+- DOCKERHUB_USERNAME: <myname>
+- DOCKER_REGISTRY: <name.azurecr.io>
 
 ## online multiplayer game(s).
 

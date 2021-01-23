@@ -31,7 +31,7 @@ app.use(morgan("tiny", {}));
 app.use("/games", gamesRouter);
 
 app.get("/", (req: any, res: any) => {
-  res.send("hi, multi-player server is running");
+  res.send("hi, multi-player server is running.");
 });
 
 // error handler
