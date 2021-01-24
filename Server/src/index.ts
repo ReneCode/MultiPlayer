@@ -8,8 +8,9 @@ const appInsights = require("applicationinsights");
 appInsights.setup().start();
 const logClient = appInsights.defaultClient;
 
-console.log(`start Server with NODE_ENV: ${process.env.NODE_ENV}`);
-logClient.trackTrace({ message: "server started", env: process.env.NODE_ENV });
+const msg = `start Server with NODE_ENV: ${process.env.NODE_ENV}`;
+console.log(msg);
+logClient.trackTrace({ message: msg });
 
 const envProduction = process.env.NODE_ENV === "production";
 

@@ -1,4 +1,4 @@
-import express = require("express");
+import express, { Request, Response } from "express";
 const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -27,6 +27,10 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(morgan("tiny", {}));
+
+app.get("/version", (req: Request, res: Response) => {
+  res.send(`version: x, env: ${process.env.NODE_ENV}`);
+});
 
 app.use("/games", gamesRouter);
 
