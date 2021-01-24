@@ -42,7 +42,7 @@ jobs:
           files: |
             ./**/config.json
           patch-syntax: |
-            = /version => "1.0.1"
+            = /version => ${NOW}
             + /author => "${{ env.datum }}"
             = /docker => "${{ env.date }}"
 
