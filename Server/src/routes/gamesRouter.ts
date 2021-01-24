@@ -6,21 +6,18 @@ var router = express.Router();
 import gameServer from "../models/GameServer";
 
 router.post("/", function (req, res) {
-  try {
-    const name = req.query.name;
-    if (!name) {
-      res.status(httpStatus.BAD_REQUEST).send();
-      return;
-    }
-    const id = gameServer.createGame(name);
-    const result = {
-      name,
-      id,
-    };
-    res.json(result);
-  } catch (err) {
-    console.error(err);
+  const name = req.query.name;
+  if (!name) {
+    // throw { status: 503, message: "bad name" };
+    res.status(httpStatus.BAD_REQUEST).send();
+    return;
   }
+  const id = gameServer.createGame(name);
+  const result = {
+    name,
+    id,
+  };
+  res.json(result);
 });
 
 router.get("/", (req, res) => {

@@ -31,7 +31,7 @@ app.use(morgan("tiny", {}));
 app.use("/games", gamesRouter);
 
 app.get("/", (req: any, res: any) => {
-  res.send("hi, multi-player server is running.");
+  res.send("hi, multi-player server is running");
 });
 
 // error handler
@@ -44,16 +44,5 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
-
-// initData();
-
-// const port = process.env.PORT || 8080;
-// const httpServer = http.createServer(app);
-// httpServer.listen(port, () => {
-//   console.log("app listening on port:", port);
-// });
-
-// const wsServer = new WebSocketServer();
-// wsServer.listen(httpServer);
 
 module.exports = app;

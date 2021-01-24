@@ -54,7 +54,6 @@ class WebSocketServer {
       const gameId: string = message.gameId;
       const cmd: string = message.cmd;
 
-      const move: object = message.move;
       switch (cmd) {
         case "ping":
           console.log(colors.messageOut("pong"));
