@@ -3,6 +3,7 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@App/*": ["src/*"]
