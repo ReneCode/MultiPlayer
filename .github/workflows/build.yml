@@ -36,7 +36,6 @@ jobs:
           patch-syntax: |
             = /version => "1.0.1"
             + /author => "${{ env.name }}"
-            + /tag => "${{ $NOW }}"
             = /docker => $NOW
 
       - name: Login to azure container registry
