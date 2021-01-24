@@ -29,7 +29,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Patch files
-        working-directory: ./Server
         uses: onlyutkarsh/patch-files-action@v1.0.1
         with:
           files: |
@@ -37,7 +36,7 @@ jobs:
           patch-syntax: |
             = /version => "1.0.1"
             + /author => "${{ env.name }}"
-            = /docker => "$NOW"
+            = /docker => $NOW
 
       - name: Login to azure container registry
         uses: azure/docker-login@v1
