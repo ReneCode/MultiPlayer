@@ -25,9 +25,6 @@ jobs:
         # https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows
         run: echo "NOW=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Echo the date
-        run: echo "${NOW}" 
-        
       - name: User npm ${{matrix.node-version}}
         uses: actions/setup-node@v1
         with:
@@ -35,15 +32,11 @@ jobs:
 
       - name: Patch files
         uses: onlyutkarsh/patch-files-action@v1.0.1
-        env: 
-          date: ${NOW}
-          datum: "${NOW}"
         with:
           files: |
             ./**/config.json
           patch-syntax: |
-            + /version => "${{ env.NOW }}"
-            = /docker => "${{ env.date }}"
+            = /version => "${{ env.NOW }}"
 
       - name: Login to azure container registry
         uses: azure/docker-login@v1

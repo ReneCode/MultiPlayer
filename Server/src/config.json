@@ -1,4 +1,4 @@
 {
-  "version": "1.0",
-  "docker": "hallo"
+  "name": "mpgame-server",
+  "version": "0.0.0.1"
 }
