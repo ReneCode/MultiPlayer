@@ -30,13 +30,16 @@ jobs:
 
       - name: Patch files
         uses: onlyutkarsh/patch-files-action@v1.0.1
+        env: 
+          date: '$NOW'
+          datum: "$NOW"
         with:
           files: |
             ./**/config.json
           patch-syntax: |
             = /version => "1.0.1"
-            + /author => "${{ env.name }}"
-            = /docker => $NOW
+            + /author => "${{ env.datum }}"
+            = /docker => "${{ env.data }}"
 
       - name: Login to azure container registry
         uses: azure/docker-login@v1
