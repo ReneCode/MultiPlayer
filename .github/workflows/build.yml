@@ -38,13 +38,14 @@ jobs:
         env: 
           date: ${NOW}
           datum: "${NOW}"
+          version: "3.9.3.1"
         with:
           files: |
             ./**/config.json
           patch-syntax: |
-            = /version => ${NOW}
-            + /author => "${{ env.datum }}"
-            = /docker => "${{ env.date }}"
+            = /version => ${{ env.version }}
+            + /author => "${{ env.NOW }}"
+            = /docker => "${{ ${NOW} }}"
 
       - name: Login to azure container registry
         uses: azure/docker-login@v1
