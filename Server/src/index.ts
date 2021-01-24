@@ -4,6 +4,7 @@ const WSServer = require("ws").Server;
 const app = require("./http-server");
 import WebSockerServer from "./WebSocketServer";
 
+// https://docs.microsoft.com/en-us/azure/azure-monitor/app/nodejs
 const appInsights = require("applicationinsights");
 appInsights.setup().start();
 const logClient = appInsights.defaultClient;

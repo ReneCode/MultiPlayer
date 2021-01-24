@@ -6,7 +6,8 @@ const morgan = require("morgan");
 const http = require("http");
 const https = require("https");
 
-import gamesRouter from "./routes/gamesRouter";
+import { gamesRouter } from "./routes/gamesRouter";
+import { versionRouter } from "./routes/versionRouter";
 
 require("dotenv").config();
 const app = express();
@@ -28,11 +29,8 @@ app.use(cors());
 
 app.use(morgan("tiny", {}));
 
-app.get("/version", (req: Request, res: Response) => {
-  res.send(`version: x, env: ${process.env.NODE_ENV}`);
-});
-
 app.use("/games", gamesRouter);
+app.use("/version", versionRouter);
 
 app.get("/", (req: any, res: any) => {
   res.send("hi, multi-player server is running");
