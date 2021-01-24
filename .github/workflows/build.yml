@@ -45,7 +45,7 @@ jobs:
           patch-syntax: |
             = /version => ${{ env.version }}
             + /author => "${{ env.NOW }}"
-            = /docker => "${{ ${NOW} }}"
+            = /docker => "${{ NOW }}"
 
       - name: Login to azure container registry
         uses: azure/docker-login@v1
