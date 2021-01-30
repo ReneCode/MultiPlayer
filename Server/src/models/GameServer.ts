@@ -1,8 +1,9 @@
 import Randomize from "./Randomize";
-import GameBase from "./Games/GameBase";
-import GameTicTacToe from "./Games/GameTicTacToe";
-import GameFiveInARow from "./Games/GameFiveInARow";
-import GameNobodyIsPerfect from "./Games/nobodyIsPerfect/GameNobodyIsPerfect";
+import GameBase from "./GameBase";
+import GameTicTacToe from "./GameTicTacToe/GameTicTacToe";
+import GameFiveInARow from "./GameFiveInARow/GameFiveInARow";
+import GameNobodyIsPerfect from "./GameNobodyIsPerfect/GameNobodyIsPerfect";
+import GameSet from "./GameSet/GameSet";
 
 type Connection = any;
 type PlayerId = string;
@@ -15,10 +16,12 @@ class GameServer {
   readonly TicTacToe_Name = "Tic Tac Toe";
   readonly FiveInARow_Name = "Five in a row";
   readonly NobodysPerfect_Name = "Nobody's perfect";
+  readonly Set_Name = "Set";
   readonly availiableGames = [
     this.TicTacToe_Name,
     this.FiveInARow_Name,
     this.NobodysPerfect_Name,
+    this.Set_Name,
   ];
 
   constructor() {}
@@ -81,6 +84,11 @@ class GameServer {
 
       case this.NobodysPerfect_Name:
         game = new GameNobodyIsPerfect();
+        game.cmdInit();
+        break;
+
+      case this.Set_Name:
+        game = new GameSet();
         game.cmdInit();
         break;
 

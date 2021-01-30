@@ -27,7 +27,7 @@ yellow: 21..40,1..20,121,122,123,124
 green:  31..40,1..30,131,132,133,134
 */
 
-import GameBase from "./GameBase";
+import GameBase from "../GameBase";
 import Randomize from "../Randomize";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
 

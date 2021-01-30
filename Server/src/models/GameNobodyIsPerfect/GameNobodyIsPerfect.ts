@@ -2,8 +2,8 @@ const fetch = require("node-fetch");
 
 import GameBase from "../GameBase";
 import { Machine, interpret, Interpreter } from "xstate";
-import Player from "../../Player";
-import Randomize from "../../Randomize";
+import Player from "../Player";
+import Randomize from "../Randomize";
 
 const SCORE_VOTED_RIGHT = 2;
 const SCORE_VOTED_FROM_OTHER = 3;

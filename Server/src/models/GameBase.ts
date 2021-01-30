@@ -1,7 +1,7 @@
 const colors = require("colors");
 
-import Player from "../Player";
-import Randomize from "../Randomize";
+import Player from "./Player";
+import Randomize from "./Randomize";
 
 const WS_OPEN = 1;
 

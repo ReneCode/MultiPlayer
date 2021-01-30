@@ -1,4 +1,4 @@
-import DtoGameBase from "./DtoGameBase";
+import DtoGameBase from "../DtoGameBase";
 
 interface DtoGameTicTacToe extends DtoGameBase {
   board: any[];

@@ -1,4 +1,4 @@
-import GameBase from "./GameBase";
+import GameBase from "../GameBase";
 import { Machine, interpret, Interpreter } from "xstate";
 import Randomize from "../Randomize";
 
