@@ -1,6 +1,6 @@
 import Randomize from "./Randomize";
 
-class Player {
+export class Player {
   id: string;
   ws: any;
   name: string;
@@ -15,4 +15,9 @@ class Player {
   }
 }
 
-export default Player;
+export interface DtoPlayer {
+  id: string;
+  name: string;
+  score: number;
+  color: string;
+}

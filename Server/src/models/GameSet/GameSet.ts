@@ -1,11 +1,13 @@
 const fetch = require("node-fetch");
 
 import GameBase from "../GameBase";
+import { DtoGameSet } from "./DtoGameSet";
 import { Machine, interpret, Interpreter } from "xstate";
-import Player from "../Player";
+import { Player } from "../Player";
 import Randomize from "../Randomize";
 
-class GameSet extends GameBase {
+export class GameSet extends GameBase {
+  board = [];
   constructor() {
     super();
   }
@@ -14,7 +16,7 @@ class GameSet extends GameBase {
     return "Set";
   }
 
-  getGame() {
+  getGame(): DtoGameSet {
     const players = this.players.map((p) => {
       return {
         id: p.id,
@@ -24,7 +26,9 @@ class GameSet extends GameBase {
       };
     });
     return {
+      gameId: this.gameId,
       name: GameSet.getName(),
+      board: this.board,
       players: players,
     };
   }
@@ -38,5 +42,3 @@ class GameSet extends GameBase {
     this.sendUpdate();
   }
 }
-
-export default GameSet;

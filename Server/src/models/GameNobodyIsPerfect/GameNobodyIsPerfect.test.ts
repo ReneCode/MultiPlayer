@@ -40,7 +40,7 @@ describe("GameNobodyIsPerfect", () => {
     expect(g.state).toBe("pickQuestion");
     expect(g.players[0]).toHaveProperty("master", true);
     expect(g.players[1]).toHaveProperty("master", false);
-    expect(g.players[1]).toHaveProperty("master", false);
+    expect(g.players[2]).toHaveProperty("master", false);
 
     const questionText = "what is the aim of life?";
     const answerOk = "42";

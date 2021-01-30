@@ -3,7 +3,7 @@ import GameBase from "./GameBase";
 import GameTicTacToe from "./GameTicTacToe/GameTicTacToe";
 import GameFiveInARow from "./GameFiveInARow/GameFiveInARow";
 import GameNobodyIsPerfect from "./GameNobodyIsPerfect/GameNobodyIsPerfect";
-import GameSet from "./GameSet/GameSet";
+import { GameSet } from "./GameSet/GameSet";
 
 type Connection = any;
 type PlayerId = string;
