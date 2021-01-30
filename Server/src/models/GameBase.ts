@@ -88,14 +88,7 @@ class GameBase {
   // --------------
 
   public sendUpdate() {
-    const players = this.players.map((player) => {
-      return {
-        id: player.id,
-        name: player.name,
-        score: player.score,
-        color: player.color,
-      };
-    });
+    const players = this.players.map((player) => player.getDtoPlayer());
     const message = {
       cmd: "GAME_UPDATE",
       gameId: this.gameId,

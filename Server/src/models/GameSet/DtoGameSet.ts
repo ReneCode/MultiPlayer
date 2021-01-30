@@ -10,5 +10,6 @@ export type GameSetCard = {
 
 export interface DtoGameSet extends DtoGameBase {
   board: GameSetCard[];
+  pickedCards: number[];
   players: DtoPlayer[];
 }
