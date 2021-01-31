@@ -1,4 +1,4 @@
-import DtoGameBase from "../model/DtoGameBase";
+import DtoGameBase from "../../model/DtoGameBase";
 
 interface DtoGameFiveInARow extends DtoGameBase {
   board: number[][];

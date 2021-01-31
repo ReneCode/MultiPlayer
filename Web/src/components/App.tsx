@@ -3,10 +3,10 @@ import styled from "styled-components";
 
 // import "./App.css";
 import { useParams, useHistory } from "react-router";
-import TicTacToe from "../TicTacToe/TicTacToe";
+import TicTacToe from "./TicTacToe/TicTacToe";
 import WebSocketPingPong from "./WebSocketPingPong";
 import { Player } from "../model/Player";
-import FiveInARow from "../FiveInARow/FiveInARow";
+import FiveInARow from "./FiveInARow/FiveInARow";
 import NobodyIsPerfect from "./NobodyIsPerfect/NobodyIsPerfect";
 import GameSet from "./GameSet/GameSet";
 import GameNameList from "./GameNameList";
@@ -136,7 +136,12 @@ const App: React.FC = () => {
 
     case "Set":
       gameComponent = (
-        <GameSet game={game} playerId={playerId} sendMessage={sendMessage} />
+        <GameSet
+          game={game}
+          players={players}
+          playerId={playerId}
+          sendMessage={sendMessage}
+        />
       );
       break;
   }

@@ -1,18 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
-import { Player } from "../model/Player";
-import PlayerList from "../components/PlayerList";
+import { Player } from "../../model/Player";
+import PlayerList from "../PlayerList";
 
-const GameContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-`;
-
-const LeftSide = styled.div`
-  width: 240px;
-`;
+import { GameContainer, LeftSide, Button } from "../styledComponents";
 
 const RightSide = styled.div`
   margin-top: 10px;
@@ -41,11 +33,6 @@ const Cell = styled.div`
   border-radius: 15px;
   animation: ${(props) =>
     props.won ? "won 1.2s infinite" : props.lastmove ? "lastmove 2s 3" : ""};
-`;
-
-const Button = styled.button`
-  font-size: 1.2rem;
-  margin: 0.5rem;
 `;
 
 type Props = {

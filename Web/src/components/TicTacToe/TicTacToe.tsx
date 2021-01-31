@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Board, Cell, Button } from "../components/style";
+import { Board, Cell, Button } from "../style";
 import DtoGameTicTacToe from "./DtoGameTicTacToe";
-import { Player } from "../model/Player";
-import PlayersTurn from "../components/PlayersTurn";
+import { Player } from "../../model/Player";
+import PlayersTurn from "../PlayersTurn";
 
 const GameContainer = styled.div`
   display: flex;
