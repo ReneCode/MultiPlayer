@@ -109,7 +109,7 @@ class GameBase {
   }
 
   private sendMessageToClients(message: any, clients: any[]) {
-    console.log(colors.messageOut(message.cmd));
+    // console.log(colors.messageOut(message.cmd));
     // console.log("sendMessage:", message);
 
     const messageString = JSON.stringify(message);

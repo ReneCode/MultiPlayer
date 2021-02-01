@@ -38,6 +38,11 @@ type Props = {
 };
 
 const Card: React.FC<Props> = ({ card, selected, onClick }) => {
+  if (!card) {
+    return (
+      <CardContainer selected={selected} onClick={onClick}></CardContainer>
+    );
+  }
   const { color } = mapCardProps(card);
   const pics = new Array(card.count).fill(1);
   return (

@@ -28,16 +28,15 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     console.log(h);
     if (h.length === 3) {
       sendMessage({ cmd: "PICK_TUPLE", cards: h });
-      setCards(h);
+      // h = [];
 
-      setTimeout(() => {
-        console.log(">>> add cards");
-        sendMessage({ cmd: "ADD_CARDS" });
-        setCards([]);
-      }, 2000);
-    } else {
-      setCards(h);
+      // setTimeout(() => {
+      //   console.log(">>> add cards");
+      //   sendMessage({ cmd: "ADD_CARDS" });
+      //   setCards([]);
+      // }, 2000);
     }
+    setCards(h);
   };
 
   return (
@@ -49,9 +48,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
             selected={cards.includes(index)}
             card={card}
             onClick={() => onClickCard(index)}
-          >
-            {card.color}
-          </Card>
+          ></Card>
         );
       })}
     </CardContainer>
