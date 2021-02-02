@@ -15,11 +15,12 @@ const machineConfiguration = {
       on: {
         START: {
           target: "searchTuple",
-          actions: ["doStart"],
+          actions: ["doStart", "doSendUpdate"],
         },
       },
     },
     searchTuple: {
+      entry: "doSendUpdate",
       on: {
         PICK_TUPLE: {
           actions: ["doPickTuple"],
@@ -29,6 +30,7 @@ const machineConfiguration = {
     },
     showTuple: {
       entry: send("REMOVE_TUPLE", { delay: 2000 }),
+      // "enterShowTuple",
       on: {
         REMOVE_TUPLE: {
           actions: ["doRemoveTuple", "doSendUpdate"],
@@ -40,7 +42,7 @@ const machineConfiguration = {
       entry: send("ADD_CARDS", { delay: 1000 }),
       on: {
         ADD_CARDS: {
-          actions: ["doAddCards", "doSendUpdate"],
+          actions: ["doAddCards"],
           target: "addCards",
         },
       },
@@ -72,6 +74,7 @@ export class GameSet extends GameBase {
         doPickTuple: this.doPickTuple.bind(this),
         doRemoveTuple: this.doRemoveTuple.bind(this),
         doAddCards: this.doAddCards.bind(this),
+        enterShowTuple: this.enterShowTulpe.bind(this),
       },
     };
     this.service = interpret(
@@ -116,8 +119,12 @@ export class GameSet extends GameBase {
     this.sendUpdate();
   }
 
+  private enterShowTulpe() {
+    console.log(">>> enterShowTuple ");
+    this.service.send("REMOVE_TUPLE", { delay: 2000 });
+  }
+
   private doSendUpdate() {
-    console.log("<<< sendUpdate");
     this.sendUpdate();
   }
 
@@ -158,6 +165,7 @@ export class GameSet extends GameBase {
     });
     if (valid) {
       this.pickedTuple = tuple.sort();
+      console.log("---- correct tuple :-) ---- ");
       this.service.send("CORRECT_TUPLE");
     }
   }
@@ -166,7 +174,7 @@ export class GameSet extends GameBase {
     this.pickedTuple.forEach((idx) => {
       this.board[idx] = undefined;
     });
-    this.sendUpdate();
+    // this.sendUpdate();
   }
 
   /**
@@ -175,7 +183,6 @@ export class GameSet extends GameBase {
    * - at least one valid tuple on the board
    */
   private doAddCards() {
-    console.log("<<< doAddCards", this.allCards.length);
     let finished = false;
 
     const addThreeCards = () => {
@@ -221,7 +228,6 @@ export class GameSet extends GameBase {
       }, 0);
     };
 
-    console.log("<< count:", countCards, this.board);
     while (countCards() < 12) {
       const added = addThreeCards();
     }
@@ -253,7 +259,7 @@ export class GameSet extends GameBase {
       });
     });
     if (!skipShuffle) {
-      this.allCards = Randomize.shuffle(this.allCards);
+      // this.allCards = Randomize.shuffle(this.allCards);
     }
   }
 

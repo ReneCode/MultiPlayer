@@ -28,7 +28,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     console.log(h);
     if (h.length === 3) {
       sendMessage({ cmd: "PICK_TUPLE", cards: h });
-      // h = [];
+      h = [];
 
       // setTimeout(() => {
       //   console.log(">>> add cards");
