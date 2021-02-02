@@ -1,12 +1,10 @@
-import DtoGameBase from "../model/DtoGameBase";
+import DtoGameBase from "../DtoGameBase";
 
 interface DtoGameFiveInARow extends DtoGameBase {
-  board: number[][];
+  board: any[];
   wonPlayerId: string;
   currentPlayerId: string;
-  lastMovedCell: { col: number; row: number };
   state: "started" | "finished" | "idle";
-  wonCells: string[];
 }
 
 export default DtoGameFiveInARow;

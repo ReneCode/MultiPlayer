@@ -2,8 +2,8 @@ const fetch = require("node-fetch");
 
 import GameBase from "../GameBase";
 import { Machine, interpret, Interpreter } from "xstate";
-import Player from "../../Player";
-import Randomize from "../../Randomize";
+import { Player } from "../Player";
+import Randomize from "../Randomize";
 
 const SCORE_VOTED_RIGHT = 2;
 const SCORE_VOTED_FROM_OTHER = 3;
@@ -148,9 +148,6 @@ class GameNobodyIsPerfect extends GameBase {
 
   public addPlayer(ws: any, playerId: string) {
     const player = new GamePlayer(ws, playerId);
-    if (this.players.length === 0) {
-      player.master = true;
-    }
     player.color = this.getUniquePlayerColor();
     this.players.push(player);
   }

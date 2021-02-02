@@ -31,26 +31,27 @@ const PlayerList: React.FC<Props> = ({
     <div>
       <h3>Player List</h3>
       <Table>
-        {players.map((player) => {
-          console.log(">>", player);
-          return (
-            <tr>
-              <td>
-                <PlayerName
-                  key={player.id}
-                  player={player}
-                  me={player.id === myPlayerId}
-                />
-              </td>
-              {showScore && <Score>{player.score}</Score>}
-              <td>
-                {currentTurnPlayerId === player.id ? (
-                  <Waiting color={player.color} />
-                ) : null}
-              </td>
-            </tr>
-          );
-        })}
+        <tbody>
+          {players.map((player) => {
+            return (
+              <tr key={player.id}>
+                <td>
+                  <PlayerName
+                    key={player.id}
+                    player={player}
+                    me={player.id === myPlayerId}
+                  />
+                </td>
+                {showScore && <Score>{player.score}</Score>}
+                <td>
+                  {currentTurnPlayerId === player.id ? (
+                    <Waiting color={player.color} />
+                  ) : null}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
       </Table>
     </div>
   );

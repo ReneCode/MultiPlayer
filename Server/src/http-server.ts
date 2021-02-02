@@ -5,6 +5,12 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const http = require("http");
 const https = require("https");
+const colors = require("colors");
+import gameServer from "./models/GameServer";
+
+colors.setTheme({
+  error: ["red"],
+});
 
 import { gamesRouter } from "./routes/gamesRouter";
 import { versionRouter } from "./routes/versionRouter";
@@ -39,6 +45,7 @@ app.get("/", (req: any, res: any) => {
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
+  console.error(colors.error(err));
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 

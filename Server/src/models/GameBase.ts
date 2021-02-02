@@ -1,7 +1,7 @@
 const colors = require("colors");
 
-import Player from "../Player";
-import Randomize from "../Randomize";
+import { Player } from "./Player";
+import Randomize from "./Randomize";
 
 const WS_OPEN = 1;
 
@@ -88,14 +88,7 @@ class GameBase {
   // --------------
 
   public sendUpdate() {
-    const players = this.players.map((player) => {
-      return {
-        id: player.id,
-        name: player.name,
-        score: player.score,
-        color: player.color,
-      };
-    });
+    const players = this.players.map((player) => player.getDtoPlayer());
     const message = {
       cmd: "GAME_UPDATE",
       gameId: this.gameId,
@@ -116,7 +109,7 @@ class GameBase {
   }
 
   private sendMessageToClients(message: any, clients: any[]) {
-    console.log(colors.messageOut(message.cmd));
+    // console.log(colors.messageOut(message.cmd));
     // console.log("sendMessage:", message);
 
     const messageString = JSON.stringify(message);
