@@ -1,5 +1,4 @@
 import React from "react";
-import { DtoGameSet, GameSetCard } from "./DtoGameSet";
 
 import styled from "styled-components";
 
@@ -87,20 +86,6 @@ const Card: React.FC<Props> = ({ fill, shape, color }) => {
       break;
   }
   return <PictureContainer>{picture}</PictureContainer>;
-};
-
-const mapColor = (color: number) => {
-  switch (color) {
-    case 1:
-      return "red";
-    case 2:
-      return "green";
-    case 3:
-      return "blue";
-
-    default:
-      return "black";
-  }
 };
 
 const mapColorFill = (color: number, fill: number) => {

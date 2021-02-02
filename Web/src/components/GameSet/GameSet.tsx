@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 
 import { GameContainer, LeftSide, Button } from "../styledComponents";
 import PlayerList from "../PlayerList";

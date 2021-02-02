@@ -1,5 +1,5 @@
 import React from "react";
-import { DtoGameSet, GameSetCard } from "./DtoGameSet";
+import { GameSetCard } from "./DtoGameSet";
 
 import styled from "styled-components";
 import Picture from "./Picture";
@@ -52,7 +52,6 @@ const Card: React.FC<Props> = ({ card, selected, showFrame, onClick }) => {
       ></CardContainer>
     );
   }
-  const { color } = mapCardProps(card);
   const pics = new Array(card.count).fill(1);
   return (
     <CardContainer selected={selected} frame={showFrame} onClick={onClick}>
@@ -68,23 +67,6 @@ const Card: React.FC<Props> = ({ card, selected, showFrame, onClick }) => {
       })}
     </CardContainer>
   );
-};
-
-const mapCardProps = (card: GameSetCard) => {
-  const props = { color: "white" };
-  switch (card.color) {
-    case 1:
-      props.color = "red";
-      break;
-    case 2:
-      props.color = "green";
-      break;
-    case 3:
-      props.color = "blue";
-      break;
-  }
-
-  return props;
 };
 
 export default Card;

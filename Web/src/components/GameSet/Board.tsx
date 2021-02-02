@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DtoGameSet, GameSetCard } from "./DtoGameSet";
+import { DtoGameSet } from "./DtoGameSet";
 
 import styled from "styled-components";
 import Card from "./Card";
@@ -23,7 +23,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     // if three cards are picked than send them to the server
     let h = cards;
     if (cards.includes(index)) {
-      h = cards.filter((c) => c != index);
+      h = cards.filter((c) => c !== index);
     } else {
       h = cards.concat(index);
     }

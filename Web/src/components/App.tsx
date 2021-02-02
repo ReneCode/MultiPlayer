@@ -9,7 +9,6 @@ import { Player } from "../model/Player";
 import FiveInARow from "./FiveInARow/FiveInARow";
 import NobodyIsPerfect from "./NobodyIsPerfect/NobodyIsPerfect";
 import GameSet from "./GameSet/GameSet";
-import GameNameList from "./GameNameList";
 
 const WS_SERVER = process.env.REACT_APP_WS_SERVER;
 if (!WS_SERVER) {
