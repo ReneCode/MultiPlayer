@@ -15,7 +15,7 @@ const machineConfiguration = {
       on: {
         START: {
           target: "searchTuple",
-          actions: ["doStart", "doSendUpdate"],
+          actions: "doStart",
         },
       },
     },
@@ -23,31 +23,25 @@ const machineConfiguration = {
       entry: "doSendUpdate",
       on: {
         PICK_TUPLE: {
-          actions: ["doPickTuple"],
+          actions: "doPickTuple",
         },
-        CORRECT_TUPLE: "showTuple",
+        CORRECT_TUPLE: "showPickedCards",
       },
     },
-    showTuple: {
-      entry: send("REMOVE_TUPLE", { delay: 2000 }),
-      // "enterShowTuple",
-      on: {
-        REMOVE_TUPLE: {
-          actions: ["doRemoveTuple", "doSendUpdate"],
-          target: "removedTuple",
-        },
+    showPickedCards: {
+      entry: "doSendUpdate",
+      after: {
+        SHOW_CORRECT_TUPLE_DELAY: "showRemovedCards",
       },
     },
-    removedTuple: {
-      entry: send("ADD_CARDS", { delay: 1000 }),
-      on: {
-        ADD_CARDS: {
-          actions: ["doAddCards"],
-          target: "addCards",
-        },
+    showRemovedCards: {
+      entry: ["doRemoveTuple", "doSendUpdate"],
+      after: {
+        SHOW_REMOVED_CARDS_DELAY: "addCards",
       },
     },
     addCards: {
+      entry: "doAddCards",
       on: {
         CONTINUE: "searchTuple",
         FINISH: "finish",
@@ -74,7 +68,10 @@ export class GameSet extends GameBase {
         doPickTuple: this.doPickTuple.bind(this),
         doRemoveTuple: this.doRemoveTuple.bind(this),
         doAddCards: this.doAddCards.bind(this),
-        enterShowTuple: this.enterShowTulpe.bind(this),
+      },
+      delays: {
+        SHOW_CORRECT_TUPLE_DELAY: () => 2000,
+        SHOW_REMOVED_CARDS_DELAY: () => 1000,
       },
     };
     this.service = interpret(
@@ -108,20 +105,10 @@ export class GameSet extends GameBase {
         this.service.send("PICK_TUPLE", message);
         break;
 
-      case "ADD_CARDS":
-        this.service.send("ADD_CARDS");
-        break;
-
       default:
         console.log("bad message:", message.cmd);
         return;
     }
-    this.sendUpdate();
-  }
-
-  private enterShowTulpe() {
-    console.log(">>> enterShowTuple ");
-    this.service.send("REMOVE_TUPLE", { delay: 2000 });
   }
 
   private doSendUpdate() {
@@ -165,7 +152,6 @@ export class GameSet extends GameBase {
     });
     if (valid) {
       this.pickedTuple = tuple.sort();
-      console.log("---- correct tuple :-) ---- ");
       this.service.send("CORRECT_TUPLE");
     }
   }

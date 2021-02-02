@@ -19,22 +19,17 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
   const [cards, setCards] = useState([] as number[]);
 
   const onClickCard = (index: number) => {
+    // toggle card
+    // if three cards are picked than send them to the server
     let h = cards;
     if (cards.includes(index)) {
       h = cards.filter((c) => c != index);
     } else {
       h = cards.concat(index);
     }
-    console.log(h);
     if (h.length === 3) {
       sendMessage({ cmd: "PICK_TUPLE", cards: h });
       h = [];
-
-      // setTimeout(() => {
-      //   console.log(">>> add cards");
-      //   sendMessage({ cmd: "ADD_CARDS" });
-      //   setCards([]);
-      // }, 2000);
     }
     setCards(h);
   };
@@ -42,9 +37,17 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
   return (
     <CardContainer>
       {game.board.map((card, index) => {
+        let showFrame = false;
+        if (
+          game.state === "showPickedCards" &&
+          game.pickedTuple.includes(index)
+        ) {
+          showFrame = true;
+        }
         return (
           <Card
             key={index}
+            showFrame={showFrame}
             selected={cards.includes(index)}
             card={card}
             onClick={() => onClickCard(index)}
