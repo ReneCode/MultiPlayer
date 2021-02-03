@@ -44,13 +44,7 @@ type Props = {
 
 const Card: React.FC<Props> = ({ card, selected, showFrame, onClick }) => {
   if (!card) {
-    return (
-      <CardContainer
-        selected={selected}
-        frame={false}
-        onClick={onClick}
-      ></CardContainer>
-    );
+    return <div></div>;
   }
   const pics = new Array(card.count).fill(1);
   return (
