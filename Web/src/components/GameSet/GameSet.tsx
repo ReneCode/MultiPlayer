@@ -1,10 +1,11 @@
 import React from "react";
 
-import { GameContainer, LeftSide, Button } from "../styledComponents";
+import { GameContainer, LeftSide } from "../styledComponents";
 import PlayerList from "../PlayerList";
 import { Player } from "../../model/Player";
 import Board from "./Board";
 import { DtoGameSet } from "./DtoGameSet";
+import { Button } from "../style";
 
 type Props = {
   playerId: string;

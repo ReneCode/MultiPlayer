@@ -3,6 +3,8 @@ import { DtoGameSet } from "./DtoGameSet";
 
 import styled from "styled-components";
 import Card from "./Card";
+import { Button } from "../style";
+import Dialog from "./Dialog";
 
 const CardContainer = styled.div`
   margin-top: 10px;
@@ -34,8 +36,25 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     setCards(h);
   };
 
+  const onStart = () => {
+    sendMessage({
+      cmd: "GAME_START",
+    });
+  };
+
+  let component = null;
+  if (game.state === "finish") {
+    component = (
+      <Dialog>
+        <h3>Finish</h3>
+        <Button onClick={onStart}>Start new Game</Button>
+      </Dialog>
+    );
+  }
+
   return (
     <CardContainer>
+      {component}
       {game.board.map((card, index) => {
         let showFrame = false;
         if (

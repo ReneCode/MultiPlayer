@@ -48,7 +48,13 @@ const machineConfiguration = {
       },
     },
     finish: {
-      entry: "doFinish",
+      entry: "doSendUpdate",
+      on: {
+        START: {
+          target: "searchTuple",
+          actions: "doStart",
+        },
+      },
     },
   },
 };
@@ -119,11 +125,6 @@ export class GameSet extends GameBase {
     this.initAllCards(skipShuffle);
 
     this.doAddCards();
-    // const count = 12;
-    // this.board = [];
-    // for (let i = 0; i < count && this.allCards.length > 0; i++) {
-    //   this.board.push(this.allCards.shift());
-    // }
   }
 
   private doPickTuple(
@@ -171,15 +172,23 @@ export class GameSet extends GameBase {
   private doAddCards() {
     let finished = false;
 
+    const moreCardsAvilable = () => {
+      return this.allCards.length > 0;
+    };
+
+    const nextFreeIndex = () => {
+      return this.board.findIndex((c) => c === undefined);
+    };
+
     const addThreeCards = () => {
       let added = false;
       for (let i = 0; i < 3; i++) {
         if (this.allCards.length > 0) {
           added = true;
           const newCard = this.allCards.shift();
-          if (this.pickedTuple.length > 0) {
-            const idx = this.pickedTuple.shift();
-            this.board[idx] = newCard;
+          const freeIdx = nextFreeIndex();
+          if (freeIdx >= 0) {
+            this.board[freeIdx] = newCard;
           } else {
             this.board.push(newCard);
           }
@@ -196,6 +205,7 @@ export class GameSet extends GameBase {
         for (let j = i + 1; !valid && j < len - 1; j++) {
           for (let k = j + 1; !valid && k < len; k++) {
             if (this.validTuple([i, j, k])) {
+              console.log("valid", i, j, k);
               valid = true;
             }
           }
@@ -214,15 +224,21 @@ export class GameSet extends GameBase {
       }, 0);
     };
 
-    while (countCards() < 12) {
-      const added = addThreeCards();
+    let canAddCards = true;
+    while (canAddCards && countCards() < 12) {
+      canAddCards = addThreeCards();
     }
 
-    const valid = validTupleOnBoard();
+    let validTupleExists = validTupleOnBoard();
+    while (!validTupleExists && moreCardsAvilable()) {
+      canAddCards = addThreeCards();
+      validTupleExists = validTupleOnBoard();
+    }
 
-    if (valid) {
+    if (validTupleExists) {
       this.service.send("CONTINUE");
     } else {
+      console.log("finish");
       this.service.send("FINISH");
     }
     this.pickedTuple = [];
@@ -245,7 +261,7 @@ export class GameSet extends GameBase {
       });
     });
     if (!skipShuffle) {
-      // this.allCards = Randomize.shuffle(this.allCards);
+      this.allCards = Randomize.shuffle(this.allCards);
     }
   }
 

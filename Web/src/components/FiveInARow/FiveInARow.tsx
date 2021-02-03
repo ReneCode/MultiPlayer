@@ -4,7 +4,8 @@ import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../../model/Player";
 import PlayerList from "../PlayerList";
 
-import { GameContainer, LeftSide, Button } from "../styledComponents";
+import { GameContainer, LeftSide } from "../styledComponents";
+import { Button } from "../style";
 
 const RightSide = styled.div`
   margin-top: 10px;
