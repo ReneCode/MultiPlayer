@@ -65,7 +65,15 @@ export class GameSet extends GameBase {
   board: GameSetCard[] = [];
   service: Interpreter<any>;
 
-  constructor() {
+  constructor(
+    {
+      showCorrectTupleDelay,
+      showRemovedCardsDelay,
+    }: {
+      showCorrectTupleDelay: number;
+      showRemovedCardsDelay: number;
+    } = { showCorrectTupleDelay: 4000, showRemovedCardsDelay: 1000 }
+  ) {
     super();
     const machineOptions = {
       actions: {
@@ -76,8 +84,8 @@ export class GameSet extends GameBase {
         doAddCards: this.doAddCards.bind(this),
       },
       delays: {
-        SHOW_CORRECT_TUPLE_DELAY: () => 2000,
-        SHOW_REMOVED_CARDS_DELAY: () => 1000,
+        SHOW_CORRECT_TUPLE_DELAY: () => showCorrectTupleDelay,
+        SHOW_REMOVED_CARDS_DELAY: () => showRemovedCardsDelay,
       },
     };
     this.service = interpret(
@@ -125,6 +133,9 @@ export class GameSet extends GameBase {
     this.initAllCards(skipShuffle);
 
     this.doAddCards();
+    this.players.forEach((player) => {
+      player.score = 0;
+    });
   }
 
   private doPickTuple(
@@ -154,6 +165,8 @@ export class GameSet extends GameBase {
     if (valid) {
       this.pickedTuple = tuple.sort();
       this.service.send("CORRECT_TUPLE");
+    } else {
+      this.sendUpdate();
     }
   }
 
@@ -205,7 +218,7 @@ export class GameSet extends GameBase {
         for (let j = i + 1; !valid && j < len - 1; j++) {
           for (let k = j + 1; !valid && k < len; k++) {
             if (this.validTuple([i, j, k])) {
-              console.log("valid", i, j, k);
+              // console.log("valid", i, j, k);
               valid = true;
             }
           }
@@ -238,7 +251,6 @@ export class GameSet extends GameBase {
     if (validTupleExists) {
       this.service.send("CONTINUE");
     } else {
-      console.log("finish");
       this.service.send("FINISH");
     }
     this.pickedTuple = [];
