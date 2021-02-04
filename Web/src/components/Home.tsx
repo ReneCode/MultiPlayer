@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import GameNameList from "./GameNameList";
 import { useHistory } from "react-router";
+import GitHubCorner from "./GitHubCorner";
 
 const API_SERVER = process.env.REACT_APP_API_SERVER;
 if (!API_SERVER) {
@@ -42,10 +43,13 @@ const Home = () => {
   };
 
   return (
-    <GameNameList
-      gameList={gameNames}
-      onClick={handleCreateGame}
-    ></GameNameList>
+    <React.Fragment>
+      <GameNameList
+        gameList={gameNames}
+        onClick={handleCreateGame}
+      ></GameNameList>
+      <GitHubCorner appearance="light" />
+    </React.Fragment>
   );
 };
 
