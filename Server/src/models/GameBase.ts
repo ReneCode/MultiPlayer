@@ -79,25 +79,29 @@ class GameBase {
     throw new Error("start not implemented");
   }
 
-  sendMessageToAllPlayers(message: object) {
-    const sendMessage = { ...message, gameId: this.gameId };
-    const clients = this.players.map((player) => player.ws);
-    this.sendMessageToClients(sendMessage, clients);
-  }
-
   // --------------
 
-  public sendUpdate() {
+  public sendUpdate({
+    toPlayerId,
+    message,
+  }: { toPlayerId?: string; message?: object } = {}) {
     const players = this.players.map((player) => player.getDtoPlayer());
-    const message = {
+    let msg: object = {
       cmd: "GAME_UPDATE",
       gameId: this.gameId,
       players: players,
       game: this.getGame(),
     };
+    if (message) {
+      msg = message;
+    }
+    let toPlayerIds = this.players;
+    if (toPlayerId) {
+      toPlayerIds = this.players.filter((player) => player.id === toPlayerId);
+    }
 
-    const clients = this.players.map((player) => player.ws);
-    this.sendMessageToClients(message, clients);
+    const clients = toPlayerIds.map((player) => player.ws);
+    this.sendMessageToClients(msg, clients);
   }
 
   getPlayerIds(): string[] {

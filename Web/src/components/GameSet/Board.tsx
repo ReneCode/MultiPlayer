@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { DtoGameSet } from "./DtoGameSet";
 
 import styled from "styled-components";
 import Card from "./Card";
 import { Button } from "../style";
 import Dialog from "./Dialog";
+
+import { Sound, noteFrequencies } from "../../Sound";
 
 const CardContainer = styled.div`
   margin-top: 10px;
@@ -16,18 +18,23 @@ type Props = {
   game: DtoGameSet;
   sendMessage: (message: any) => void;
 };
-
+const createSound = () => {
+  return new Sound();
+};
 const Board: React.FC<Props> = ({ game, sendMessage }) => {
   const [cards, setCards] = useState([] as number[]);
+  const sound = useMemo(createSound, []);
 
   const onClickCard = (index: number) => {
     // toggle card
     // if three cards are picked than send them to the server
     let h = cards;
-    if (cards.includes(index)) {
-      h = cards.filter((c) => c !== index);
-    } else {
+    const addCard = !cards.includes(index);
+    playSound(h.length, addCard);
+    if (addCard) {
       h = cards.concat(index);
+    } else {
+      h = cards.filter((c) => c !== index);
     }
     if (h.length === 3) {
       sendMessage({ cmd: "PICK_TUPLE", cards: h });
@@ -40,6 +47,16 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     sendMessage({
       cmd: "GAME_START",
     });
+  };
+
+  const playSound = (len: number, add: boolean) => {
+    let frequence = 0;
+    if (add) {
+      frequence = noteFrequencies.C6;
+    } else {
+      frequence = noteFrequencies.A5;
+    }
+    sound.playNote(frequence, { length: 0.1 });
   };
 
   let component = null;
