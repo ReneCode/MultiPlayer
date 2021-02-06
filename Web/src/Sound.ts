@@ -148,10 +148,50 @@ export class Sound {
       (window as any).webkitAudioContext)();
   }
 
-  public play(cmd: "on" | "off" | "bad" | "ok") {
+  public play(
+    cmd: "on" | "off" | "bad" | "ok",
+    { volume, delay }: { volume?: number; delay?: number } = {}
+  ) {
+    const playVolume = volume || 0.5;
+    const playDelay = delay || 0;
+
     switch (cmd) {
       case "on":
-        this.playNote(noteFrequencies.C6, { length: 0.1 });
+        this.playNote(noteFrequencies.C6, { volume: playVolume, length: 0.1 });
+        break;
+
+      case "off":
+        this.playNote(noteFrequencies.A5, { volume: playVolume, length: 0.1 });
+        break;
+
+      case "ok":
+        this.playNote(noteFrequencies.Eb5, {
+          length: 0.8,
+          delay: playDelay,
+        });
+        this.playNote(noteFrequencies.G5, {
+          length: 0.8,
+          delay: playDelay + 0.1,
+        });
+        this.playNote(noteFrequencies.Bb5, {
+          length: 0.8,
+          delay: playDelay + 0.2,
+        });
+        this.playNote(noteFrequencies.Eb6, {
+          length: 0.8,
+          delay: playDelay + 0.3,
+        });
+        break;
+
+      case "bad":
+        this.playNote(noteFrequencies.Eb5, {
+          length: 0.8,
+          delay: playDelay,
+        });
+        this.playNote(noteFrequencies.C5, {
+          length: 0.8,
+          delay: playDelay + 0.2,
+        });
         break;
     }
   }
@@ -168,17 +208,17 @@ export class Sound {
 
     const playVolume = volume || 0.5;
     const playLength = length || 0.5;
-    const playWait = delay || 0;
+    const playDelay = delay || 0;
 
     const time: number = this.context.currentTime;
     this.oscillator.frequency.value = value;
     this.gainNode.gain.setValueAtTime(
       playVolume,
-      this.context.currentTime + playWait
+      this.context.currentTime + playDelay
     );
 
-    this.oscillator.start(time + playWait);
-    this.stop(time + playWait, playLength);
+    this.oscillator.start(time + playDelay);
+    this.stop(time + playDelay, playLength);
   }
 
   private init() {

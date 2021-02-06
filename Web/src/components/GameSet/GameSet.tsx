@@ -6,7 +6,7 @@ import { Player } from "../../model/Player";
 import Board from "./Board";
 import { DtoGameSet } from "./DtoGameSet";
 import { Button } from "../style";
-import { noteFrequencies, Sound } from "../../Sound";
+import { Sound } from "../../Sound";
 
 type Props = {
   playerId: string;
@@ -34,38 +34,14 @@ const GameSet: React.FC<Props> = ({
   useEffect(() => {
     switch (message.cmd) {
       case "GOOD_PICK":
-        sound.playNote(noteFrequencies.Eb5, {
-          length: 0.8,
-          delay: 0.5,
-        });
-        sound.playNote(noteFrequencies.G5, {
-          length: 0.8,
-          delay: 0.6,
-        });
-        sound.playNote(noteFrequencies.Bb5, {
-          length: 0.8,
-          delay: 0.7,
-        });
-        sound.playNote(noteFrequencies.Eb6, {
-          length: 0.8,
-          delay: 0.8,
-        });
+        sound.play("ok", { delay: 0.5 });
         break;
 
       case "BAD_PICK":
-        sound.playNote(noteFrequencies.Eb5, {
-          length: 0.8,
-          delay: 0.5,
-        });
-        sound.playNote(noteFrequencies.C5, {
-          length: 0.8,
-          delay: 0.7,
-        });
-
-        console.error("oh, bad pick");
+        sound.play("bad", { delay: 0.5 });
         break;
     }
-  }, [message]);
+  }, [message, sound]);
 
   return (
     <GameContainer>

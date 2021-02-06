@@ -6,7 +6,7 @@ import Card from "./Card";
 import { Button } from "../style";
 import Dialog from "./Dialog";
 
-import { Sound, noteFrequencies } from "../../Sound";
+import { Sound } from "../../Sound";
 
 const CardContainer = styled.div`
   margin-top: 10px;
@@ -30,7 +30,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     // if three cards are picked than send them to the server
     let h = cards;
     const addCard = !cards.includes(index);
-    playSound(h.length, addCard);
+    playSound(addCard);
     if (addCard) {
       h = cards.concat(index);
     } else {
@@ -49,14 +49,12 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     });
   };
 
-  const playSound = (len: number, add: boolean) => {
-    let frequence = 0;
+  const playSound = (add: boolean) => {
     if (add) {
-      frequence = noteFrequencies.C6;
+      sound.play("on");
     } else {
-      frequence = noteFrequencies.A5;
+      sound.play("off");
     }
-    sound.playNote(frequence, { length: 0.1 });
   };
 
   let component = null;
