@@ -3,7 +3,6 @@ const fetch = require("node-fetch");
 import GameBase from "../GameBase";
 import { DtoGameSet, GameSetCard } from "./DtoGameSet";
 import { Machine, interpret, Interpreter, send, actions } from "xstate";
-import { Player } from "../Player";
 import Randomize from "../Randomize";
 
 const machineConfiguration = {
@@ -165,8 +164,15 @@ export class GameSet extends GameBase {
     if (valid) {
       this.pickedTuple = tuple.sort();
       this.service.send("CORRECT_TUPLE");
+      this.sendUpdate({ message: { gameId: this.gameId, cmd: "GOOD_PICK" } });
     } else {
       this.sendUpdate();
+      const badPickMessage = {
+        gameId: this.gameId,
+        cmd: "BAD_PICK",
+        playerId: playerId,
+      };
+      this.sendUpdate({ toPlayerId: playerId, message: badPickMessage });
     }
   }
 

@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const [gameId, setGameId] = useState("");
   const [players, setPlayers] = useState([] as Player[]);
   const [ws, setWs] = useState((undefined as unknown) as WebSocket);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     // routing with gameId
@@ -67,7 +68,7 @@ const App: React.FC = () => {
   };
 
   const handleMessage = (message: any) => {
-    console.log("got message:", message);
+    console.log("got message:", message.cmd);
     switch (message.cmd) {
       case "GAME_UPDATE":
         setPlayers(message.players ? message.players : []);
@@ -97,6 +98,7 @@ const App: React.FC = () => {
         }
         break;
     }
+    setMessage(message);
   };
 
   let gameComponent = null;
@@ -139,6 +141,7 @@ const App: React.FC = () => {
           game={game}
           players={players}
           playerId={playerId}
+          message={message}
           sendMessage={sendMessage}
         />
       );
