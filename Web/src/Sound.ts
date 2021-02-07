@@ -152,7 +152,7 @@ export class Sound {
     cmd: "on" | "off" | "bad" | "ok",
     { volume, delay }: { volume?: number; delay?: number } = {}
   ) {
-    const playVolume = volume || 0.5;
+    const playVolume = volume || 0.2;
     const playDelay = delay || 0;
 
     switch (cmd) {
@@ -166,18 +166,22 @@ export class Sound {
 
       case "ok":
         this.playNote(noteFrequencies.Eb5, {
+          volume: playVolume,
           length: 0.8,
           delay: playDelay,
         });
         this.playNote(noteFrequencies.G5, {
+          volume: playVolume,
           length: 0.8,
           delay: playDelay + 0.1,
         });
         this.playNote(noteFrequencies.Bb5, {
+          volume: playVolume,
           length: 0.8,
           delay: playDelay + 0.2,
         });
         this.playNote(noteFrequencies.Eb6, {
+          volume: playVolume,
           length: 0.8,
           delay: playDelay + 0.3,
         });
@@ -185,10 +189,12 @@ export class Sound {
 
       case "bad":
         this.playNote(noteFrequencies.Eb5, {
+          volume: playVolume,
           length: 0.8,
           delay: playDelay,
         });
         this.playNote(noteFrequencies.C5, {
+          volume: playVolume,
           length: 0.8,
           delay: playDelay + 0.2,
         });
@@ -210,15 +216,14 @@ export class Sound {
     const playLength = length || 0.5;
     const playDelay = delay || 0;
 
-    const time: number = this.context.currentTime;
+    const time: number = this.context.currentTime + playDelay;
     this.oscillator.frequency.value = value;
-    this.gainNode.gain.setValueAtTime(
-      playVolume,
-      this.context.currentTime + playDelay
-    );
 
-    this.oscillator.start(time + playDelay);
-    this.stop(time + playDelay, playLength);
+    // this.gainNode.gain.value = playVolume;
+    this.gainNode.gain.setValueAtTime(playVolume, time);
+
+    this.oscillator.start(time);
+    this.stop(time + playLength);
   }
 
   private init() {
@@ -229,8 +234,8 @@ export class Sound {
     this.oscillator.type = "sawtooth";
   }
 
-  private stop(time: number, length: number) {
-    this.gainNode.gain.exponentialRampToValueAtTime(0.001, time + length);
-    this.oscillator.stop(time + length);
+  private stop(time: number) {
+    this.gainNode.gain.exponentialRampToValueAtTime(0.01, time);
+    this.oscillator.stop(time);
   }
 }

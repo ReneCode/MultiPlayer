@@ -195,17 +195,13 @@ export class GameSet extends GameBase {
       return this.allCards.length > 0;
     };
 
-    const nextFreeIndex = () => {
-      return this.board.findIndex((c) => c === undefined);
-    };
-
     const addThreeCards = () => {
       let added = false;
       for (let i = 0; i < 3; i++) {
         if (this.allCards.length > 0) {
           added = true;
           const newCard = this.allCards.shift();
-          const freeIdx = nextFreeIndex();
+          const freeIdx = this.nextFreeIndexOnBoard();
           if (freeIdx >= 0) {
             this.board[freeIdx] = newCard;
           } else {
@@ -214,23 +210,6 @@ export class GameSet extends GameBase {
         }
       }
       return added;
-    };
-
-    const validTupleOnBoard = () => {
-      const len = this.board.length;
-
-      let valid = false;
-      for (let i = 0; !valid && i < len - 2; i++) {
-        for (let j = i + 1; !valid && j < len - 1; j++) {
-          for (let k = j + 1; !valid && k < len; k++) {
-            if (this.validTuple([i, j, k])) {
-              console.log("valid", i, j, k);
-              valid = true;
-            }
-          }
-        }
-      }
-      return valid;
     };
 
     const countCards = () => {
@@ -248,21 +227,66 @@ export class GameSet extends GameBase {
       canAddCards = addThreeCards();
     }
 
-    let validTupleExists = validTupleOnBoard();
-    while (!validTupleExists && moreCardsAvilable()) {
+    let validTuple = this.findFirstValidTupleOnBoard();
+    while (!validTuple && moreCardsAvilable()) {
       canAddCards = addThreeCards();
-      validTupleExists = validTupleOnBoard();
+      validTuple = this.findFirstValidTupleOnBoard();
     }
 
-    if (validTupleExists) {
+    this.fillGapsOnBoard();
+
+    validTuple = this.findFirstValidTupleOnBoard();
+
+    if (validTuple) {
+      console.log("found valid Tuple:", validTuple);
       this.service.send("CONTINUE");
     } else {
       this.service.send("FINISH");
     }
     this.pickedTuple = [];
+
+    this.checkDuplicateCards();
+  }
+
+  private fillGapsOnBoard() {
+    const countGaps = this.board.reduce((acc, c) => {
+      if (!c) {
+        return acc + 1;
+      } else {
+        return acc;
+      }
+    }, 0);
+    if (countGaps > 0) {
+      // get the last 'countGaps' cards
+      const cardsToMove = [];
+      for (
+        let i = this.board.length - 1;
+        cardsToMove.length < countGaps && i >= 0;
+        i--
+      ) {
+        if (this.board[i]) {
+          cardsToMove.unshift(this.board[i]);
+        }
+      }
+
+      if (cardsToMove.length !== countGaps) {
+        throw new Error("panik");
+      }
+      cardsToMove.forEach((card) => {
+        const freeIndex = this.nextFreeIndexOnBoard();
+        if (freeIndex >= 0) {
+          this.board[freeIndex] = card;
+        }
+      });
+
+      this.board = this.board.slice(0, this.board.length - cardsToMove.length);
+    }
   }
 
   private initAllCards(skipShuffle: boolean) {
+    this.allCards = [];
+    this.pickedTuple = [];
+    this.board = [];
     [1, 2, 3].forEach((shape) => {
       [1, 2, 3].forEach((color) => {
         [1, 2, 3].forEach((count) => {
@@ -322,4 +346,47 @@ export class GameSet extends GameBase {
       equalOrSame(tuple, "fill");
     return valid;
   };
+
+  nextFreeIndexOnBoard() {
+    return this.board.findIndex((c) => c === undefined);
+  }
+
+  findFirstValidTupleOnBoard() {
+    const len = this.board.length;
+
+    let validTuple = undefined;
+    for (let i = 0; !validTuple && i < len - 2; i++) {
+      for (let j = i + 1; !validTuple && j < len - 1; j++) {
+        for (let k = j + 1; !validTuple && k < len; k++) {
+          if (this.validTuple([i, j, k])) {
+            validTuple = [i, j, k];
+          }
+        }
+      }
+    }
+    return validTuple;
+  }
+
+  checkDuplicateCards() {
+    for (let i = 0; i < this.board.length; i++) {
+      const checkCard = this.board[i];
+      if (checkCard) {
+        for (let j = i + 1; j < this.board.length; j++) {
+          const compareCard = this.board[j];
+          if (this.cardsEqual(checkCard, compareCard)) {
+            console.error(">>>> duplicateCards:", i, j, this.board);
+          }
+        }
+      }
+    }
+  }
+
+  cardsEqual(c1: GameSetCard, c2: GameSetCard) {
+    return (
+      c1.color === c2.color &&
+      c1.count === c2.count &&
+      c1.fill === c2.fill &&
+      c1.shape === c2.shape
+    );
+  }
 }
