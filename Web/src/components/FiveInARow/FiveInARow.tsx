@@ -7,6 +7,8 @@ import PlayerList from "../PlayerList";
 import { GameContainer, LeftSide } from "../styledComponents";
 import { Button } from "../style";
 
+import "./FiveInARow.scss";
+
 const RightSide = styled.div`
   margin-top: 10px;
 `;

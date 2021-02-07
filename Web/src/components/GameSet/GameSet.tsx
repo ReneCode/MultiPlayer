@@ -8,6 +8,8 @@ import { DtoGameSet } from "./DtoGameSet";
 import { Button } from "../style";
 import { Sound } from "../../Sound";
 
+import styles from "./GameSet.module.scss";
+
 type Props = {
   playerId: string;
   players: Player[];
@@ -44,13 +46,13 @@ const GameSet: React.FC<Props> = ({
   }, [message, sound]);
 
   return (
-    <GameContainer>
+    <div className={styles.main}>
       <LeftSide>
         <PlayerList players={players} myPlayerId={playerId} showScore={true} />
         <Button onClick={onStart}>Start</Button>
       </LeftSide>
       <Board game={game} sendMessage={sendMessage}></Board>
-    </GameContainer>
+    </div>
   );
 };
 
