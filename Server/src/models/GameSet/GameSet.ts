@@ -71,7 +71,7 @@ export class GameSet extends GameBase {
     }: {
       showCorrectTupleDelay: number;
       showRemovedCardsDelay: number;
-    } = { showCorrectTupleDelay: 4000, showRemovedCardsDelay: 1000 }
+    } = { showCorrectTupleDelay: 6000, showRemovedCardsDelay: 1000 }
   ) {
     super();
     const machineOptions = {
