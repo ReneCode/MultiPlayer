@@ -224,7 +224,7 @@ export class GameSet extends GameBase {
         for (let j = i + 1; !valid && j < len - 1; j++) {
           for (let k = j + 1; !valid && k < len; k++) {
             if (this.validTuple([i, j, k])) {
-              // console.log("valid", i, j, k);
+              console.log("valid", i, j, k);
               valid = true;
             }
           }

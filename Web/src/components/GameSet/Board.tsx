@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { DtoGameSet } from "./DtoGameSet";
 
-import styled from "styled-components";
 import Card from "./Card";
 import { Button } from "../style";
 import Dialog from "./Dialog";
-import styles from "./GameSet.module.scss";
+import "./Board.scss";
 
 import { Sound } from "../../Sound";
 
@@ -63,7 +62,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
   }
 
   return (
-    <div className={styles.board}>
+    <div className="board">
       {component}
       {game.board.map((card, index) => {
         let showFrame = false;

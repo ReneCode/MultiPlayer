@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 
-import { GameContainer, LeftSide } from "../styledComponents";
+import { LeftSide } from "../styledComponents";
 import PlayerList from "../PlayerList";
 import { Player } from "../../model/Player";
 import Board from "./Board";
@@ -8,7 +8,7 @@ import { DtoGameSet } from "./DtoGameSet";
 import { Button } from "../style";
 import { Sound } from "../../Sound";
 
-import styles from "./GameSet.module.scss";
+import "./GameSet.scss";
 
 type Props = {
   playerId: string;
@@ -46,7 +46,7 @@ const GameSet: React.FC<Props> = ({
   }, [message, sound]);
 
   return (
-    <div className={styles.main}>
+    <div className="game">
       <LeftSide>
         <PlayerList players={players} myPlayerId={playerId} showScore={true} />
         <Button onClick={onStart}>Start</Button>
