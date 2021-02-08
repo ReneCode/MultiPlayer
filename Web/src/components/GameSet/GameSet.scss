@@ -1,0 +1,16 @@
+.game {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+}

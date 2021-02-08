@@ -7,11 +7,12 @@ const FinishContainer = styled.div`
   flex-direction: column;
   align-items: center;
   position: fixed;
-  top: 100px;
+  top: 120px;
   left: 50%;
   background-color: #ddd;
-  border: 1px solid #aaa;
-  border-radius: 8px;
+  opacity: 0.98;
+  border: 2px solid #222;
+
   padding: 15px 30px;
   z-index: 1;
 `;

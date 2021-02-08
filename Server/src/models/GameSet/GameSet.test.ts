@@ -1,7 +1,12 @@
 const colors = require("colors");
 
 import { wait } from "../../utils/wait";
+import { GameSetCard } from "./DtoGameSet";
 import { GameSet } from "./GameSet";
+
+const createGameSetCard = (nr: number): GameSetCard => {
+  return { shape: nr, color: nr, count: nr, fill: nr };
+};
 
 describe.only("GameSet", () => {
   beforeAll(() => {
@@ -9,6 +14,58 @@ describe.only("GameSet", () => {
       messageIn: ["brightRed"],
       messageOut: ["green"],
     });
+  });
+
+  it("fillGapsOnBoard-1", () => {
+    const game = new GameSet();
+    game.board = [
+      createGameSetCard(1),
+      createGameSetCard(2),
+      undefined,
+      createGameSetCard(4),
+      createGameSetCard(5),
+      undefined,
+      createGameSetCard(7),
+      createGameSetCard(8),
+      createGameSetCard(9),
+    ];
+
+    game["fillGapsOnBoard"]();
+    expect(game.board).toHaveLength(7);
+    expect(game.board).toEqual([
+      createGameSetCard(1),
+      createGameSetCard(2),
+      createGameSetCard(8),
+      createGameSetCard(4),
+      createGameSetCard(5),
+      createGameSetCard(9),
+      createGameSetCard(7),
+    ]);
+  });
+
+  it("fillGapsOnBoard-2", () => {
+    const game = new GameSet();
+    game.board = [
+      undefined,
+      createGameSetCard(1),
+      createGameSetCard(2),
+      undefined,
+      createGameSetCard(4),
+      createGameSetCard(5),
+      undefined,
+      createGameSetCard(7),
+      createGameSetCard(8),
+    ];
+
+    game["fillGapsOnBoard"]();
+    expect(game.board).toEqual([
+      createGameSetCard(7),
+      createGameSetCard(1),
+      createGameSetCard(2),
+      createGameSetCard(8),
+      createGameSetCard(4),
+      createGameSetCard(5),
+    ]);
   });
 
   it("complete Set game", async () => {
@@ -98,6 +155,7 @@ describe.only("GameSet", () => {
       await wait(showCorrectTupleDelay);
       await wait(showRemovedCardsDelay);
     }
+
     g = game.getGame();
     expect(g.state).toBe("searchTuple");
     expect(g.remainingCards).toBe(0);
@@ -108,13 +166,14 @@ describe.only("GameSet", () => {
       playerId: playerIdB,
       cards: [0, 3, 6],
     });
+
     await wait(showCorrectTupleDelay);
     await wait(showRemovedCardsDelay);
 
     game.message({
       cmd: "PICK_TUPLE",
       playerId: playerIdB,
-      cards: [9, 10, 11],
+      cards: [0, 1, 4],
     });
     await wait(showCorrectTupleDelay);
     await wait(showRemovedCardsDelay);
@@ -122,7 +181,7 @@ describe.only("GameSet", () => {
     game.message({
       cmd: "PICK_TUPLE",
       playerId: playerIdB,
-      cards: [2, 5, 8],
+      cards: [0, 1, 2],
     });
     await wait(showCorrectTupleDelay);
     await wait(showRemovedCardsDelay);

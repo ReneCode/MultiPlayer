@@ -1,18 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { DtoGameSet } from "./DtoGameSet";
 
-import styled from "styled-components";
 import Card from "./Card";
 import { Button } from "../style";
 import Dialog from "./Dialog";
+import "./Board.scss";
 
 import { Sound } from "../../Sound";
-
-const CardContainer = styled.div`
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-`;
 
 type Props = {
   game: DtoGameSet;
@@ -68,7 +62,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
   }
 
   return (
-    <CardContainer>
+    <div className="board">
       {component}
       {game.board.map((card, index) => {
         let showFrame = false;
@@ -88,7 +82,7 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
           ></Card>
         );
       })}
-    </CardContainer>
+    </div>
   );
 };
 
