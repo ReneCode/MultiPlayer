@@ -1,6 +1,7 @@
 import { Server } from "ws";
 const colors = require("colors");
 import gameServer from "./models/GameServer";
+import { logger } from "./logger";
 
 colors.setTheme({
   messageIn: ["brightRed"],
@@ -16,15 +17,12 @@ const WS_CLOSED = 3;
 class WebSocketServer {
   constructor(wss: any) {
     console.log("start webSocket Server");
-    wss.on("request", (req) => {
-      console.log(">>> request:", req);
-    });
 
     wss.on("connection", (ws, req) => {
-      console.log(colors.messageIn("connect"));
       const playerId = gameServer.connectPlayer(ws);
       // console.log("connect player:", playerId);
       // add playerId to the client
+      logger.trackTrace(`WS: connection ${playerId}`);
       ws.playerId = playerId;
       const result = {
         cmd: "CLIENT_CONNECTED",
@@ -38,7 +36,8 @@ class WebSocketServer {
       });
 
       ws.on("close", () => {
-        console.log(colors.messageIn(`close ${ws.playerId}`));
+        logger.trackTrace(`WS: close ${ws.playerId}`);
+
         gameServer.disconnectPlayer(ws.playerId);
       });
     });
@@ -47,7 +46,7 @@ class WebSocketServer {
   private handleMessage(ws: Server, data: any) {
     try {
       const message = JSON.parse(data);
-      console.log(colors.messageIn(`message ${message.cmd}`));
+      logger.trackTrace(`WS: message ${message.cmd}`);
 
       // console.log("message:", message);
       const playerId: string = message.playerId;
