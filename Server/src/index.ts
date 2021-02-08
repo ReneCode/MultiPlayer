@@ -11,10 +11,7 @@ logger.trackTrace(msg);
 const envProduction = process.env.NODE_ENV === "production";
 
 const server = http.createServer((req, res) => {
-  console.log("created:", envProduction);
-  if (envProduction) {
-    logger.trackNodeHttpRequest({ request: req, response: res });
-  }
+  logger.trackNodeHttpRequest({ request: req, response: res });
 });
 server.on("request", app);
 

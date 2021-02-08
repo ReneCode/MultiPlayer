@@ -2,25 +2,26 @@
 const appInsights = require("applicationinsights");
 
 class Logger {
-  production: boolean = false;
+  logAI: boolean = false;
   client = undefined;
 
   constructor() {
     appInsights.setup().start();
     this.client = appInsights.defaultClient;
 
-    this.production = process.env.NODE_ENV === "production";
+    this.logAI = process.env.NODE_ENV === "production";
+    this.logAI = true;
   }
 
   trackTrace(message: string) {
     console.log(">>", message);
-    if (this.production) {
+    if (this.logAI) {
       this.client.trackTrace({ message: message });
     }
   }
 
   trackNodeHttpRequest(para: object) {
-    if (this.production) {
+    if (this.logAI) {
       this.client.trackNodeHttpRequest(para);
     }
   }
