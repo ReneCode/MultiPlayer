@@ -180,7 +180,6 @@ export class GameSet extends GameBase {
     this.pickedTuple.forEach((idx) => {
       this.board[idx] = undefined;
     });
-    // this.sendUpdate();
   }
 
   /**
@@ -201,7 +200,7 @@ export class GameSet extends GameBase {
         if (this.allCards.length > 0) {
           added = true;
           const newCard = this.allCards.shift();
-          const freeIdx = this.nextFreeIndexOnBoard();
+          const freeIdx = this.firstFreeIndexOnBoard();
           if (freeIdx >= 0) {
             this.board[freeIdx] = newCard;
           } else {
@@ -244,8 +243,6 @@ export class GameSet extends GameBase {
       this.service.send("FINISH");
     }
     this.pickedTuple = [];
-
-    this.checkDuplicateCards();
   }
 
   private fillGapsOnBoard() {
@@ -256,30 +253,24 @@ export class GameSet extends GameBase {
         return acc;
       }
     }, 0);
+
     if (countGaps > 0) {
       // get the last 'countGaps' cards
       const cardsToMove = [];
-      for (
-        let i = this.board.length - 1;
-        cardsToMove.length < countGaps && i >= 0;
-        i--
-      ) {
+      for (let i = this.board.length - countGaps; i < this.board.length; i++) {
         if (this.board[i]) {
-          cardsToMove.unshift(this.board[i]);
+          cardsToMove.push(this.board[i]);
         }
       }
 
-      if (cardsToMove.length !== countGaps) {
-        throw new Error("panik");
-      }
-      cardsToMove.forEach((card) => {
-        const freeIndex = this.nextFreeIndexOnBoard();
+      for (let card of cardsToMove) {
+        const freeIndex = this.firstFreeIndexOnBoard();
         if (freeIndex >= 0) {
           this.board[freeIndex] = card;
         }
-      });
+      }
 
-      this.board = this.board.slice(0, this.board.length - cardsToMove.length);
+      this.board = this.board.slice(0, this.board.length - countGaps);
     }
   }
 
@@ -347,7 +338,7 @@ export class GameSet extends GameBase {
     return valid;
   };
 
-  nextFreeIndexOnBoard() {
+  firstFreeIndexOnBoard() {
     return this.board.findIndex((c) => c === undefined);
   }
 
@@ -373,8 +364,10 @@ export class GameSet extends GameBase {
       if (checkCard) {
         for (let j = i + 1; j < this.board.length; j++) {
           const compareCard = this.board[j];
-          if (this.cardsEqual(checkCard, compareCard)) {
-            console.error(">>>> duplicateCards:", i, j, this.board);
+          if (compareCard) {
+            if (this.cardsEqual(checkCard, compareCard)) {
+              console.error(">>>> duplicateCards:", i, j, this.board);
+            }
           }
         }
       }
