@@ -1,4 +1,4 @@
-import GameServer from "./GameServer";
+import { gameServer } from "./GameServer";
 
 describe("GameServer", () => {
   const wss = {};

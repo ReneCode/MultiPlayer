@@ -76,9 +76,9 @@ class GameTicTacToe extends GameBase {
     return dto;
   }
 
-  public addPlayer(ws: any, playerId: string) {
+  public addPlayer(playerId: string) {
     if (this.state == "idle" && this.players.length < MAX_PLAYER_COUNT) {
-      super.addPlayer(ws, playerId);
+      super.addPlayer(playerId);
     }
 
     //   if (this.players.length == MAX_PLAYER_COUNT) {

@@ -1,25 +1,30 @@
-const http = require("http");
-const WSServer = require("ws").Server;
+require("dotenv").config();
 
-const app = require("./http-server");
-import WebSockerServer from "./WebSocketServer";
+import { Server as SocketServer } from "socket.io";
+
+import { app } from "./http-server";
+const http = require("http");
+
 import { logger } from "./logger";
+import { gameServer } from "./models/GameServer";
+import { initSocketServer } from "./WebSocketServer";
 
 const msg = `start Server with NODE_ENV: ${process.env.NODE_ENV}`;
 logger.trackTrace(msg);
 
 const envProduction = process.env.NODE_ENV === "production";
 
-const server = http.createServer((req, res) => {
-  logger.trackNodeHttpRequest({ request: req, response: res });
-});
-server.on("request", app);
+const server = http.createServer(app);
 
-// create web socket server on top of a regular http server
-const wss = new WSServer({
-  server: server,
+// https://socket.io/docs/v3/handling-cors/
+const socketServer = new SocketServer(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN,
+    methods: ["GET", "POST"],
+  },
 });
-const webSocketServer = new WebSockerServer(wss);
+gameServer.init(socketServer);
+initSocketServer(socketServer);
 
 const port = process.env.PORT || 8080;
 server.listen(port, () => {

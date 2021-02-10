@@ -1,4 +1,5 @@
 import Randomize from "./Randomize";
+import { Server as SocketServer } from "socket.io";
 import GameBase from "./GameBase";
 import GameTicTacToe from "./GameTicTacToe/GameTicTacToe";
 import GameFiveInARow from "./GameFiveInARow/GameFiveInARow";
@@ -10,8 +11,9 @@ type PlayerId = string;
 type GameId = string;
 
 class GameServer {
-  allPlayers: Map<PlayerId, Connection> = new Map<PlayerId, Connection>();
+  allPlayers: Map<PlayerId, boolean> = new Map<PlayerId, boolean>();
   games: Map<GameId, GameBase> = new Map<GameId, GameBase>();
+  socketServer: SocketServer;
 
   readonly TicTacToe_Name = "Tic Tac Toe";
   readonly FiveInARow_Name = "Five in a row";
@@ -24,15 +26,17 @@ class GameServer {
     this.Set_Name,
   ];
 
-  constructor() {}
+  init(socketServer: SocketServer) {
+    this.socketServer = socketServer;
+  }
 
   getAvailiableGames() {
     return this.availiableGames;
   }
 
-  public connectPlayer(ws: Connection) {
-    const playerId = Randomize.generateId(16);
-    this.allPlayers.set(playerId, ws);
+  public connectPlayer(playerId: string) {
+    // const playerId = Randomize.generateId(16);
+    this.allPlayers.set(playerId, true);
     return playerId;
   }
 
@@ -53,15 +57,17 @@ class GameServer {
   }
 
   // add playerId to the game with id gameId
-  public addPlayer(gameId: string, playerId: string, ws: WebSocket) {
+  public addPlayer(gameId: string, playerId: string) {
     const game = this.games.get(gameId);
     if (!game) {
-      const message = { cmd: "GAME_INVALID" };
-      ws.send(JSON.stringify(message));
+      return false;
+      // const message = { cmd: "GAME_INVALID" };
+      // ws.send(JSON.stringify(message));
     } else {
       this.checkPlayerId(playerId);
-      game.addPlayer(ws, playerId);
+      game.addPlayer(playerId);
       game.sendUpdate();
+      return true;
     }
   }
 
@@ -73,22 +79,22 @@ class GameServer {
     let game: GameBase;
     switch (gameName) {
       case this.TicTacToe_Name:
-        game = new GameTicTacToe();
+        game = new GameTicTacToe(this.socketServer);
         game.cmdInit();
         break;
 
       case this.FiveInARow_Name:
-        game = new GameFiveInARow();
+        game = new GameFiveInARow(this.socketServer);
         game.cmdInit();
         break;
 
       case this.NobodysPerfect_Name:
-        game = new GameNobodyIsPerfect();
+        game = new GameNobodyIsPerfect(this.socketServer);
         game.cmdInit();
         break;
 
       case this.Set_Name:
-        game = new GameSet();
+        game = new GameSet(this.socketServer);
         game.cmdInit();
         break;
 
@@ -155,6 +161,4 @@ class GameServer {
   }
 }
 
-const gameServer = new GameServer();
-
-export default gameServer;
+export const gameServer = new GameServer();

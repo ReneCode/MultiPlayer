@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from "react";
 
-import { LeftSide } from "../styledComponents";
 import PlayerList from "../PlayerList";
 import { Player } from "../../model/Player";
 import Board from "./Board";
@@ -47,10 +46,10 @@ const GameSet: React.FC<Props> = ({
 
   return (
     <div className="game">
-      <LeftSide>
+      <div className="left-side">
         <PlayerList players={players} myPlayerId={playerId} showScore={true} />
         <Button onClick={onStart}>Start</Button>
-      </LeftSide>
+      </div>
       <Board game={game} sendMessage={sendMessage}></Board>
     </div>
   );

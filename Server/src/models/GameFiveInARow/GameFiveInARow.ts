@@ -1,4 +1,5 @@
 import GameBase from "../GameBase";
+import { Server as SocketServer } from "socket.io";
 import { Machine, interpret, Interpreter } from "xstate";
 import Randomize from "../Randomize";
 
@@ -62,8 +63,8 @@ class GameFiveInARow extends GameBase {
   static getName() {
     return "FiveInARow";
   }
-  constructor() {
-    super();
+  constructor(socketServer: SocketServer) {
+    super(socketServer);
 
     const machineOptions = {
       actions: {
@@ -81,8 +82,8 @@ class GameFiveInARow extends GameBase {
     ).start();
   }
 
-  public addPlayer(ws: any, playerId: string) {
-    super.addPlayer(ws, playerId);
+  public addPlayer(playerId: string) {
+    super.addPlayer(playerId);
   }
 
   public removePlayer(playerId: string) {

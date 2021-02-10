@@ -1,6 +1,7 @@
 const fetch = require("node-fetch");
 
 import GameBase from "../GameBase";
+import { Server as SocketServer } from "socket.io";
 import { Machine, interpret, Interpreter } from "xstate";
 import { Player } from "../Player";
 import Randomize from "../Randomize";
@@ -95,8 +96,8 @@ class GameNobodyIsPerfect extends GameBase {
   answer: string;
   allAnswers: { text: string; playerId: string }[] = [];
 
-  constructor() {
-    super();
+  constructor(socketServer: SocketServer) {
+    super(socketServer);
 
     const machineOptions = {
       actions: {
@@ -146,8 +147,8 @@ class GameNobodyIsPerfect extends GameBase {
     };
   }
 
-  public addPlayer(ws: any, playerId: string) {
-    const player = new GamePlayer(ws, playerId);
+  public addPlayer(playerId: string) {
+    const player = new GamePlayer(playerId);
     player.color = this.getUniquePlayerColor();
     this.players.push(player);
   }

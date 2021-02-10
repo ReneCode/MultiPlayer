@@ -6,7 +6,8 @@ const morgan = require("morgan");
 const http = require("http");
 const https = require("https");
 const colors = require("colors");
-import gameServer from "./models/GameServer";
+//
+import { logger } from "./logger";
 
 colors.setTheme({
   error: ["red"],
@@ -15,12 +16,9 @@ colors.setTheme({
 import { gamesRouter } from "./routes/gamesRouter";
 import { versionRouter } from "./routes/versionRouter";
 
-require("dotenv").config();
-const app = express();
+export const app = express();
 
-// if (applicationInsightsLogger.init()) {
-//   applicationInsightsLogger.trackHttpRequests(app);
-// }
+console.log("create express server");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -33,6 +31,10 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
+app.use((err, req, res, next) => {
+  logger.trackNodeHttpRequest({ request: req, response: res });
+  next();
+});
 app.use(morgan("tiny", {}));
 
 app.use("/games", gamesRouter);
@@ -54,4 +56,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+// module.exports = app;
