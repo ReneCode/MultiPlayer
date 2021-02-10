@@ -1,6 +1,7 @@
 const colors = require("colors");
 
 import GameNobodyIsPerfect from "./GameNobodyIsPerfect";
+import { createSocketMock } from "../socketMock";
 
 describe("GameNobodyIsPerfect", () => {
   beforeAll(() => {
@@ -11,7 +12,7 @@ describe("GameNobodyIsPerfect", () => {
   });
 
   it("complete game", () => {
-    const game = new GameNobodyIsPerfect();
+    const game = new GameNobodyIsPerfect(createSocketMock());
     let g = game.getGame();
     expect(g.state).toBe("idle");
 
@@ -20,9 +21,9 @@ describe("GameNobodyIsPerfect", () => {
     g = game.getGame();
     expect(g.state).toBe("idle");
 
-    game.addPlayer({}, "player-A");
-    game.addPlayer({}, "player-B");
-    game.addPlayer({}, "player-C");
+    game.addPlayer("player-A");
+    game.addPlayer("player-B");
+    game.addPlayer("player-C");
     g = game.getGame();
 
     expect(g.players).toHaveLength(3);
@@ -160,12 +161,12 @@ describe("GameNobodyIsPerfect", () => {
   });
 
   it("do not score you own answer", () => {
-    const game = new GameNobodyIsPerfect();
+    const game = new GameNobodyIsPerfect(createSocketMock());
     let g = game.getGame();
     game.message({ cmd: "GAME_START" });
-    game.addPlayer({}, "player-A");
-    game.addPlayer({}, "player-B");
-    game.addPlayer({}, "player-C");
+    game.addPlayer("player-A");
+    game.addPlayer("player-B");
+    game.addPlayer("player-C");
     // start the game - first: pickQuestion
     game.message({ cmd: "GAME_START" });
     const questionText = "what is the aim of life?";

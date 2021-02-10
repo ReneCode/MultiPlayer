@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 
+import { Server as SocketServer } from "socket.io";
 import GameBase from "../GameBase";
 import { DtoGameSet, GameSetCard } from "./DtoGameSet";
 import { Machine, interpret, Interpreter, send, actions } from "xstate";
@@ -65,6 +66,7 @@ export class GameSet extends GameBase {
   service: Interpreter<any>;
 
   constructor(
+    socketServer: SocketServer,
     {
       showCorrectTupleDelay,
       showRemovedCardsDelay,
@@ -73,7 +75,8 @@ export class GameSet extends GameBase {
       showRemovedCardsDelay: number;
     } = { showCorrectTupleDelay: 6000, showRemovedCardsDelay: 1000 }
   ) {
-    super();
+    super(socketServer);
+
     const machineOptions = {
       actions: {
         doSendUpdate: this.doSendUpdate.bind(this),

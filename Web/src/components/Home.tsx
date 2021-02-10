@@ -30,12 +30,14 @@ const Home = () => {
   const handleCreateGame = async (name: string) => {
     try {
       const params = new URLSearchParams({ name: name });
+      // create game on server
       const url = `${API_SERVER}/games?${params}`;
       const options = {
         method: "POST",
       };
       const res = await fetch(url, options);
       const json = await res.json();
+      // take the gameId and route to that game
       if (json.name === name && json.id) {
         history.push(`/g/${json.id}`);
       }

@@ -21,6 +21,7 @@ class Logger {
   }
 
   trackNodeHttpRequest(para: object) {
+    console.log(">> httpRequest");
     if (this.logAI) {
       this.client.trackNodeHttpRequest(para);
     }

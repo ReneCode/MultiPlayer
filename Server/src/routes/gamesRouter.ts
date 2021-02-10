@@ -4,7 +4,7 @@ import * as httpStatus from "http-status-codes";
 // https://auth0.com/blog/use-typescript-to-create-a-secure-api-with-nodejs-and-express-creating-endpoints/
 export const gamesRouter = express.Router();
 
-import gameServer from "../models/GameServer";
+import { gameServer } from "../models/GameServer";
 
 gamesRouter.post("/", function (req: Request, res: Response) {
   const name = req.query.name as string;

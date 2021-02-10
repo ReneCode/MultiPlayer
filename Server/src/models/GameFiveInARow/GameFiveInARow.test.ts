@@ -1,6 +1,7 @@
 const colors = require("colors");
 
 import GameFiveInARow from "./GameFiveInARow";
+import { createSocketMock } from "../socketMock";
 
 describe("GameFiveInARow", () => {
   beforeAll(() => {
@@ -11,7 +12,7 @@ describe("GameFiveInARow", () => {
   });
 
   it("createCheckCells", () => {
-    const game = new GameFiveInARow();
+    const game = new GameFiveInARow(createSocketMock());
 
     let g = game.getGame();
     expect(g.state).toEqual("idle");
@@ -20,8 +21,8 @@ describe("GameFiveInARow", () => {
     g = game.getGame();
     expect(g.state).toEqual("idle");
 
-    game.addPlayer({}, "player-A");
-    game.addPlayer({}, "player-B");
+    game.addPlayer("player-A");
+    game.addPlayer("player-B");
     game.message({ cmd: "GAME_START" });
     g = game.getGame();
     expect(g.state).toEqual("started");

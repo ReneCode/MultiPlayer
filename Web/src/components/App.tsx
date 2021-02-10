@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { io, Socket } from "socket.io-client";
 import styled from "styled-components";
 
-// import "./App.css";
 import { useParams, useHistory } from "react-router";
 import TicTacToe from "./TicTacToe/TicTacToe";
-import WebSocketPingPong from "./WebSocketPingPong";
 import { Player } from "../model/Player";
 import FiveInARow from "./FiveInARow/FiveInARow";
 import NobodyIsPerfect from "./NobodyIsPerfect/NobodyIsPerfect";
 import GameSet from "./GameSet/GameSet";
 
-const WS_SERVER = process.env.REACT_APP_WS_SERVER;
+const WS_SERVER = process.env.REACT_APP_WS_SERVER as string;
 if (!WS_SERVER) {
   throw new Error(`REACT_APP_WS_SERVER not set`);
 }
@@ -35,20 +34,67 @@ const GameName = styled.div`
   margin-left: 10px;
 `;
 
-const App: React.FC = () => {
-  const { id } = useParams();
+export const SocketContext = React.createContext<Socket>(
+  (undefined as unknown) as Socket
+);
+
+const App = () => {
+  const { id: gameId } = useParams<{ id: string }>();
+  const socket = useMemo(() => io(WS_SERVER), []);
   const history = useHistory();
   const [game, setGame] = useState(undefined as any);
   const [playerId, setPlayerId] = useState("");
-  const [gameId, setGameId] = useState("");
   const [players, setPlayers] = useState([] as Player[]);
-  const [ws, setWs] = useState((undefined as unknown) as WebSocket);
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    // routing with gameId
-    setGameId(id);
-  }, [id]);
+    const handleMessage = (message: any) => {
+      switch (message.cmd) {
+        case "GAME_UPDATE":
+          setPlayers(message.players ? message.players : []);
+          setGame(message.game);
+          if (!gameId) {
+            history.push(`/g/${message.gameId}`);
+          }
+          break;
+
+        case "GAME_INVALID":
+          if (gameId) {
+            history.push("/");
+          }
+          break;
+
+        case "CLIENT_CONNECTED":
+          if (!playerId && message.playerId) {
+            setPlayerId(message.playerId);
+            if (gameId) {
+              sendMessage({
+                cmd: "GAME_CONNECT",
+                gameId: gameId,
+                playerId: message.playerId,
+              });
+            }
+          }
+          break;
+      }
+      setMessage(message);
+    };
+
+    socket.onAny((data: string) => {
+      try {
+        const message = JSON.parse(data);
+        handleMessage(message);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    return () => {
+      console.log("disconnect");
+      socket.disconnect();
+    };
+    // eslint-disable-next-line
+  }, []);
 
   const sendMessage = (message: any) => {
     let sendMessage = { ...message };
@@ -58,47 +104,11 @@ const App: React.FC = () => {
     if (playerId) {
       sendMessage = { ...sendMessage, playerId: playerId };
     }
-
-    // console.log("sendMessage:", sendMessage);
-    ws.send(JSON.stringify(sendMessage));
+    socket.emit(JSON.stringify(sendMessage));
   };
 
   const handleReset = () => {
     history.push("/");
-  };
-
-  const handleMessage = (message: any) => {
-    console.log("got message:", message.cmd);
-    switch (message.cmd) {
-      case "GAME_UPDATE":
-        setPlayers(message.players ? message.players : []);
-        setGame(message.game);
-        if (!gameId) {
-          history.push(`/g/${message.gameId}`);
-        }
-        break;
-
-      case "GAME_INVALID":
-        if (gameId) {
-          setGameId("");
-          history.push("/");
-        }
-        break;
-
-      case "CLIENT_CONNECTED":
-        if (!playerId && message.playerId) {
-          setPlayerId(message.playerId);
-          if (gameId) {
-            sendMessage({
-              cmd: "GAME_CONNECT",
-              gameId: gameId,
-              playerId: message.playerId,
-            });
-          }
-        }
-        break;
-    }
-    setMessage(message);
   };
 
   let gameComponent = null;
@@ -150,10 +160,6 @@ const App: React.FC = () => {
 
   return (
     <AppContainer>
-      <WebSocketPingPong
-        onMessage={handleMessage}
-        onConnectWebSocket={(ws) => setWs(ws)}
-      />
       <TopBar>
         <HomeButton onClick={handleReset}>
           <img src="/home.svg" alt="home" width="28" height="28" />

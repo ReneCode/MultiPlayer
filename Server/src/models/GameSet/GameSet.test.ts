@@ -1,4 +1,5 @@
 const colors = require("colors");
+import { createSocketMock } from "../socketMock";
 
 import { wait } from "../../utils/wait";
 import { GameSetCard } from "./DtoGameSet";
@@ -17,7 +18,7 @@ describe.only("GameSet", () => {
   });
 
   it("fillGapsOnBoard-1", () => {
-    const game = new GameSet();
+    const game = new GameSet(undefined);
     game.board = [
       createGameSetCard(1),
       createGameSetCard(2),
@@ -44,7 +45,7 @@ describe.only("GameSet", () => {
   });
 
   it("fillGapsOnBoard-2", () => {
-    const game = new GameSet();
+    const game = new GameSet(undefined);
     game.board = [
       undefined,
       createGameSetCard(1),
@@ -71,10 +72,14 @@ describe.only("GameSet", () => {
   it("complete Set game", async () => {
     const showCorrectTupleDelay = 50;
     const showRemovedCardsDelay = 50;
-    const game = new GameSet({ showCorrectTupleDelay, showRemovedCardsDelay });
-    game.addPlayer({}, "player-A");
-    game.addPlayer({}, "player-B");
-    game.addPlayer({}, "player-C");
+
+    const game = new GameSet(createSocketMock(), {
+      showCorrectTupleDelay,
+      showRemovedCardsDelay,
+    });
+    game.addPlayer("player-A");
+    game.addPlayer("player-B");
+    game.addPlayer("player-C");
 
     let g = game.getGame();
     const playerIdA = game.players[0].id;

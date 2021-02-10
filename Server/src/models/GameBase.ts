@@ -1,5 +1,5 @@
 const colors = require("colors");
-
+import { Server as SocketServer } from "socket.io";
 import { Player } from "./Player";
 import Randomize from "./Randomize";
 
@@ -8,16 +8,18 @@ const WS_OPEN = 1;
 class GameBase {
   players: Player[] = [];
   readonly gameId: string;
+  readonly socketServer: SocketServer;
 
-  constructor() {
+  constructor(socketServer: SocketServer) {
+    this.socketServer = socketServer;
     this.gameId = Randomize.generateId(10);
   }
 
-  addPlayer(ws: any, playerId: string) {
+  addPlayer(playerId: string) {
     if (this.getPlayer(playerId)) {
       throw new Error("player ${playerId} allready added to game");
     }
-    const player = new Player(ws, playerId);
+    const player = new Player(playerId);
     player.color = this.getUniquePlayerColor();
     this.players.push(player);
   }
@@ -100,8 +102,8 @@ class GameBase {
       toPlayerIds = this.players.filter((player) => player.id === toPlayerId);
     }
 
-    const clients = toPlayerIds.map((player) => player.ws);
-    this.sendMessageToClients(msg, clients);
+    const playerIds = toPlayerIds.map((player) => player.id);
+    this.sendMessageToClients(msg, playerIds);
   }
 
   getPlayerIds(): string[] {
@@ -112,16 +114,17 @@ class GameBase {
     return this.players.find((player) => player.id === playerId);
   }
 
-  private sendMessageToClients(message: any, clients: any[]) {
+  private sendMessageToClients(message: any, playerIds: string[]) {
     // console.log(colors.messageOut(message.cmd));
     // console.log("sendMessage:", message);
 
     const messageString = JSON.stringify(message);
-    clients.forEach((client) => {
-      if (client.readyState === WS_OPEN) {
-        client.send(messageString);
-      }
-    });
+    for (let playerId of playerIds) {
+      this.socketServer.to(playerId).emit(messageString);
+      // if (client.readyState === WS_OPEN) {
+      //   client.send(messageString);
+      // }
+    }
   }
 }
 
