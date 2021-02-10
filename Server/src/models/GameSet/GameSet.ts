@@ -240,7 +240,7 @@ export class GameSet extends GameBase {
     validTuple = this.findFirstValidTupleOnBoard();
 
     if (validTuple) {
-      console.log("found valid Tuple:", validTuple);
+      // console.log("found valid Tuple:", validTuple);
       this.service.send("CONTINUE");
     } else {
       this.service.send("FINISH");
