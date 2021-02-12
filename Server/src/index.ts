@@ -9,10 +9,9 @@ import { logger } from "./logger";
 import { gameServer } from "./models/GameServer";
 import { initSocketServer } from "./WebSocketServer";
 
+console.log("----------------------------------------------------------------");
 const msg = `start Server with NODE_ENV: ${process.env.NODE_ENV}`;
 logger.trackTrace(msg);
-
-const envProduction = process.env.NODE_ENV === "production";
 
 const server = http.createServer(app);
 

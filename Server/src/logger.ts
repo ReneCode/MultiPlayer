@@ -1,5 +1,6 @@
 // https://docs.microsoft.com/en-us/azure/azure-monitor/app/nodejs
 const appInsights = require("applicationinsights");
+import config from "./config.json";
 
 class Logger {
   logAI: boolean = false;
@@ -10,13 +11,15 @@ class Logger {
     this.client = appInsights.defaultClient;
 
     this.logAI = process.env.NODE_ENV === "production";
-    this.logAI = true;
   }
 
-  trackTrace(message: string) {
-    console.log(">>", message);
+  trackTrace(message: string, properties = {}) {
+    console.log(">>", message, properties);
     if (this.logAI) {
-      this.client.trackTrace({ message: message });
+      this.client.trackTrace({
+        message: message,
+        properties: { ...config, ...properties },
+      });
     }
   }
 
