@@ -61,7 +61,10 @@ const machineConfiguration = {
 
 export class GameSet extends GameBase {
   allCards: GameSetCard[] = [];
-  pickedTuple: number[] = [];
+  pickedCards: {
+    tuple: number[];
+    playerId: string;
+  } = { tuple: [], playerId: "" };
   board: GameSetCard[] = [];
   service: Interpreter<any>;
 
@@ -106,7 +109,7 @@ export class GameSet extends GameBase {
       state: this.service.state.value,
       remainingCards: this.allCards.length,
       board: this.board,
-      pickedTuple: this.pickedTuple,
+      pickedCards: this.pickedCards,
       players: this.players.map((p) => p.getDtoPlayer()),
     };
   }
@@ -165,9 +168,14 @@ export class GameSet extends GameBase {
       return p;
     });
     if (valid) {
-      this.pickedTuple = tuple.sort();
+      this.pickedCards = {
+        tuple: tuple.sort(),
+        playerId: playerId,
+      };
       this.service.send("CORRECT_TUPLE");
-      this.sendUpdate({ message: { gameId: this.gameId, cmd: "GOOD_PICK" } });
+      this.sendUpdate({
+        message: { gameId: this.gameId, cmd: "GOOD_PICK" },
+      });
     } else {
       this.sendUpdate();
       const badPickMessage = {
@@ -180,9 +188,13 @@ export class GameSet extends GameBase {
   }
 
   private doRemoveTuple() {
-    this.pickedTuple.forEach((idx) => {
+    this.pickedCards.tuple.forEach((idx) => {
       this.board[idx] = undefined;
     });
+    this.pickedCards = {
+      tuple: [],
+      playerId: "",
+    };
   }
 
   /**
@@ -245,7 +257,6 @@ export class GameSet extends GameBase {
     } else {
       this.service.send("FINISH");
     }
-    this.pickedTuple = [];
   }
 
   private fillGapsOnBoard() {
@@ -279,7 +290,7 @@ export class GameSet extends GameBase {
 
   private initAllCards(skipShuffle: boolean) {
     this.allCards = [];
-    this.pickedTuple = [];
+    this.pickedCards = { tuple: [], playerId: "" };
     this.board = [];
     [1, 2, 3].forEach((shape) => {
       [1, 2, 3].forEach((color) => {
