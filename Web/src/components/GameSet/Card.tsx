@@ -9,20 +9,23 @@ import Picture from "./Picture";
 type Props = {
   card: GameSetCard;
   selected: boolean;
-  showFrame: boolean;
+  borderColor: string;
   onClick: () => void;
 };
 
-const Card: React.FC<Props> = ({ card, selected, showFrame, onClick }) => {
+const Card: React.FC<Props> = ({ card, selected, borderColor, onClick }) => {
   if (!card) {
     return <div className="card"></div>;
   }
   const pics = new Array(card.count).fill(1);
+  const style = {
+    borderColor: borderColor,
+  };
   return (
     <div
+      style={style}
       className={classNames("card", {
         selected: selected,
-        frame: showFrame,
       })}
       onClick={onClick}
     >

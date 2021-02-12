@@ -51,6 +51,14 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     }
   };
 
+  const getBorderColor = (playerId: string) => {
+    const player = game.players.find((p) => p.id === playerId);
+    if (player) {
+      return player.color;
+    }
+    return "";
+  };
+
   let component = null;
   if (game.state === "finish") {
     component = (
@@ -65,17 +73,17 @@ const Board: React.FC<Props> = ({ game, sendMessage }) => {
     <div className="board">
       {component}
       {game.board.map((card, index) => {
-        let showFrame = false;
+        let borderColor = "";
         if (
           game.state === "showPickedCards" &&
-          game.pickedTuple.includes(index)
+          game.pickedCards.tuple.includes(index)
         ) {
-          showFrame = true;
+          borderColor = getBorderColor(game.pickedCards.playerId);
         }
         return (
           <Card
             key={index}
-            showFrame={showFrame}
+            borderColor={borderColor}
             selected={cards.includes(index)}
             card={card}
             onClick={() => onClickCard(index)}

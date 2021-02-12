@@ -12,6 +12,9 @@ export interface DtoGameSet extends DtoGameBase {
   state: any;
   remainingCards: number;
   board: GameSetCard[];
-  pickedTuple: number[];
+  pickedCards: {
+    tuple: number[];
+    playerId: string;
+  };
   players: DtoPlayer[];
 }

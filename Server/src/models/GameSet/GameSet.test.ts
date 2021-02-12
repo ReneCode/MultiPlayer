@@ -104,7 +104,8 @@ describe.only("GameSet", () => {
     g = game.getGame();
     expect(g.state).toBe("searchTuple");
     expect(g.board).toHaveLength(12);
-    expect(g.pickedTuple).toEqual([]);
+    expect(g.pickedCards.tuple).toEqual([]);
+    expect(g.pickedCards.playerId).toEqual("");
     expect(g.players[0].score).toBe(-1);
 
     // first correct answer
@@ -113,19 +114,21 @@ describe.only("GameSet", () => {
     expect(g.state).toBe("showPickedCards");
     expect(g.board).toHaveLength(12);
     expect(g.remainingCards).toEqual(69);
-    expect(g.pickedTuple).toEqual([0, 3, 6]);
+    expect(g.pickedCards.tuple).toEqual([0, 3, 6]);
+    expect(g.pickedCards.playerId).toEqual(playerIdB);
     expect(g.players[0].score).toBe(-1);
     expect(g.players[1].score).toBe(1);
     expect(g.players[2].score).toBe(0);
     expect(g.board[0]).toEqual({ shape: 1, color: 1, count: 1, fill: 1 });
 
     // second answer - will not be counted
-    game.message({ cmd: "PICK_TUPLE", playerId: playerIdB, cards: [0, 1, 7] });
+    game.message({ cmd: "PICK_TUPLE", playerId: playerIdC, cards: [0, 1, 7] });
     g = game.getGame();
     expect(g.state).toBe("showPickedCards");
     expect(g.board).toHaveLength(12);
     expect(g.remainingCards).toEqual(69);
-    expect(g.pickedTuple).toEqual([0, 3, 6]);
+    expect(g.pickedCards.tuple).toEqual([0, 3, 6]);
+    expect(g.pickedCards.playerId).toEqual(playerIdB);
     expect(g.players[0].score).toBe(-1);
     expect(g.players[1].score).toBe(1);
     expect(g.players[2].score).toBe(0);
@@ -136,6 +139,8 @@ describe.only("GameSet", () => {
     expect(g.state).toBe("showRemovedCards");
     expect(g.board).toHaveLength(12);
     expect(g.remainingCards).toEqual(69);
+    expect(g.pickedCards.tuple).toEqual([]);
+    expect(g.pickedCards.playerId).toEqual("");
     expect(g.board[0]).toBeUndefined();
     expect(g.board[3]).toBeUndefined();
     expect(g.board[6]).toBeUndefined();
