@@ -49,13 +49,15 @@ namespace Randomize {
 
   export function shuffle(list: any[]): any[] {
     const result = list.map((e) => e);
-    for (let i = 0; i < list.length; i++) {
+    let i = 0;
+    while (i < list.length) {
       const idx1 = Randomize.generateInt(list.length);
       const idx2 = Randomize.generateInt(list.length);
       if (idx1 !== idx2) {
         const tmp = result[idx1];
         result[idx1] = result[idx2];
         result[idx2] = tmp;
+        i++;
       }
     }
     return result;

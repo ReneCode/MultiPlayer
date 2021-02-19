@@ -15,9 +15,9 @@ const GameName = styled.button`
   border: 1px solid #888;
   box-shadow: 4px 4px 4px #00000055;
   background-color: lightgreen;
-  width: 200px;
+  width: 300px;
   font-size: 1.4rem;
-  margin: 0.5rem;
+  margin: 0.7rem;
   cursor: pointer;
 `;
 
