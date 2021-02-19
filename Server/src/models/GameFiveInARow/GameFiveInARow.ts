@@ -2,6 +2,7 @@ import GameBase from "../GameBase";
 import { Server as SocketServer } from "socket.io";
 import { Machine, interpret, Interpreter } from "xstate";
 import Randomize from "../Randomize";
+import { Player } from "../Player";
 
 const MAX_ROWS = 15;
 const MAX_COLS = 15;
@@ -51,7 +52,14 @@ const machineConfiguration = {
   },
 };
 
+class GamePlayer extends Player {
+  team: number;
+}
+
 class GameFiveInARow extends GameBase {
+  players: GamePlayer[];
+  teamSize: number = 1;
+  shuffleTeam: boolean = true;
   board = [];
   currentPlayerId = "";
   wonPlayerId = undefined;
@@ -63,8 +71,19 @@ class GameFiveInARow extends GameBase {
   static getName() {
     return "FiveInARow";
   }
-  constructor(socketServer: SocketServer) {
+  constructor(
+    socketServer: SocketServer,
+    { teamSize, shuffleTeam }: { teamSize: number; shuffleTeam: boolean } = {
+      teamSize: 1,
+      shuffleTeam: true,
+    }
+  ) {
     super(socketServer);
+
+    if (teamSize) {
+      this.teamSize = teamSize;
+      this.shuffleTeam = shuffleTeam;
+    }
 
     const machineOptions = {
       actions: {
@@ -83,7 +102,9 @@ class GameFiveInARow extends GameBase {
   }
 
   public addPlayer(playerId: string) {
-    super.addPlayer(playerId);
+    const player = new GamePlayer(playerId);
+    player.color = this.getUniquePlayerColor();
+    this.players.push(player);
   }
 
   public removePlayer(playerId: string) {
@@ -144,8 +165,29 @@ class GameFiveInARow extends GameBase {
 
   private doStart() {
     this.cmdInit();
-    const startPlayerIdx = Randomize.generateInt(this.players.length);
-    this.currentPlayerId = this.players[startPlayerIdx].id;
+
+    let teams = [];
+    let teamId = 0;
+    const playerIds = this.players.map((player) => player.id);
+    playerIds.forEach((playerId) => {
+      teamId++;
+      for (let t = 0; t < this.teamSize; t++) {
+        teams.push(teamId);
+      }
+    });
+    teams = teams.slice(0, playerIds.length);
+
+    if (this.shuffleTeam) {
+      teams = Randomize.shuffle(teams);
+      const startPlayerIdx = Randomize.generateInt(this.players.length);
+      this.currentPlayerId = this.players[startPlayerIdx].id;
+    } else {
+      this.currentPlayerId = this.players[0].id;
+    }
+    this.players.forEach((player, index) => {
+      player.team = teams[index];
+    });
+
     this.sendUpdate();
   }
 
@@ -176,9 +218,12 @@ class GameFiveInARow extends GameBase {
           // game finished
           const [col, row] = this.wonCells[0].split(",");
           const cellValue = this.getCell(col, row);
-          this.wonPlayerId = this.getPlayerIdFromCellValue(cellValue);
-          const wonPlayer = this.getPlayer(this.wonPlayerId);
-          wonPlayer.score++;
+          // this.wonPlayerId = this.getPlayerFromCellValue(cellValue);
+          const oneWonPlayer = this.getPlayerFromCellValue(cellValue);
+          if (oneWonPlayer) {
+            const allTeamPlayers = this.getTeamPlayers(oneWonPlayer.team);
+            allTeamPlayers.forEach((player) => player.score++);
+          }
           this.service.send("FINISH");
         } else {
           this.setNextCurrentPlayerId();
@@ -193,6 +238,10 @@ class GameFiveInARow extends GameBase {
     this.sendUpdate();
   }
 
+  private getTeamPlayers(teamId: number) {
+    return this.players.filter((p) => p.team === teamId);
+  }
+
   private getCellValueForPlayer(playerId: string) {
     const index = this.players.findIndex((player) => player.id === playerId);
     if (index < 0) {
@@ -202,13 +251,13 @@ class GameFiveInARow extends GameBase {
     }
   }
 
-  private getPlayerIdFromCellValue(cellValue: string) {
+  private getPlayerFromCellValue(cellValue: string) {
     let idx = parseInt(cellValue);
     idx--;
     if (idx >= 0 && idx < this.players.length) {
-      return this.players[idx].id;
+      return this.players[idx];
     }
-    return "";
+    return null;
   }
 
   private setCell(col: number, row: number, val: number) {
@@ -239,11 +288,29 @@ class GameFiveInARow extends GameBase {
         const [col, row] = cell.split(",").map((str: string) => parseInt(str));
         values.add(this.getCell(col, row));
       });
-      if (values.size === 1 && !values.has(CELL_EMPTY)) {
+      if (
+        values.size <= this.teamSize &&
+        !values.has(CELL_EMPTY) &&
+        this.sameTeam(values)
+      ) {
         wonCells = cells;
       }
     });
     return wonCells;
+  }
+
+  private sameTeam(playerIndexSet: Set<number>) {
+    let team = 0;
+    for (let playerIndex of playerIndexSet.keys()) {
+      const playerTeam = this.players[playerIndex - 1].team;
+      if (!team) {
+        team = playerTeam;
+      }
+      if (team !== playerTeam) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private getCheckCells() {

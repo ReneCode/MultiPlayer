@@ -17,11 +17,13 @@ class GameServer {
 
   readonly TicTacToe_Name = "Tic Tac Toe";
   readonly FiveInARow_Name = "Five in a row";
+  readonly FiveInARowTeam_Name = "Five in a row - Team";
   readonly NobodysPerfect_Name = "Nobody's perfect";
   readonly Set_Name = "Set";
   readonly availiableGames = [
     this.TicTacToe_Name,
     this.FiveInARow_Name,
+    this.FiveInARowTeam_Name,
     this.NobodysPerfect_Name,
     this.Set_Name,
   ];
@@ -85,6 +87,14 @@ class GameServer {
 
       case this.FiveInARow_Name:
         game = new GameFiveInARow(this.socketServer);
+        game.cmdInit();
+        break;
+
+      case this.FiveInARowTeam_Name:
+        game = new GameFiveInARow(this.socketServer, {
+          teamSize: 2,
+          shuffleTeam: true,
+        });
         game.cmdInit();
         break;
 
