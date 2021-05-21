@@ -17,12 +17,14 @@ class GameServer {
 
   readonly TicTacToe_Name = "Tic Tac Toe";
   readonly FiveInARow_Name = "Five in a row";
+  readonly FiveInARowRemove_Name = "Five in a row - max:15";
   readonly FiveInARowTeam_Name = "Five in a row - Team";
   readonly NobodysPerfect_Name = "Nobody's perfect";
   readonly Set_Name = "Set";
   readonly availiableGames = [
     this.TicTacToe_Name,
     this.FiveInARow_Name,
+    this.FiveInARowRemove_Name,
     this.FiveInARowTeam_Name,
     this.NobodysPerfect_Name,
     this.Set_Name,
@@ -75,8 +77,9 @@ class GameServer {
 
   public disconnect(ws: Connection) {}
 
-  public createGame(gameName: string) {
+  public createGame(gameName: string, options: { maxCellsEachPlayer: number }) {
     this.checkGameName(gameName);
+    console.log("options:", options);
 
     let game: GameBase;
     switch (gameName) {
@@ -86,7 +89,20 @@ class GameServer {
         break;
 
       case this.FiveInARow_Name:
-        game = new GameFiveInARow(this.socketServer);
+        game = new GameFiveInARow(this.socketServer, {
+          teamSize: 1,
+          shuffleTeam: false,
+          maxCellsEachPlayer: 0,
+        });
+        game.cmdInit();
+        break;
+
+      case this.FiveInARowRemove_Name:
+        game = new GameFiveInARow(this.socketServer, {
+          teamSize: 1,
+          shuffleTeam: false,
+          maxCellsEachPlayer: 15,
+        });
         game.cmdInit();
         break;
 
@@ -94,6 +110,7 @@ class GameServer {
         game = new GameFiveInARow(this.socketServer, {
           teamSize: 2,
           shuffleTeam: true,
+          maxCellsEachPlayer: 0,
         });
         game.cmdInit();
         break;

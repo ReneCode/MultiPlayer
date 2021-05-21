@@ -15,6 +15,7 @@ describe("GameFiveInARow", () => {
     const game = new GameFiveInARow(createSocketMock(), {
       teamSize: 1,
       shuffleTeam: false,
+      maxCellsEachPlayer: 0,
     });
 
     let g = game.getGame();
@@ -94,6 +95,7 @@ describe("GameFiveInARow", () => {
     const game = new GameFiveInARow(createSocketMock(), {
       teamSize: 2,
       shuffleTeam: false,
+      maxCellsEachPlayer: 0,
     });
 
     game.addPlayer("player-A");
@@ -172,6 +174,7 @@ describe("GameFiveInARow", () => {
     const game = new GameFiveInARow(createSocketMock(), {
       teamSize: 2,
       shuffleTeam: false,
+      maxCellsEachPlayer: 0,
     });
 
     game.addPlayer("player-A");
@@ -204,5 +207,54 @@ describe("GameFiveInARow", () => {
       expect(g.wonCells[i]).toEqual(`${colFirst},${i}`);
     }
     expect(g.players[0]).toHaveProperty("score", 1);
+  });
+
+  it("remove Cells because of maxCellsPerPlayer", () => {
+    const game = new GameFiveInARow(createSocketMock(), {
+      teamSize: 1,
+      shuffleTeam: false,
+      maxCellsEachPlayer: 2,
+    });
+
+    game.addPlayer("player-A");
+    const valA = 1;
+    game.message({ cmd: "GAME_START" });
+    let g = game.getGame();
+    // first Move
+    game.message({
+      cmd: "GAME_MOVE",
+      playerId: g.currentPlayerId,
+      move: { col: 0, row: 0 },
+    });
+    g = game.getGame();
+    expect(g.board[0][0]).toEqual(valA);
+    expect(g.board[1][1]).toEqual(0);
+    expect(g.board[2][2]).toEqual(0);
+    expect(g.lastMovedCell).toEqual({ col: 0, row: 0 });
+    expect(g.lastRemovedCell).toBeFalsy();
+
+    // second Move
+    game.message({
+      cmd: "GAME_MOVE",
+      playerId: g.currentPlayerId,
+      move: { col: 1, row: 1 },
+    });
+    g = game.getGame();
+    expect(g.board[0][0]).toEqual(valA);
+    expect(g.board[1][1]).toEqual(valA);
+    expect(g.board[2][2]).toEqual(0);
+
+    // third Move - remove first move
+    game.message({
+      cmd: "GAME_MOVE",
+      playerId: g.currentPlayerId,
+      move: { col: 2, row: 2 },
+    });
+    g = game.getGame();
+    expect(g.board[0][0]).toEqual(0);
+    expect(g.board[1][1]).toEqual(valA);
+    expect(g.board[2][2]).toEqual(valA);
+    expect(g.lastMovedCell).toEqual({ col: 2, row: 2 });
+    expect(g.lastRemovedCell).toEqual({ col: 0, row: 0, val: 1 });
   });
 });

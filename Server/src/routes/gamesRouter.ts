@@ -8,12 +8,13 @@ import { gameServer } from "../models/GameServer";
 
 gamesRouter.post("/", function (req: Request, res: Response) {
   const name = req.query.name as string;
+  const options = req.body;
   if (!name) {
     // throw { status: 503, message: "bad name" };
     res.status(httpStatus.BAD_REQUEST).send();
     return;
   }
-  const id = gameServer.createGame(name);
+  const id = gameServer.createGame(name, options);
   const result = {
     name,
     id,

@@ -1,13 +1,19 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import DtoGameFiveInARow from "./DtoGameFiveInARow";
 import { Player } from "../../model/Player";
 import PlayerList from "../PlayerList";
 
 import { GameContainer, LeftSide } from "../styledComponents";
 import { Button } from "../style";
+import { BaseAnimation } from "./BaseAnimation";
 
 import "./FiveInARow.scss";
+
+const FadeOutAnimation = keyframes`
+ from {opacity:0;}
+ to {opacity:1;}
+`;
 
 const RightSide = styled.div`
   margin-top: 10px;
@@ -23,7 +29,9 @@ const Board = styled.div`
 
 type CellProps = {
   lastmove: boolean;
+  lastremove: boolean;
   won: boolean;
+  removedcolor: string;
   color: string;
 };
 const Cell = styled.div`
@@ -35,7 +43,13 @@ const Cell = styled.div`
   text-align: center;
   border-radius: 15px;
   animation: ${(props) =>
-    props.won ? "won 1.2s infinite" : props.lastmove ? "lastmove 2s 3" : ""};
+    props.won
+      ? "won 1.2s infinite"
+      : props.lastmove
+      ? "lastmove 2s 3"
+      : props.lastremove
+      ? "lastremove 2s 3"
+      : ""};
 `;
 
 type Props = {
@@ -117,12 +131,19 @@ const FiveInARow: React.FC<Props> = ({
                     game.lastMovedCell &&
                     iRow === game.lastMovedCell.row &&
                     iCol === game.lastMovedCell.col;
+                  const lastRemove =
+                    game.lastRemovedCell &&
+                    iRow === game.lastRemovedCell.row &&
+                    iCol === game.lastRemovedCell.col;
+                  const removeVal = game.lastRemovedCell?.val;
                   return (
                     <Cell
+                      lastremove={lastRemove}
                       lastmove={lastMove}
                       won={game.wonCells.includes(`${iCol},${iRow}`)}
                       key={iRow}
                       color={getCellColor(val)}
+                      removedcolor={getCellColor(removeVal)}
                       onClick={() => handleCellClick(iCol, iRow)}
                     ></Cell>
                   );

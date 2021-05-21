@@ -10,6 +10,17 @@
   }
 }
 
+@keyframes lastremove {
+  0% {
+    transform: scale(1);
+    // background-color: red;
+  }
+  100% {
+    transform: scale(0);
+    // background-color: gainsboro;
+  }
+}
+
 @keyframes won {
   0% {
     transform: scale(1);

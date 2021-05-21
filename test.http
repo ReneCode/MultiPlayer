@@ -1,0 +1,6 @@
+POST http://localhost:8080/games?name=Five+in+a+row
+content-type: application/json
+
+{
+    "maxCellsEachPlayer": 5
+}

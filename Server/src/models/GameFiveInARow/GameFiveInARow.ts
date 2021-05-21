@@ -65,6 +65,10 @@ class GameFiveInARow extends GameBase {
   wonPlayerId = undefined;
   wonCells = [];
   lastMovedCell = undefined;
+  lastRemovedCell = undefined;
+
+  maxCellsEachPlayer = 0;
+  movedCells: Record<string, { col: number; row: number }[]> = {};
 
   service: Interpreter<any>;
 
@@ -73,9 +77,18 @@ class GameFiveInARow extends GameBase {
   }
   constructor(
     socketServer: SocketServer,
-    { teamSize, shuffleTeam }: { teamSize: number; shuffleTeam: boolean } = {
+    {
+      teamSize,
+      shuffleTeam,
+      maxCellsEachPlayer,
+    }: {
+      teamSize: number;
+      shuffleTeam: boolean;
+      maxCellsEachPlayer: number;
+    } = {
       teamSize: 1,
       shuffleTeam: true,
+      maxCellsEachPlayer: 999,
     }
   ) {
     super(socketServer);
@@ -84,6 +97,7 @@ class GameFiveInARow extends GameBase {
       this.teamSize = teamSize;
       this.shuffleTeam = shuffleTeam;
     }
+    this.maxCellsEachPlayer = maxCellsEachPlayer;
 
     const machineOptions = {
       actions: {
@@ -105,10 +119,12 @@ class GameFiveInARow extends GameBase {
     const player = new GamePlayer(playerId);
     player.color = this.getUniquePlayerColor();
     this.players.push(player);
+    this.movedCells[playerId] = [];
   }
 
   public removePlayer(playerId: string) {
     this.players = this.players.filter((p) => p.id !== playerId);
+    this.lastMovedCell[playerId] = [];
     this.service.send("RESET");
   }
 
@@ -119,8 +135,10 @@ class GameFiveInARow extends GameBase {
       currentPlayerId: this.currentPlayerId,
       state: this.service ? this.service.state.value : "",
       lastMovedCell: this.lastMovedCell,
+      lastRemovedCell: this.lastRemovedCell,
       wonCells: this.wonCells,
       wonPlayerId: this.wonPlayerId,
+
       players: this.players.map((p) => {
         return {
           id: p.id,
@@ -207,10 +225,24 @@ class GameFiveInARow extends GameBase {
 
     const oldVal = this.getCell(col, row);
     if (oldVal === CELL_EMPTY) {
-      const val = this.getCellValueForPlayer(message.playerId);
+      const playerId = message.playerId;
+      const val = this.getCellValueForPlayer(playerId);
       if (val) {
         this.setCell(col, row, val);
         this.lastMovedCell = { col, row };
+
+        if (this.maxCellsEachPlayer) {
+          this.movedCells[playerId].push({ col, row });
+          if (this.movedCells[playerId].length > this.maxCellsEachPlayer) {
+            const moveClear = this.movedCells[playerId].shift();
+            this.setCell(moveClear.col, moveClear.row, 0);
+            this.lastRemovedCell = {
+              col: moveClear.col,
+              row: moveClear.row,
+              val: val,
+            };
+          }
+        }
 
         this.wonCells = this.getWonCells();
 
@@ -218,7 +250,6 @@ class GameFiveInARow extends GameBase {
           // game finished
           const [col, row] = this.wonCells[0].split(",");
           const cellValue = this.getCell(col, row);
-          // this.wonPlayerId = this.getPlayerFromCellValue(cellValue);
           const oneWonPlayer = this.getPlayerFromCellValue(cellValue);
           if (oneWonPlayer) {
             const allTeamPlayers = this.getTeamPlayers(oneWonPlayer.team);
