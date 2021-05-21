@@ -6,14 +6,14 @@ import PlayerList from "../PlayerList";
 
 import { GameContainer, LeftSide } from "../styledComponents";
 import { Button } from "../style";
-import { BaseAnimation } from "./BaseAnimation";
+// import { BaseAnimation } from "./BaseAnimation";
 
 import "./FiveInARow.scss";
 
-const FadeOutAnimation = keyframes`
- from {opacity:0;}
- to {opacity:1;}
-`;
+// const FadeOutAnimation = keyframes`
+//  from {opacity:0;}
+//  to {opacity:1;}
+// `;
 
 const RightSide = styled.div`
   margin-top: 10px;
