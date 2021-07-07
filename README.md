@@ -10,6 +10,8 @@ add github.settings.secrets:
 
 create azure web app / containerized
 
+- application settings
+  - CORS_ORIGIN = "https://mpgame.netlify.app" (without / at the end)
 - general settings
   - enable web-socket
   - switch allways on: true
