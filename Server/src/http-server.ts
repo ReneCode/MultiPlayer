@@ -15,6 +15,7 @@ colors.setTheme({
 
 import { gamesRouter } from "./routes/gamesRouter";
 import { versionRouter } from "./routes/versionRouter";
+import { debugRouter } from "./routes/debugRouter";
 
 export const app = express();
 
@@ -29,7 +30,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+  })
+);
 
 app.use((err, req, res, next) => {
   logger.trackNodeHttpRequest({ request: req, response: res });
@@ -39,6 +44,7 @@ app.use(morgan("tiny", {}));
 
 app.use("/games", gamesRouter);
 app.use("/version", versionRouter);
+app.use("/debug", debugRouter);
 
 app.get("/", (req: any, res: any) => {
   res.send("hi, multi-player server is running.");

@@ -8,6 +8,14 @@ add github.settings.secrets:
 - DOCKERHUB_USERNAME: <myname>
 - DOCKER_REGISTRY: <name.azurecr.io>
 
+create azure web app / containerized
+
+- general settings
+  - enable web-socket
+  - switch allways on: true
+- deployment settings
+  - enable CI
+
 ## online multiplayer game(s).
 
 Server (node.js)
