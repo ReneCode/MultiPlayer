@@ -41,7 +41,7 @@ app.use("/games", gamesRouter);
 app.use("/version", versionRouter);
 
 app.get("/", (req: any, res: any) => {
-  res.send("hi, multi-player server is running");
+  res.send("hi, multi-player server is running.");
 });
 
 // error handler
